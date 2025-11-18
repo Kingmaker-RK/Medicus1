@@ -16,13 +16,45 @@ class TranslationScreen extends StatefulWidget {
 
 class _TranslationScreenState extends State<TranslationScreen> {
   final TextEditingController _inputController = TextEditingController();
+  String? _previousUserLanguage;
 
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      Provider.of<TranslationProvider>(context, listen: false).initialize();
+      final userProvider = Provider.of<UserProvider>(context, listen: false);
+      final translationProvider = Provider.of<TranslationProvider>(
+        context,
+        listen: false,
+      );
+
+      // Initialize with the user's selected language
+      translationProvider.initialize(
+        userLanguage: userProvider.selectedLanguage,
+      );
+      _previousUserLanguage = userProvider.selectedLanguage;
     });
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    // Listen for changes in user's language preference
+    final userProvider = Provider.of<UserProvider>(context, listen: false);
+    final translationProvider = Provider.of<TranslationProvider>(
+      context,
+      listen: false,
+    );
+
+    // If user changed their language preference, update the translation provider
+    if (_previousUserLanguage != null &&
+        _previousUserLanguage != userProvider.selectedLanguage) {
+      translationProvider.updateSourceLanguageFromUser(
+        userProvider.selectedLanguage,
+      );
+      _previousUserLanguage = userProvider.selectedLanguage;
+    }
   }
 
   @override
@@ -94,20 +126,13 @@ class _TranslationScreenState extends State<TranslationScreen> {
             child: Row(
               children: [
                 // Left panel - Input
-                Expanded(
-                  child: _buildInputPanel(translationProvider),
-                ),
+                Expanded(child: _buildInputPanel(translationProvider)),
 
                 // Divider
-                Container(
-                  width: 2,
-                  color: AppColors.primary.withOpacity(0.2),
-                ),
+                Container(width: 2, color: AppColors.primary.withOpacity(0.2)),
 
                 // Right panel - Translation output
-                Expanded(
-                  child: _buildOutputPanel(translationProvider),
-                ),
+                Expanded(child: _buildOutputPanel(translationProvider)),
               ],
             ),
           ),
@@ -177,10 +202,7 @@ class _TranslationScreenState extends State<TranslationScreen> {
       children: [
         Text(
           label,
-          style: TextStyle(
-            fontSize: 12,
-            color: AppColors.textSecondary,
-          ),
+          style: TextStyle(fontSize: 12, color: AppColors.textSecondary),
         ),
         const SizedBox(height: 4),
         DropdownButton<String>(
@@ -251,8 +273,9 @@ class _TranslationScreenState extends State<TranslationScreen> {
                     ? null
                     : () {
                         if (_inputController.text.isNotEmpty) {
-                          translationProvider
-                              .translateText(_inputController.text);
+                          translationProvider.translateText(
+                            _inputController.text,
+                          );
                         }
                       },
                 icon: translationProvider.isTranslating
@@ -388,11 +411,14 @@ class _TranslationScreenState extends State<TranslationScreen> {
                         spacing: 8,
                         runSpacing: 8,
                         children: currentTranslation.medicalTerms
-                            .map((term) => Chip(
-                                  label: Text(term),
-                                  backgroundColor:
-                                      AppColors.primary.withOpacity(0.1),
-                                ))
+                            .map(
+                              (term) => Chip(
+                                label: Text(term),
+                                backgroundColor: AppColors.primary.withOpacity(
+                                  0.1,
+                                ),
+                              ),
+                            )
                             .toList(),
                       ),
                       const SizedBox(height: 16),

@@ -23,9 +23,24 @@ class TranslationProvider with ChangeNotifier {
   String get sourceLanguage => _sourceLanguage;
   String get targetLanguage => _targetLanguage;
 
-  // Initialize speech service
-  Future<void> initialize() async {
+  // Initialize speech service with user's selected language
+  Future<void> initialize({String? userLanguage}) async {
     await _speechService.initialize();
+
+    // If user has selected a language, set it as the source language
+    if (userLanguage != null && userLanguage.isNotEmpty) {
+      _sourceLanguage = userLanguage;
+
+      // Set target language to a different language (not the same as source)
+      // Default to English if source is not English, otherwise Spanish
+      if (userLanguage != 'en') {
+        _targetLanguage = 'en';
+      } else {
+        _targetLanguage = 'es';
+      }
+
+      notifyListeners();
+    }
   }
 
   // Translate text
@@ -104,6 +119,21 @@ class TranslationProvider with ChangeNotifier {
     notifyListeners();
   }
 
+  // Update source language based on user preference (from welcome screen)
+  void updateSourceLanguageFromUser(String userLanguageCode) {
+    // Only update if it's different
+    if (_sourceLanguage != userLanguageCode) {
+      _sourceLanguage = userLanguageCode;
+
+      // If target is the same as source, swap it to a different language
+      if (_targetLanguage == userLanguageCode) {
+        _targetLanguage = userLanguageCode != 'en' ? 'en' : 'es';
+      }
+
+      notifyListeners();
+    }
+  }
+
   // Set target language
   void setTargetLanguage(String languageCode) {
     _targetLanguage = languageCode;
@@ -125,10 +155,7 @@ class TranslationProvider with ChangeNotifier {
 
   // Speak text
   Future<void> speakText(String text, String languageCode) async {
-    await _speechService.speak(
-      text: text,
-      languageCode: languageCode,
-    );
+    await _speechService.speak(text: text, languageCode: languageCode);
   }
 
   // Stop speaking
