@@ -4,6 +4,7 @@ import '../screens/welcome_screen.dart';
 import '../screens/translation_screen.dart';
 import '../screens/settings_screen.dart';
 import '../screens/user_profile_screen.dart';
+import '../screens/doctor_profile_screen.dart';
 
 class AppRouter {
   static final GoRouter router = GoRouter(
@@ -29,11 +30,13 @@ class AppRouter {
         name: 'profile',
         builder: (context, state) => const UserProfileScreen(),
       ),
-    ],
-    errorBuilder: (context, state) => Scaffold(
-      body: Center(
-        child: Text('Page not found: ${state.uri}'),
+      GoRoute(
+        path: '/doctor-profile',
+        name: 'doctor-profile',
+        builder: (context, state) => const DoctorProfileScreen(),
       ),
-    ),
+    ],
+    errorBuilder: (context, state) =>
+        Scaffold(body: Center(child: Text('Page not found: ${state.uri}'))),
   );
 }

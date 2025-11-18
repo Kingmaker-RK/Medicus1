@@ -23,6 +23,12 @@
       "name": "profile",
       "screen": "UserProfileScreen",
       "description": "User profile screen with personal info, certificates, sick notes, reimbursements, and mailbox"
+    },
+    {
+      "path": "/doctor-profile",
+      "name": "doctor-profile",
+      "screen": "DoctorProfileScreen",
+      "description": "Doctor profile screen with professional info, credentials, and clinic details"
     }
   ]
 }

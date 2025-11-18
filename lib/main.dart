@@ -5,6 +5,7 @@ import 'config/router.dart';
 import 'providers/user_provider.dart';
 import 'providers/translation_provider.dart';
 import 'providers/user_profile_provider.dart';
+import 'providers/doctor_profile_provider.dart';
 import 'constants/colors.dart';
 import 'constants/app_constants.dart';
 
@@ -26,14 +27,15 @@ class MedicusApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
-        ChangeNotifierProvider(
-          create: (_) => UserProvider()..initialize(),
-        ),
+        ChangeNotifierProvider(create: (_) => UserProvider()..initialize()),
         ChangeNotifierProvider(
           create: (_) => TranslationProvider()..initialize(),
         ),
         ChangeNotifierProvider(
           create: (_) => UserProfileProvider()..initialize(),
+        ),
+        ChangeNotifierProvider(
+          create: (_) => DoctorProfileProvider()..initialize(),
         ),
       ],
       child: MaterialApp.router(
@@ -75,13 +77,13 @@ class MedicusApp extends StatelessWidget {
             ),
           ),
           inputDecorationTheme: InputDecorationTheme(
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-            ),
+            border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
             filled: true,
             fillColor: Colors.white,
-            contentPadding:
-                const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+            contentPadding: const EdgeInsets.symmetric(
+              horizontal: 16,
+              vertical: 16,
+            ),
           ),
           cardTheme: CardThemeData(
             elevation: 2,

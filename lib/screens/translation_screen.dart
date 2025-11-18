@@ -510,7 +510,10 @@ class _TranslationScreenState extends State<TranslationScreen> {
     );
   }
 
-  Widget _buildNavigationDrawer(BuildContext context, UserProvider userProvider) {
+  Widget _buildNavigationDrawer(
+    BuildContext context,
+    UserProvider userProvider,
+  ) {
     return Drawer(
       child: Column(
         children: [
@@ -519,11 +522,7 @@ class _TranslationScreenState extends State<TranslationScreen> {
             decoration: BoxDecoration(color: AppColors.primary),
             currentAccountPicture: CircleAvatar(
               backgroundColor: Colors.white,
-              child: Icon(
-                Icons.person,
-                size: 40,
-                color: AppColors.primary,
-              ),
+              child: Icon(Icons.person, size: 40, color: AppColors.primary),
             ),
             accountName: Text(
               userProvider.currentUser?.name ?? 'Guest User',
@@ -531,17 +530,27 @@ class _TranslationScreenState extends State<TranslationScreen> {
             ),
             accountEmail: Text(
               userProvider.currentUser?.email ??
-              (userProvider.currentUser?.isGuest == true ? 'Guest Mode' : 'No email'),
+                  (userProvider.currentUser?.isGuest == true
+                      ? 'Guest Mode'
+                      : 'No email'),
             ),
           ),
 
           // Navigation Items
           ListTile(
             leading: const Icon(Icons.person_outline),
-            title: const Text('User Profile'),
+            title: Text(
+              userProvider.currentUser?.role == AppConstants.roleDoctor
+                  ? 'Doctor Profile'
+                  : 'User Profile',
+            ),
             onTap: () {
               Navigator.pop(context); // Close drawer
-              context.push('/profile');
+              if (userProvider.currentUser?.role == AppConstants.roleDoctor) {
+                context.push('/doctor-profile');
+              } else {
+                context.push('/profile');
+              }
             },
           ),
           ListTile(
@@ -573,7 +582,8 @@ class _TranslationScreenState extends State<TranslationScreen> {
             ),
             subtitle: const Text('Tap to switch'),
             onTap: () {
-              final newRole = userProvider.currentUser?.role == AppConstants.roleDoctor
+              final newRole =
+                  userProvider.currentUser?.role == AppConstants.roleDoctor
                   ? AppConstants.rolePatient
                   : AppConstants.roleDoctor;
               userProvider.changeRole(newRole);
