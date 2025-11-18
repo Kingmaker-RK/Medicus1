@@ -11,17 +11,21 @@ class TranslationProvider with ChangeNotifier {
   TranslationResult? _currentTranslation;
   bool _isTranslating = false;
   bool _isListening = false;
+  bool _isSpeaking = false;
   String _currentInput = '';
   String _sourceLanguage = 'en';
   String _targetLanguage = 'es';
+  String? _lastError;
 
   List<TranslationResult> get translationHistory => _translationHistory;
   TranslationResult? get currentTranslation => _currentTranslation;
   bool get isTranslating => _isTranslating;
   bool get isListening => _isListening;
+  bool get isSpeaking => _isSpeaking;
   String get currentInput => _currentInput;
   String get sourceLanguage => _sourceLanguage;
   String get targetLanguage => _targetLanguage;
+  String? get lastError => _lastError;
 
   // Initialize speech service with user's selected language
   Future<void> initialize({String? userLanguage}) async {
@@ -44,11 +48,12 @@ class TranslationProvider with ChangeNotifier {
   }
 
   // Translate text
-  Future<void> translateText(String text) async {
+  Future<void> translateText(String text, {bool autoSpeak = false}) async {
     if (text.trim().isEmpty) return;
 
     _isTranslating = true;
     _currentInput = text;
+    _lastError = null;
     notifyListeners();
 
     try {
@@ -61,13 +66,15 @@ class TranslationProvider with ChangeNotifier {
       _currentTranslation = result;
       _translationHistory.insert(0, result);
 
-      // Speak the translated text
-      await _speechService.speak(
-        text: result.translatedText,
-        languageCode: _targetLanguage,
-      );
+      // Optionally speak the translated text
+      if (autoSpeak) {
+        await speakText(result.translatedText, _targetLanguage);
+      }
+
+      _lastError = null;
     } catch (e) {
       print('Error translating: $e');
+      _lastError = 'Translation failed: ${e.toString()}';
     } finally {
       _isTranslating = false;
       notifyListeners();
@@ -75,20 +82,30 @@ class TranslationProvider with ChangeNotifier {
   }
 
   // Start listening for speech
-  Future<void> startListening() async {
-    if (_isListening) return;
+  Future<bool> startListening() async {
+    if (_isListening) return false;
 
+    _lastError = null;
     _isListening = true;
     _currentInput = '';
     notifyListeners();
 
-    await _speechService.startListening(
-      languageCode: _sourceLanguage,
-      onResult: (text) {
-        _currentInput = text;
-        notifyListeners();
-      },
-    );
+    try {
+      await _speechService.startListening(
+        languageCode: _sourceLanguage,
+        onResult: (text) {
+          _currentInput = text;
+          notifyListeners();
+        },
+      );
+      return true;
+    } catch (e) {
+      print('Error starting speech recognition: $e');
+      _lastError = 'Speech recognition failed: ${e.toString()}';
+      _isListening = false;
+      notifyListeners();
+      return false;
+    }
   }
 
   // Stop listening
@@ -105,12 +122,23 @@ class TranslationProvider with ChangeNotifier {
     }
   }
 
-  // Swap languages
-  void swapLanguages() {
+  // Swap languages and optionally re-translate
+  Future<void> swapLanguages({bool retranslate = false}) async {
     final temp = _sourceLanguage;
     _sourceLanguage = _targetLanguage;
     _targetLanguage = temp;
-    notifyListeners();
+
+    // Swap input and output text if translation exists
+    if (_currentTranslation != null && retranslate) {
+      final oldTranslatedText = _currentTranslation!.translatedText;
+      _currentInput = oldTranslatedText;
+      notifyListeners();
+
+      // Re-translate with swapped languages
+      await translateText(oldTranslatedText);
+    } else {
+      notifyListeners();
+    }
   }
 
   // Set source language
@@ -155,12 +183,33 @@ class TranslationProvider with ChangeNotifier {
 
   // Speak text
   Future<void> speakText(String text, String languageCode) async {
-    await _speechService.speak(text: text, languageCode: languageCode);
+    if (_isSpeaking) {
+      await stopSpeaking();
+      return;
+    }
+
+    _isSpeaking = true;
+    _lastError = null;
+    notifyListeners();
+
+    try {
+      await _speechService.speak(text: text, languageCode: languageCode);
+    } catch (e) {
+      print('Error speaking text: $e');
+      _lastError = 'Text-to-speech failed: ${e.toString()}';
+    } finally {
+      _isSpeaking = false;
+      notifyListeners();
+    }
   }
 
   // Stop speaking
   Future<void> stopSpeaking() async {
-    await _speechService.stopSpeaking();
+    if (_isSpeaking) {
+      await _speechService.stopSpeaking();
+      _isSpeaking = false;
+      notifyListeners();
+    }
   }
 
   // Update current input
