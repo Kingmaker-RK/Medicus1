@@ -8,6 +8,11 @@ class AppConstants {
   static const String medicalTermsApiUrl = 'YOUR_MEDICAL_TERMS_API_URL';
   static const String anatomyImagesApiUrl = 'YOUR_ANATOMY_API_URL';
 
+  // OpenAI API Configuration for Advanced LLM Translation
+  // IMPORTANT: Replace with your actual OpenAI API key
+  // Get your API key from: https://platform.openai.com/api-keys
+  static const String openaiApiKey = 'YOUR_OPENAI_API_KEY';
+
   // Supported Languages - 200+ languages
   static const List<Map<String, String>> supportedLanguages = [
     {'code': 'en', 'name': 'English', 'nativeName': 'English'},
@@ -42,6 +47,7 @@ class AppConstants {
   static const String keyUserRole = 'user_role';
   static const String keyIsLoggedIn = 'is_logged_in';
   static const String keyUserId = 'user_id';
+  static const String keyProfileCompleted = 'profile_completed';
 
   // Animation Duration
   static const Duration animationDuration = Duration(milliseconds: 300);

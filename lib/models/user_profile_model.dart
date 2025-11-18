@@ -25,19 +25,23 @@ class UserProfileModel {
       secondName: json['secondName'] as String? ?? '',
       insuranceNumber: json['insuranceNumber'] as String? ?? '',
       insuranceProvider: json['insuranceProvider'] as String? ?? '',
-      certificates: (json['certificates'] as List<dynamic>?)
+      certificates:
+          (json['certificates'] as List<dynamic>?)
               ?.map((e) => Certificate.fromJson(e as Map<String, dynamic>))
               .toList() ??
           [],
-      sickNotes: (json['sickNotes'] as List<dynamic>?)
+      sickNotes:
+          (json['sickNotes'] as List<dynamic>?)
               ?.map((e) => SickNote.fromJson(e as Map<String, dynamic>))
               .toList() ??
           [],
-      reimbursements: (json['reimbursements'] as List<dynamic>?)
+      reimbursements:
+          (json['reimbursements'] as List<dynamic>?)
               ?.map((e) => Reimbursement.fromJson(e as Map<String, dynamic>))
               .toList() ??
           [],
-      mailbox: (json['mailbox'] as List<dynamic>?)
+      mailbox:
+          (json['mailbox'] as List<dynamic>?)
               ?.map((e) => MailboxMessage.fromJson(e as Map<String, dynamic>))
               .toList() ??
           [],
@@ -77,6 +81,24 @@ class UserProfileModel {
       reimbursements: reimbursements ?? this.reimbursements,
       mailbox: mailbox ?? this.mailbox,
     );
+  }
+
+  // Check if profile is complete (all required fields filled)
+  bool get isComplete {
+    return firstName.isNotEmpty &&
+        secondName.isNotEmpty &&
+        insuranceNumber.isNotEmpty &&
+        insuranceProvider.isNotEmpty;
+  }
+
+  // Get list of missing required fields
+  List<String> get missingFields {
+    final missing = <String>[];
+    if (firstName.isEmpty) missing.add('First Name');
+    if (secondName.isEmpty) missing.add('Second Name');
+    if (insuranceNumber.isEmpty) missing.add('Insurance Number');
+    if (insuranceProvider.isEmpty) missing.add('Insurance Provider');
+    return missing;
   }
 }
 
@@ -235,9 +257,7 @@ class MailboxMessage {
     };
   }
 
-  MailboxMessage copyWith({
-    bool? isRead,
-  }) {
+  MailboxMessage copyWith({bool? isRead}) {
     return MailboxMessage(
       id: id,
       subject: subject,

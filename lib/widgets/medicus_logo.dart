@@ -5,11 +5,8 @@ class MedicusLogo extends StatelessWidget {
   final double size;
   final bool showText;
 
-  const MedicusLogo({
-    Key? key,
-    this.size = 100,
-    this.showText = false,
-  }) : super(key: key);
+  const MedicusLogo({Key? key, this.size = 100, this.showText = false})
+    : super(key: key);
 
   @override
   Widget build(BuildContext context) {

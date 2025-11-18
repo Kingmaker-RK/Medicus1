@@ -167,7 +167,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       subtitle: 'Get important updates',
                       granted: _permissions['notification'] ?? false,
                       onTap: () async {
-                        await _permissionService.requestNotificationPermission();
+                        await _permissionService
+                            .requestNotificationPermission();
                         await _checkPermissions();
                       },
                     ),
@@ -306,8 +307,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
             itemCount: AppConstants.supportedLanguages.length,
             itemBuilder: (context, index) {
               final lang = AppConstants.supportedLanguages[index];
-              final isSelected =
-                  lang['code'] == userProvider.selectedLanguage;
+              final isSelected = lang['code'] == userProvider.selectedLanguage;
 
               return ListTile(
                 title: Text(lang['nativeName'] ?? ''),

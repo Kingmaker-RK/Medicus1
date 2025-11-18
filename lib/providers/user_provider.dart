@@ -24,7 +24,9 @@ class UserProvider with ChangeNotifier {
 
       if (isLoggedIn) {
         final userId = prefs.getString(AppConstants.keyUserId);
-        final role = prefs.getString(AppConstants.keyUserRole) ?? AppConstants.rolePatient;
+        final role =
+            prefs.getString(AppConstants.keyUserRole) ??
+            AppConstants.rolePatient;
         final languageCode = prefs.getString(AppConstants.keyLanguage) ?? 'en';
 
         _currentUser = UserModel(

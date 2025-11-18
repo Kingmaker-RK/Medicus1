@@ -129,7 +129,9 @@ class _UserProfileScreenState extends State<UserProfileScreen>
           onPressed: () {
             // TODO: Implement download functionality
             ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('Download functionality coming soon')),
+              const SnackBar(
+                content: Text('Download functionality coming soon'),
+              ),
             );
           },
         ),
@@ -259,10 +261,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
             Text('Date: ${reimbursement.date}'),
             const SizedBox(height: 4),
             Container(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 8,
-                vertical: 2,
-              ),
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
               decoration: BoxDecoration(
                 color: statusColor.withOpacity(0.1),
                 borderRadius: BorderRadius.circular(12),
@@ -297,7 +296,9 @@ class _UserProfileScreenState extends State<UserProfileScreen>
   Widget _buildMailboxCard(message, UserProfileProvider provider) {
     return Card(
       margin: const EdgeInsets.only(bottom: 12),
-      color: message.isRead ? Colors.white : AppColors.primary.withOpacity(0.05),
+      color: message.isRead
+          ? Colors.white
+          : AppColors.primary.withOpacity(0.05),
       child: ListTile(
         leading: CircleAvatar(
           backgroundColor: message.isRead
@@ -321,11 +322,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
             Text('From: ${message.sender}'),
             Text('Date: ${message.date}'),
             const SizedBox(height: 4),
-            Text(
-              message.message,
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
-            ),
+            Text(message.message, maxLines: 2, overflow: TextOverflow.ellipsis),
           ],
         ),
         isThreeLine: true,
@@ -609,9 +606,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
               const SizedBox(height: 12),
               TextField(
                 controller: descriptionController,
-                decoration: const InputDecoration(
-                  labelText: 'Description',
-                ),
+                decoration: const InputDecoration(labelText: 'Description'),
               ),
             ],
           ),

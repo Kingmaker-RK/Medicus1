@@ -4,10 +4,7 @@ import '../constants/colors.dart';
 class AnatomyViewer extends StatefulWidget {
   final List<String> imageUrls;
 
-  const AnatomyViewer({
-    Key? key,
-    required this.imageUrls,
-  }) : super(key: key);
+  const AnatomyViewer({Key? key, required this.imageUrls}) : super(key: key);
 
   @override
   State<AnatomyViewer> createState() => _AnatomyViewerState();
@@ -130,7 +127,7 @@ class _AnatomyViewerState extends State<AnatomyViewer> {
             child: CircularProgressIndicator(
               value: loadingProgress.expectedTotalBytes != null
                   ? loadingProgress.cumulativeBytesLoaded /
-                      loadingProgress.expectedTotalBytes!
+                        loadingProgress.expectedTotalBytes!
                   : null,
             ),
           );
@@ -173,11 +170,7 @@ class _AnatomyViewerState extends State<AnatomyViewer> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(
-              Icons.view_in_ar,
-              size: 60,
-              color: AppColors.primary,
-            ),
+            Icon(Icons.view_in_ar, size: 60, color: AppColors.primary),
             const SizedBox(height: 16),
             Text(
               '3D Model View',
@@ -190,18 +183,12 @@ class _AnatomyViewerState extends State<AnatomyViewer> {
             const SizedBox(height: 8),
             Text(
               'Interactive 3D anatomy model',
-              style: TextStyle(
-                fontSize: 12,
-                color: AppColors.textSecondary,
-              ),
+              style: TextStyle(fontSize: 12, color: AppColors.textSecondary),
             ),
             const SizedBox(height: 16),
             Text(
               'Rotate • Zoom • Explore',
-              style: TextStyle(
-                fontSize: 10,
-                color: AppColors.textSecondary,
-              ),
+              style: TextStyle(fontSize: 10, color: AppColors.textSecondary),
             ),
           ],
         ),

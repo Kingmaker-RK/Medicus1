@@ -23,11 +23,13 @@ class TranslationResult {
       translatedText: json['translatedText'] as String? ?? '',
       sourceLanguage: json['sourceLanguage'] as String? ?? '',
       targetLanguage: json['targetLanguage'] as String? ?? '',
-      medicalTerms: (json['medicalTerms'] as List<dynamic>?)
+      medicalTerms:
+          (json['medicalTerms'] as List<dynamic>?)
               ?.map((e) => e as String)
               .toList() ??
           [],
-      anatomyImages: (json['anatomyImages'] as List<dynamic>?)
+      anatomyImages:
+          (json['anatomyImages'] as List<dynamic>?)
               ?.map((e) => e as String)
               .toList() ??
           [],

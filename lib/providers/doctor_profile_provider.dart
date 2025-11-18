@@ -8,30 +8,20 @@ class DoctorProfileProvider with ChangeNotifier {
   DoctorProfileModel get profile => _profile;
   bool get isLoading => _isLoading;
 
-  // Initialize with demo data
+  // Initialize profile (empty initially, user must complete it)
   Future<void> initialize() async {
     _isLoading = true;
     notifyListeners();
 
     try {
-      // TODO: Load from backend/Firebase
+      // TODO: Load from backend/Firebase/SharedPreferences
       await Future.delayed(const Duration(milliseconds: 500));
 
-      // Demo data for testing
-      _profile = DoctorProfileModel(
-        name: 'Dr. Hans Müller',
-        speciality: 'Cardiology',
-        highestQualification: 'MD, PhD in Cardiovascular Medicine',
-        yearsOfExperience: 15,
-        clinicAddress:
-            'Universitätsklinikum Hamburg-Eppendorf\nMartinistraße 52\n20251 Hamburg, Germany',
-        approbationCertificate: 'DE-HH-2008-12345',
-        idNumber: 'ID-987654321',
-        personnelNumber: 'PN-2008-0042',
-        profilePictureUrl: null, // Will use default avatar
-      );
+      // Start with empty profile - user must fill it out
+      _profile = DoctorProfileModel();
     } catch (e) {
       print('Error loading doctor profile: $e');
+      _profile = DoctorProfileModel();
     } finally {
       _isLoading = false;
       notifyListeners();

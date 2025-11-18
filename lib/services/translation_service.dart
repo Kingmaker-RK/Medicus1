@@ -9,7 +9,7 @@ class TranslationService {
 
   final Dio _dio = Dio();
 
-  // Translate text using LLM API
+  // Translate text using advanced LLM (OpenAI GPT-4)
   Future<TranslationResult> translateText({
     required String text,
     required String sourceLanguage,
@@ -17,38 +17,128 @@ class TranslationService {
     bool isMedicalContext = true,
   }) async {
     try {
-      // TODO: Replace with your actual LLM API endpoint
-      // This is a placeholder implementation
-      // You should integrate with services like:
-      // - OpenAI GPT-4
-      // - Google Cloud Translation API
-      // - Azure Translator
-      // - Custom medical translation LLM
+      // Use OpenAI GPT-4 for high-quality medical translation
+      // Get API key from environment or constants
+      final apiKey = AppConstants.openaiApiKey;
+
+      if (apiKey.isEmpty || apiKey == 'YOUR_OPENAI_API_KEY') {
+        print('OpenAI API key not configured, using fallback translation');
+        return _mockTranslation(text, sourceLanguage, targetLanguage);
+      }
+
+      // Build a medical-context aware prompt for GPT-4
+      final systemPrompt =
+          '''You are a professional medical translator specializing in healthcare communication.
+Your task is to translate medical texts accurately while preserving medical terminology and context.
+Provide translations that are culturally appropriate and medically accurate.
+Extract any medical terms mentioned in the text.
+Identify relevant anatomy parts that should be visualized.''';
+
+      final userPrompt =
+          '''Translate the following medical text from $sourceLanguage to $targetLanguage.
+Provide the response in JSON format with these fields:
+- "translatedText": the translated text
+- "medicalTerms": array of medical terms found in the text
+- "anatomyParts": array of anatomy parts mentioned that should be visualized
+
+Text to translate: "$text"''';
 
       final response = await _dio.post(
-        AppConstants.translationApiUrl,
+        'https://api.openai.com/v1/chat/completions',
         data: {
-          'text': text,
-          'source_language': sourceLanguage,
-          'target_language': targetLanguage,
-          'context': 'medical',
-          'include_medical_terms': true,
+          'model': 'gpt-4',
+          'messages': [
+            {'role': 'system', 'content': systemPrompt},
+            {'role': 'user', 'content': userPrompt},
+          ],
+          'temperature':
+              0.3, // Lower temperature for more consistent translations
+          'max_tokens': 1000,
         },
         options: Options(
           headers: {
             'Content-Type': 'application/json',
-            // Add your API key here
-            // 'Authorization': 'Bearer YOUR_API_KEY',
+            'Authorization': 'Bearer $apiKey',
           },
         ),
       );
 
-      return TranslationResult.fromJson(response.data);
+      // Parse GPT-4 response
+      final content =
+          response.data['choices'][0]['message']['content'] as String;
+
+      // Try to parse as JSON
+      try {
+        final jsonStart = content.indexOf('{');
+        final jsonEnd = content.lastIndexOf('}') + 1;
+        if (jsonStart != -1 && jsonEnd > jsonStart) {
+          final jsonStr = content.substring(jsonStart, jsonEnd);
+          // Parse manually using regex helpers
+          final translatedText = _extractJsonValue(jsonStr, 'translatedText');
+          final medicalTerms = _extractJsonArray(jsonStr, 'medicalTerms');
+          final anatomyParts = _extractJsonArray(jsonStr, 'anatomyParts');
+
+          final anatomyImages = await getAnatomyImages(anatomyParts);
+
+          return TranslationResult(
+            originalText: text,
+            translatedText: translatedText.isNotEmpty
+                ? translatedText
+                : content,
+            sourceLanguage: sourceLanguage,
+            targetLanguage: targetLanguage,
+            medicalTerms: medicalTerms,
+            anatomyImages: anatomyImages,
+          );
+        }
+      } catch (e) {
+        print('Could not parse JSON from GPT-4 response: $e');
+      }
+
+      // If JSON parsing fails, use the raw content as translation
+      return TranslationResult(
+        originalText: text,
+        translatedText: content,
+        sourceLanguage: sourceLanguage,
+        targetLanguage: targetLanguage,
+        medicalTerms: _mockMedicalTerms(text),
+        anatomyImages: [],
+      );
     } catch (e) {
-      print('Error translating text: $e');
+      print('Error translating with GPT-4: $e');
 
       // Fallback: Return a mock translation for testing
       return _mockTranslation(text, sourceLanguage, targetLanguage);
+    }
+  }
+
+  // Helper to extract JSON string value
+  String _extractJsonValue(String json, String key) {
+    try {
+      final pattern = RegExp('"$key"\\s*:\\s*"([^"]*)"');
+      final match = pattern.firstMatch(json);
+      return match?.group(1) ?? '';
+    } catch (e) {
+      return '';
+    }
+  }
+
+  // Helper to extract JSON array
+  List<String> _extractJsonArray(String json, String key) {
+    try {
+      final pattern = RegExp('"$key"\\s*:\\s*\\[([^\\]]*)\\]');
+      final match = pattern.firstMatch(json);
+      if (match != null) {
+        final arrayContent = match.group(1) ?? '';
+        return arrayContent
+            .split(',')
+            .map((e) => e.trim().replaceAll('"', ''))
+            .where((e) => e.isNotEmpty)
+            .toList();
+      }
+      return [];
+    } catch (e) {
+      return [];
     }
   }
 

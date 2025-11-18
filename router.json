@@ -29,6 +29,12 @@
       "name": "doctor-profile",
       "screen": "DoctorProfileScreen",
       "description": "Doctor profile screen with professional info, credentials, and clinic details"
+    },
+    {
+      "path": "/complete-profile",
+      "name": "complete-profile",
+      "screen": "ProfileCompletionScreen",
+      "description": "Mandatory profile completion screen for new users to fill all required information"
     }
   ]
 }

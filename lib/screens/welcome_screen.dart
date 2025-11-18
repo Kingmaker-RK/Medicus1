@@ -42,9 +42,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
         ),
         child: Container(
           // Semi-transparent overlay for better readability
-          decoration: BoxDecoration(
-            color: Colors.white.withOpacity(0.85),
-          ),
+          decoration: BoxDecoration(color: Colors.white.withOpacity(0.85)),
           child: SafeArea(
             child: SingleChildScrollView(
               child: Padding(
@@ -52,185 +50,188 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                // Language selector at top left
-                Row(
-                  children: [
-                    _buildLanguageSelector(userProvider),
-                    const Spacer(),
-                  ],
-                ),
-                const SizedBox(height: 40),
+                    // Language selector at top left
+                    Row(
+                      children: [
+                        _buildLanguageSelector(userProvider),
+                        const Spacer(),
+                      ],
+                    ),
+                    const SizedBox(height: 40),
 
-                // Logo
-                const Center(
-                  child: MedicusLogo(
-                    size: 120,
-                    showText: true,
-                  ),
-                ),
-                const SizedBox(height: 20),
+                    // Logo
+                    const Center(child: MedicusLogo(size: 120, showText: true)),
+                    const SizedBox(height: 20),
 
-                // Welcome text
-                Text(
-                  'Welcome to Medicus',
-                  style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                        fontWeight: FontWeight.bold,
-                        color: AppColors.textPrimary,
-                      ),
-                  textAlign: TextAlign.center,
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  'Breaking language barriers in healthcare',
-                  style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                    // Welcome text
+                    Text(
+                      'Welcome to Medicus',
+                      style: Theme.of(context).textTheme.headlineMedium
+                          ?.copyWith(
+                            fontWeight: FontWeight.bold,
+                            color: AppColors.textPrimary,
+                          ),
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      'Breaking language barriers in healthcare',
+                      style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                         color: AppColors.textSecondary,
                       ),
-                  textAlign: TextAlign.center,
-                ),
-                const SizedBox(height: 40),
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: 40),
 
-                // Role selection
-                _buildRoleSelector(),
-                const SizedBox(height: 24),
+                    // Role selection
+                    _buildRoleSelector(),
+                    const SizedBox(height: 24),
 
-                // Sign in / Sign up toggle
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    TextButton(
-                      onPressed: () {
-                        setState(() {
-                          _isSignIn = true;
-                        });
-                      },
-                      child: Text(
-                        'Sign In',
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight:
-                              _isSignIn ? FontWeight.bold : FontWeight.normal,
-                          color: _isSignIn
-                              ? AppColors.primary
-                              : AppColors.textSecondary,
+                    // Sign in / Sign up toggle
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        TextButton(
+                          onPressed: () {
+                            setState(() {
+                              _isSignIn = true;
+                            });
+                          },
+                          child: Text(
+                            'Sign In',
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: _isSignIn
+                                  ? FontWeight.bold
+                                  : FontWeight.normal,
+                              color: _isSignIn
+                                  ? AppColors.primary
+                                  : AppColors.textSecondary,
+                            ),
+                          ),
                         ),
+                        const SizedBox(width: 20),
+                        Text(
+                          '|',
+                          style: TextStyle(color: AppColors.textSecondary),
+                        ),
+                        const SizedBox(width: 20),
+                        TextButton(
+                          onPressed: () {
+                            setState(() {
+                              _isSignIn = false;
+                            });
+                          },
+                          child: Text(
+                            'Sign Up',
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: !_isSignIn
+                                  ? FontWeight.bold
+                                  : FontWeight.normal,
+                              color: !_isSignIn
+                                  ? AppColors.primary
+                                  : AppColors.textSecondary,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 24),
+
+                    // Email field
+                    TextField(
+                      controller: _emailController,
+                      decoration: InputDecoration(
+                        labelText: 'Email',
+                        prefixIcon: const Icon(Icons.email),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        filled: true,
+                        fillColor: Colors.white,
+                      ),
+                      keyboardType: TextInputType.emailAddress,
+                    ),
+                    const SizedBox(height: 16),
+
+                    // Password field
+                    TextField(
+                      controller: _passwordController,
+                      obscureText: true,
+                      decoration: InputDecoration(
+                        labelText: 'Password',
+                        prefixIcon: const Icon(Icons.lock),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        filled: true,
+                        fillColor: Colors.white,
                       ),
                     ),
-                    const SizedBox(width: 20),
-                    Text('|', style: TextStyle(color: AppColors.textSecondary)),
-                    const SizedBox(width: 20),
-                    TextButton(
-                      onPressed: () {
-                        setState(() {
-                          _isSignIn = false;
-                        });
+                    const SizedBox(height: 24),
+
+                    // Sign in / Sign up button
+                    ElevatedButton(
+                      onPressed: userProvider.isLoading
+                          ? null
+                          : () async {
+                              await userProvider.login(
+                                email: _emailController.text,
+                                password: _passwordController.text,
+                                role: _selectedRole,
+                              );
+                              if (mounted && userProvider.isLoggedIn) {
+                                // Redirect to profile completion screen
+                                context.go('/complete-profile');
+                              }
+                            },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppColors.primary,
+                        foregroundColor: Colors.white,
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                      child: userProvider.isLoading
+                          ? const CircularProgressIndicator(color: Colors.white)
+                          : Text(
+                              _isSignIn ? 'Sign In' : 'Sign Up',
+                              style: const TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                    ),
+                    const SizedBox(height: 16),
+
+                    // Continue as guest button
+                    OutlinedButton(
+                      onPressed: () async {
+                        await userProvider.continueAsGuest(_selectedRole);
+                        if (mounted) {
+                          // Redirect to profile completion screen
+                          context.go('/complete-profile');
+                        }
                       },
-                      child: Text(
-                        'Sign Up',
+                      style: OutlinedButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        side: BorderSide(color: AppColors.primary),
+                      ),
+                      child: const Text(
+                        'Continue as Guest',
                         style: TextStyle(
-                          fontSize: 18,
-                          fontWeight:
-                              !_isSignIn ? FontWeight.bold : FontWeight.normal,
-                          color: !_isSignIn
-                              ? AppColors.primary
-                              : AppColors.textSecondary,
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
                         ),
                       ),
                     ),
                   ],
                 ),
-                const SizedBox(height: 24),
-
-                // Email field
-                TextField(
-                  controller: _emailController,
-                  decoration: InputDecoration(
-                    labelText: 'Email',
-                    prefixIcon: const Icon(Icons.email),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    filled: true,
-                    fillColor: Colors.white,
-                  ),
-                  keyboardType: TextInputType.emailAddress,
-                ),
-                const SizedBox(height: 16),
-
-                // Password field
-                TextField(
-                  controller: _passwordController,
-                  obscureText: true,
-                  decoration: InputDecoration(
-                    labelText: 'Password',
-                    prefixIcon: const Icon(Icons.lock),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    filled: true,
-                    fillColor: Colors.white,
-                  ),
-                ),
-                const SizedBox(height: 24),
-
-                // Sign in / Sign up button
-                ElevatedButton(
-                  onPressed: userProvider.isLoading
-                      ? null
-                      : () async {
-                          await userProvider.login(
-                            email: _emailController.text,
-                            password: _passwordController.text,
-                            role: _selectedRole,
-                          );
-                          if (mounted && userProvider.isLoggedIn) {
-                            context.go('/translation');
-                          }
-                        },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.primary,
-                    foregroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(vertical: 16),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                  ),
-                  child: userProvider.isLoading
-                      ? const CircularProgressIndicator(color: Colors.white)
-                      : Text(
-                          _isSignIn ? 'Sign In' : 'Sign Up',
-                          style: const TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                ),
-                const SizedBox(height: 16),
-
-                // Continue as guest button
-                OutlinedButton(
-                  onPressed: () async {
-                    await userProvider.continueAsGuest(_selectedRole);
-                    if (mounted) {
-                      context.go('/translation');
-                    }
-                  },
-                  style: OutlinedButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(vertical: 16),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    side: BorderSide(color: AppColors.primary),
-                  ),
-                  child: const Text(
-                    'Continue as Guest',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
-              ],
-            ),
               ),
             ),
           ),

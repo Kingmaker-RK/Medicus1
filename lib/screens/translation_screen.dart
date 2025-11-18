@@ -350,27 +350,10 @@ class _TranslationScreenState extends State<TranslationScreen> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    // Doctor-Patient Image
-                    Container(
-                      width: 300,
-                      height: 200,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(12),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withOpacity(0.1),
-                            blurRadius: 10,
-                            spreadRadius: 2,
-                          ),
-                        ],
-                      ),
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(12),
-                        child: Image.asset(
-                          'assets/images/doctor_patient.jpg',
-                          fit: BoxFit.cover,
-                        ),
-                      ),
+                    Icon(
+                      Icons.translate,
+                      size: 100,
+                      color: AppColors.primary.withOpacity(0.3),
                     ),
                     const SizedBox(height: 24),
                     Text(
@@ -378,6 +361,14 @@ class _TranslationScreenState extends State<TranslationScreen> {
                       style: TextStyle(
                         color: AppColors.textSecondary,
                         fontSize: 16,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      'Enter text or use voice input',
+                      style: TextStyle(
+                        color: AppColors.textSecondary.withOpacity(0.7),
+                        fontSize: 14,
                       ),
                     ),
                   ],

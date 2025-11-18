@@ -73,4 +73,30 @@ class DoctorProfileModel {
       profilePictureUrl: profilePictureUrl ?? this.profilePictureUrl,
     );
   }
+
+  // Check if profile is complete (all required fields filled)
+  bool get isComplete {
+    return name.isNotEmpty &&
+        speciality.isNotEmpty &&
+        highestQualification.isNotEmpty &&
+        yearsOfExperience > 0 &&
+        clinicAddress.isNotEmpty &&
+        approbationCertificate.isNotEmpty &&
+        idNumber.isNotEmpty &&
+        personnelNumber.isNotEmpty;
+  }
+
+  // Get list of missing required fields
+  List<String> get missingFields {
+    final missing = <String>[];
+    if (name.isEmpty) missing.add('Name');
+    if (speciality.isEmpty) missing.add('Speciality');
+    if (highestQualification.isEmpty) missing.add('Highest Qualification');
+    if (yearsOfExperience <= 0) missing.add('Years of Experience');
+    if (clinicAddress.isEmpty) missing.add('Clinic Address');
+    if (approbationCertificate.isEmpty) missing.add('Approbation Certificate');
+    if (idNumber.isEmpty) missing.add('ID Number');
+    if (personnelNumber.isEmpty) missing.add('Personnel Number');
+    return missing;
+  }
 }
