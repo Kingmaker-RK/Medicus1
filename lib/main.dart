@@ -4,6 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'config/router.dart';
 import 'providers/user_provider.dart';
 import 'providers/translation_provider.dart';
+import 'providers/user_profile_provider.dart';
 import 'constants/colors.dart';
 import 'constants/app_constants.dart';
 
@@ -30,6 +31,9 @@ class MedicusApp extends StatelessWidget {
         ),
         ChangeNotifierProvider(
           create: (_) => TranslationProvider()..initialize(),
+        ),
+        ChangeNotifierProvider(
+          create: (_) => UserProfileProvider()..initialize(),
         ),
       ],
       child: MaterialApp.router(

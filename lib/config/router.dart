@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import '../screens/welcome_screen.dart';
 import '../screens/translation_screen.dart';
 import '../screens/settings_screen.dart';
+import '../screens/user_profile_screen.dart';
 
 class AppRouter {
   static final GoRouter router = GoRouter(
@@ -22,6 +23,11 @@ class AppRouter {
         path: '/settings',
         name: 'settings',
         builder: (context, state) => const SettingsScreen(),
+      ),
+      GoRoute(
+        path: '/profile',
+        name: 'profile',
+        builder: (context, state) => const UserProfileScreen(),
       ),
     ],
     errorBuilder: (context, state) => Scaffold(

@@ -17,6 +17,12 @@
       "name": "settings",
       "screen": "SettingsScreen",
       "description": "Settings screen for app configuration"
+    },
+    {
+      "path": "/profile",
+      "name": "profile",
+      "screen": "UserProfileScreen",
+      "description": "User profile screen with personal info, certificates, sick notes, reimbursements, and mailbox"
     }
   ]
 }

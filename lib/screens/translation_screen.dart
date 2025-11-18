@@ -74,6 +74,14 @@ class _TranslationScreenState extends State<TranslationScreen> {
         backgroundColor: AppColors.primary,
         foregroundColor: Colors.white,
         title: const Text('Medicus Translation'),
+        leading: Builder(
+          builder: (context) => IconButton(
+            icon: const Icon(Icons.menu),
+            onPressed: () {
+              Scaffold.of(context).openDrawer();
+            },
+          ),
+        ),
         actions: [
           // Role switcher
           PopupMenuButton<String>(
@@ -116,6 +124,7 @@ class _TranslationScreenState extends State<TranslationScreen> {
           ),
         ],
       ),
+      drawer: _buildNavigationDrawer(context, userProvider),
       body: Column(
         children: [
           // Language selector bar
@@ -496,6 +505,105 @@ class _TranslationScreenState extends State<TranslationScreen> {
               ),
             ),
           ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildNavigationDrawer(BuildContext context, UserProvider userProvider) {
+    return Drawer(
+      child: Column(
+        children: [
+          // Drawer Header
+          UserAccountsDrawerHeader(
+            decoration: BoxDecoration(color: AppColors.primary),
+            currentAccountPicture: CircleAvatar(
+              backgroundColor: Colors.white,
+              child: Icon(
+                Icons.person,
+                size: 40,
+                color: AppColors.primary,
+              ),
+            ),
+            accountName: Text(
+              userProvider.currentUser?.name ?? 'Guest User',
+              style: const TextStyle(fontWeight: FontWeight.bold),
+            ),
+            accountEmail: Text(
+              userProvider.currentUser?.email ??
+              (userProvider.currentUser?.isGuest == true ? 'Guest Mode' : 'No email'),
+            ),
+          ),
+
+          // Navigation Items
+          ListTile(
+            leading: const Icon(Icons.person_outline),
+            title: const Text('User Profile'),
+            onTap: () {
+              Navigator.pop(context); // Close drawer
+              context.push('/profile');
+            },
+          ),
+          ListTile(
+            leading: const Icon(Icons.translate),
+            title: const Text('Translation'),
+            selected: true,
+            selectedColor: AppColors.primary,
+            onTap: () {
+              Navigator.pop(context); // Close drawer
+            },
+          ),
+          ListTile(
+            leading: const Icon(Icons.settings),
+            title: const Text('Settings'),
+            onTap: () {
+              Navigator.pop(context); // Close drawer
+              context.push('/settings');
+            },
+          ),
+          const Divider(),
+          ListTile(
+            leading: Icon(
+              userProvider.currentUser?.role == AppConstants.roleDoctor
+                  ? Icons.local_hospital
+                  : Icons.person,
+            ),
+            title: Text(
+              'Role: ${userProvider.currentUser?.role == AppConstants.roleDoctor ? "Doctor" : "Patient"}',
+            ),
+            subtitle: const Text('Tap to switch'),
+            onTap: () {
+              final newRole = userProvider.currentUser?.role == AppConstants.roleDoctor
+                  ? AppConstants.rolePatient
+                  : AppConstants.roleDoctor;
+              userProvider.changeRole(newRole);
+            },
+          ),
+          const Spacer(),
+          const Divider(),
+          ListTile(
+            leading: const Icon(Icons.info_outline),
+            title: const Text('About'),
+            onTap: () {
+              Navigator.pop(context);
+              showAboutDialog(
+                context: context,
+                applicationName: 'Medicus Translation',
+                applicationVersion: '1.0.0',
+                applicationLegalese: '© 2024 Medicus',
+              );
+            },
+          ),
+          if (userProvider.isLoggedIn)
+            ListTile(
+              leading: const Icon(Icons.logout),
+              title: const Text('Logout'),
+              onTap: () async {
+                Navigator.pop(context);
+                await userProvider.logout();
+                context.go('/');
+              },
+            ),
         ],
       ),
     );

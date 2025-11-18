@@ -50,8 +50,8 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
               child: Padding(
                 padding: const EdgeInsets.all(24.0),
                 child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
                 // Language selector at top left
                 Row(
                   children: [
@@ -231,10 +231,11 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                 ),
               ],
             ),
+              ),
+            ),
           ),
         ),
       ),
-    ),
     );
   }
 
