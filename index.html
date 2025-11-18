@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Preview Not Available - Teta</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #8E16EE 0%, #FD6B50 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 20px;
+            color: #333;
+        }
+
+        .container {
+            background: #181818;
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 600px;
+            width: 100%;
+            padding: 48px;
+            text-align: center;
+        }
+
+        .icon {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 24px;
+            background: #f3f4f6;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 40px;
+        }
+
+        h1 {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 16px;
+            color: #fff;
+        }
+
+        p {
+            font-size: 16px;
+            line-height: 1.6;
+            color: #a6a6a6;
+            margin-bottom: 12px;
+        }
+
+        .error-details {
+            border: 1px solid #fbbf24;
+            border-radius: 8px;
+            padding: 16px;
+            margin: 24px 0;
+            text-align: left;
+        }
+
+        .error-details h3 {
+            font-size: 14px;
+            font-weight: 600;
+            color: #fbbf24;
+            margin-bottom: 8px;
+        }
+
+        .error-details p {
+            font-size: 14px;
+            color: #e6e6e6;
+            margin-bottom: 0;
+        }
+
+        .suggestions {
+            background: #343434;
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 24px;
+            text-align: left;
+        }
+
+        .suggestions h3 {
+            font-size: 16px;
+            font-weight: 600;
+            color: #fff;
+            margin-bottom: 12px;
+        }
+
+        .suggestions ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .suggestions li {
+            padding: 8px 0;
+            padding-left: 24px;
+            position: relative;
+            color: #e6e6e6;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        .suggestions li:before {
+            content: "→";
+            position: absolute;
+            left: 0;
+            color: #FD6B50;
+            font-weight: bold;
+        }
+
+        .footer {
+            margin-top: 32px;
+            padding-top: 24px;
+            border-top: 1px solid #e5e7eb;
+            font-size: 14px;
+            color: #9ca3af;
+        }
+
+        .logo {
+            font-weight: 700;
+            color: #667eea;
+        }
+
+        a {
+            text-decoration: none;
+            color: white;
+        }
+
+        @media (max-width: 640px) {
+            .container {
+                padding: 32px 24px;
+            }
+
+            h1 {
+                font-size: 24px;
+            }
+
+            .icon {
+                width: 64px;
+                height: 64px;
+                font-size: 32px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <img class="logo" src="https://framerusercontent.com/images/i8shXg5V5P3Jk8fcIMaDZcX7o.svg" alt="Teta Logo" width="48" height="48" style="margin-bottom: 16px;color: black">
+
+        <h1>Preview not yet available</h1>
+
+        <p>The app preview cannot be displayed because the repository doesn't contain a valid project.</p>
+
+        <div class="error-details">
+            <h3>What's wrong?</h3>
+            <p id="error-reason">No project detected in the repository. Make sure your repository contains a <code>pubspec.yaml</code> file.</p>
+        </div>
+
+        <div class="suggestions">
+            <h3>💡 How to fix this:</h3>
+            <ul>
+                <li>Ask Teta AI to create a new app in the chat</li>
+                <li>Import a repository that contains a project</li>
+                <li>If your app is in a subdirectory, configure the app path in Settings</li>
+                <li>Make sure your repository has been pushed to GitHub</li>
+            </ul>
+        </div>
+
+        <div class="footer">
+            Happy (vibe) coding! -<span class="logo"><a href="https://teta.so">Teta</a></span>
+        </div>
+    </div>
+
+    <script>
+        // Parse error details from URL if provided
+        const params = new URLSearchParams(window.location.search);
+        const reason = params.get('reason');
+        const path = params.get('path');
+
+        if (reason) {
+            const reasonElement = document.getElementById('error-reason');
+            let message = '';
+
+            switch(reason) {
+                case 'no_pubspec':
+                    message = `No <code>pubspec.yaml</code> file found${path ? ` in <code>${path}</code>` : ''}. This doesn't appear to be a Flutter project.`;
+                    break;
+                case 'build_failed':
+                    message = 'The Flutter build failed. Check the console for error details.';
+                    break;
+                case 'empty_repo':
+                    message = 'The repository is empty. Import a project or ask Teta AI to create one for you.';
+                    break;
+                case 'invalid_path':
+                    message = `The configured app path${path ? ` (<code>${path}</code>)` : ''} doesn't exist or doesn't contain a Flutter project.`;
+                    break;
+                default:
+                    message = reason;
+            }
+
+            reasonElement.innerHTML = message;
+        }
+    </script>
+</body>
+</html>

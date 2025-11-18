@@ -1,0 +1,339 @@
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:go_router/go_router.dart';
+import '../providers/user_provider.dart';
+import '../widgets/medicus_logo.dart';
+import '../constants/colors.dart';
+import '../constants/app_constants.dart';
+
+class WelcomeScreen extends StatefulWidget {
+  const WelcomeScreen({Key? key}) : super(key: key);
+
+  @override
+  State<WelcomeScreen> createState() => _WelcomeScreenState();
+}
+
+class _WelcomeScreenState extends State<WelcomeScreen> {
+  String _selectedRole = AppConstants.rolePatient;
+  final _emailController = TextEditingController();
+  final _passwordController = TextEditingController();
+  bool _isSignIn = true;
+
+  @override
+  void dispose() {
+    _emailController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final userProvider = Provider.of<UserProvider>(context);
+
+    return Scaffold(
+      backgroundColor: AppColors.background,
+      body: SafeArea(
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.all(24.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                // Language selector at top left
+                Row(
+                  children: [
+                    _buildLanguageSelector(userProvider),
+                    const Spacer(),
+                  ],
+                ),
+                const SizedBox(height: 40),
+
+                // Logo
+                const Center(
+                  child: MedicusLogo(
+                    size: 120,
+                    showText: true,
+                  ),
+                ),
+                const SizedBox(height: 20),
+
+                // Welcome text
+                Text(
+                  'Welcome to Medicus',
+                  style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.textPrimary,
+                      ),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  'Breaking language barriers in healthcare',
+                  style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                        color: AppColors.textSecondary,
+                      ),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 40),
+
+                // Role selection
+                _buildRoleSelector(),
+                const SizedBox(height: 24),
+
+                // Sign in / Sign up toggle
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    TextButton(
+                      onPressed: () {
+                        setState(() {
+                          _isSignIn = true;
+                        });
+                      },
+                      child: Text(
+                        'Sign In',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight:
+                              _isSignIn ? FontWeight.bold : FontWeight.normal,
+                          color: _isSignIn
+                              ? AppColors.primary
+                              : AppColors.textSecondary,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 20),
+                    Text('|', style: TextStyle(color: AppColors.textSecondary)),
+                    const SizedBox(width: 20),
+                    TextButton(
+                      onPressed: () {
+                        setState(() {
+                          _isSignIn = false;
+                        });
+                      },
+                      child: Text(
+                        'Sign Up',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight:
+                              !_isSignIn ? FontWeight.bold : FontWeight.normal,
+                          color: !_isSignIn
+                              ? AppColors.primary
+                              : AppColors.textSecondary,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 24),
+
+                // Email field
+                TextField(
+                  controller: _emailController,
+                  decoration: InputDecoration(
+                    labelText: 'Email',
+                    prefixIcon: const Icon(Icons.email),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    filled: true,
+                    fillColor: Colors.white,
+                  ),
+                  keyboardType: TextInputType.emailAddress,
+                ),
+                const SizedBox(height: 16),
+
+                // Password field
+                TextField(
+                  controller: _passwordController,
+                  obscureText: true,
+                  decoration: InputDecoration(
+                    labelText: 'Password',
+                    prefixIcon: const Icon(Icons.lock),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    filled: true,
+                    fillColor: Colors.white,
+                  ),
+                ),
+                const SizedBox(height: 24),
+
+                // Sign in / Sign up button
+                ElevatedButton(
+                  onPressed: userProvider.isLoading
+                      ? null
+                      : () async {
+                          await userProvider.login(
+                            email: _emailController.text,
+                            password: _passwordController.text,
+                            role: _selectedRole,
+                          );
+                          if (mounted && userProvider.isLoggedIn) {
+                            context.go('/translation');
+                          }
+                        },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.primary,
+                    foregroundColor: Colors.white,
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                  child: userProvider.isLoading
+                      ? const CircularProgressIndicator(color: Colors.white)
+                      : Text(
+                          _isSignIn ? 'Sign In' : 'Sign Up',
+                          style: const TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                ),
+                const SizedBox(height: 16),
+
+                // Continue as guest button
+                OutlinedButton(
+                  onPressed: () async {
+                    await userProvider.continueAsGuest(_selectedRole);
+                    if (mounted) {
+                      context.go('/translation');
+                    }
+                  },
+                  style: OutlinedButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    side: BorderSide(color: AppColors.primary),
+                  ),
+                  child: const Text(
+                    'Continue as Guest',
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildLanguageSelector(UserProvider userProvider) {
+    return PopupMenuButton<String>(
+      icon: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(Icons.language, color: AppColors.primary),
+          const SizedBox(width: 4),
+          Text(
+            userProvider.selectedLanguage.toUpperCase(),
+            style: TextStyle(
+              color: AppColors.primary,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ],
+      ),
+      onSelected: (String languageCode) {
+        userProvider.changeLanguage(languageCode);
+      },
+      itemBuilder: (BuildContext context) {
+        return AppConstants.supportedLanguages.map((lang) {
+          return PopupMenuItem<String>(
+            value: lang['code'],
+            child: Text('${lang['nativeName']} (${lang['name']})'),
+          );
+        }).toList();
+      },
+    );
+  }
+
+  Widget _buildRoleSelector() {
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.shadow,
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Row(
+        children: [
+          Expanded(
+            child: _buildRoleOption(
+              role: AppConstants.rolePatient,
+              label: 'Patient',
+              icon: Icons.person,
+              color: AppColors.patientColor,
+            ),
+          ),
+          Expanded(
+            child: _buildRoleOption(
+              role: AppConstants.roleDoctor,
+              label: 'Doctor',
+              icon: Icons.local_hospital,
+              color: AppColors.doctorColor,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildRoleOption({
+    required String role,
+    required String label,
+    required IconData icon,
+    required Color color,
+  }) {
+    final isSelected = _selectedRole == role;
+
+    return InkWell(
+      onTap: () {
+        setState(() {
+          _selectedRole = role;
+        });
+      },
+      borderRadius: BorderRadius.circular(12),
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 20),
+        decoration: BoxDecoration(
+          color: isSelected ? color.withOpacity(0.1) : Colors.transparent,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(
+            color: isSelected ? color : Colors.transparent,
+            width: 2,
+          ),
+        ),
+        child: Column(
+          children: [
+            Icon(
+              icon,
+              size: 40,
+              color: isSelected ? color : AppColors.textSecondary,
+            ),
+            const SizedBox(height: 8),
+            Text(
+              label,
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                color: isSelected ? color : AppColors.textSecondary,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}

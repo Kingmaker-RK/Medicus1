@@ -1,0 +1,6 @@
+
+# Teta - MCP configuration (contains API keys)
+.mcp.json
+
+# Teta - AI agents configuration
+.claude/agents/
