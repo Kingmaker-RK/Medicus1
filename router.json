@@ -1,0 +1,22 @@
+{
+  "routes": [
+    {
+      "path": "/",
+      "name": "welcome",
+      "screen": "WelcomeScreen",
+      "description": "Welcome screen with app introduction"
+    },
+    {
+      "path": "/translation",
+      "name": "translation",
+      "screen": "TranslationScreen",
+      "description": "Main translation screen with voice recognition"
+    },
+    {
+      "path": "/settings",
+      "name": "settings",
+      "screen": "SettingsScreen",
+      "description": "Settings screen for app configuration"
+    }
+  ]
+}
