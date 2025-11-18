@@ -31,12 +31,25 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
     final userProvider = Provider.of<UserProvider>(context);
 
     return Scaffold(
-      backgroundColor: AppColors.background,
-      body: SafeArea(
-        child: SingleChildScrollView(
-          child: Padding(
-            padding: const EdgeInsets.all(24.0),
-            child: Column(
+      body: Container(
+        decoration: const BoxDecoration(
+          image: DecorationImage(
+            image: AssetImage('assets/images/hospital_background.jpg'),
+            fit: BoxFit.cover,
+            // If image doesn't load, will show background color
+            onError: null,
+          ),
+        ),
+        child: Container(
+          // Semi-transparent overlay for better readability
+          decoration: BoxDecoration(
+            color: Colors.white.withOpacity(0.85),
+          ),
+          child: SafeArea(
+            child: SingleChildScrollView(
+              child: Padding(
+                padding: const EdgeInsets.all(24.0),
+                child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 // Language selector at top left
@@ -221,6 +234,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
           ),
         ),
       ),
+    ),
     );
   }
 
