@@ -136,101 +136,17 @@ class _TranslationScreenState extends State<TranslationScreen>
             ),
           ),
 
-          // Modern language selector bar
-          _buildModernLanguageBar(translationProvider, userProvider),
-
           // Medical context section (if available)
           if (translationProvider.currentTranslation != null)
             _buildMedicalContextSection(translationProvider),
+
+          // Unified Control Panel (Merged Language Bar + Actions)
+          _buildUnifiedControlPanel(translationProvider, userProvider),
             
-          // Add spacing for FAB to prevent collision with language bar
-          const SizedBox(height: 100),
+          // Small spacing at bottom (Reduced by 50% from previous FAB margin)
+          const SizedBox(height: 2),
         ],
       ),
-      // Floating microphone button
-      floatingActionButton: Container(
-        width: MediaQuery.of(context).size.width,
-        padding: const EdgeInsets.symmetric(horizontal: 24),
-        margin: const EdgeInsets.only(bottom: 4),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            // Conversation Mode (Left)
-            Container(
-              width: 45,
-              height: 45,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: _isConversationMode ? AppColors.accent : Colors.white,
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.1),
-                    blurRadius: 8,
-                    offset: const Offset(0, 2),
-                  ),
-                ],
-              ),
-              child: IconButton(
-                onPressed: () async {
-                  setState(() {
-                    _isConversationMode = !_isConversationMode;
-                  });
-                  if (_isConversationMode) {
-                    await translationProvider.startListening();
-                  } else {
-                    await translationProvider.stopListening();
-                  }
-                },
-                icon: Icon(
-                  Icons.record_voice_over_rounded,
-                  color: _isConversationMode ? Colors.white : AppColors.accent,
-                  size: 20,
-                ),
-                tooltip: 'Conversation Mode',
-              ),
-            ),
-
-            const SizedBox(width: 24),
-
-            // Microphone (Middle)
-            _buildFloatingMicButton(translationProvider),
-
-            const SizedBox(width: 24),
-
-            // Camera (Right)
-            Container(
-              width: 45,
-              height: 45,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: Colors.white,
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.1),
-                    blurRadius: 8,
-                    offset: const Offset(0, 2),
-                  ),
-                ],
-              ),
-              child: IconButton(
-                onPressed: () {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('Camera feature coming soon'),
-                      duration: Duration(seconds: 1),
-                    ),
-                  );
-                },
-                icon: const Icon(Icons.camera_alt_rounded),
-                color: AppColors.accent,
-                iconSize: 22,
-              ),
-            ),
-          ],
-        ),
-      ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       endDrawer: _buildHistoryDrawer(translationProvider),
       bottomNavigationBar: const AppBottomNavigationBar(currentIndex: 0),
     );
@@ -288,29 +204,30 @@ class _TranslationScreenState extends State<TranslationScreen>
     );
   }
 
-  Widget _buildModernLanguageBar(
+  Widget _buildUnifiedControlPanel(
     TranslationProvider translationProvider,
     UserProvider userProvider,
   ) {
     return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 32),
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+      margin: const EdgeInsets.symmetric(horizontal: 16),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(24),
         boxShadow: [
           BoxShadow(
             color: AppColors.shadowLight,
-            offset: const Offset(0, 2),
-            blurRadius: 8,
+            offset: const Offset(0, 4),
+            blurRadius: 12,
           ),
         ],
       ),
       child: Column(
+        mainAxisSize: MainAxisSize.min,
         children: [
+          // Language Selectors
           Row(
             children: [
-              // Source language
               Expanded(
                 child: _buildModernLanguageDropdown(
                   value: translationProvider.sourceLanguage,
@@ -321,17 +238,14 @@ class _TranslationScreenState extends State<TranslationScreen>
                   },
                 ),
               ),
-
-              // Swap button with animation
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 12),
+                padding: const EdgeInsets.symmetric(horizontal: 8),
                 child: Tooltip(
                   message: 'Swap languages',
                   child: Material(
                     color: Colors.transparent,
                     child: InkWell(
                       onTap: () async {
-                        // Ask user if they want to re-translate
                         if (translationProvider.currentTranslation != null) {
                           final shouldRetranslate = await showDialog<bool>(
                             context: context,
@@ -380,15 +294,13 @@ class _TranslationScreenState extends State<TranslationScreen>
                         child: Icon(
                           Icons.swap_horiz_rounded,
                           color: AppColors.accent,
-                          size: 24,
+                          size: 20,
                         ),
                       ),
                     ),
                   ),
                 ),
               ),
-
-              // Target language
               Expanded(
                 child: _buildModernLanguageDropdown(
                   value: translationProvider.targetLanguage,
@@ -397,6 +309,76 @@ class _TranslationScreenState extends State<TranslationScreen>
                       translationProvider.setTargetLanguage(value);
                     }
                   },
+                ),
+              ),
+            ],
+          ),
+
+          const SizedBox(height: 16), // Reduced spacing between sections
+
+          // Action Buttons (Merged from FAB)
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              // Conversation Mode
+              Container(
+                width: 45,
+                height: 45,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: _isConversationMode ? AppColors.accent : Colors.grey[50],
+                  border: Border.all(
+                    color: _isConversationMode ? AppColors.accent : AppColors.borderLight,
+                  ),
+                ),
+                child: IconButton(
+                  onPressed: () async {
+                    setState(() {
+                      _isConversationMode = !_isConversationMode;
+                    });
+                    if (_isConversationMode) {
+                      await translationProvider.startListening();
+                    } else {
+                      await translationProvider.stopListening();
+                    }
+                  },
+                  icon: Icon(
+                    Icons.record_voice_over_rounded,
+                    color: _isConversationMode ? Colors.white : AppColors.accent,
+                    size: 20,
+                  ),
+                  tooltip: 'Conversation Mode',
+                ),
+              ),
+
+              const SizedBox(width: 24),
+
+              // Microphone (Middle)
+              _buildFloatingMicButton(translationProvider),
+
+              const SizedBox(width: 24),
+
+              // Camera
+              Container(
+                width: 45,
+                height: 45,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: Colors.grey[50],
+                  border: Border.all(color: AppColors.borderLight),
+                ),
+                child: IconButton(
+                  onPressed: () {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('Camera feature coming soon'),
+                        duration: Duration(seconds: 1),
+                      ),
+                    );
+                  },
+                  icon: Icon(Icons.camera_alt_rounded, color: AppColors.accent),
+                  iconSize: 22,
                 ),
               ),
             ],
