@@ -295,14 +295,14 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                                 } else {
                                   // New user - Sign Up
                                   await userProvider.signUp(
-                                    email: _emailController.text,
+                                    email: _emailController.text.trim(),
                                     password: _passwordController.text,
                                     role: _selectedRole,
                                     rememberMe: _rememberMe,
                                   );
                                   if (mounted && userProvider.isLoggedIn) {
-                                    // Sign Up: Request profile information
-                                    context.go('/complete-profile');
+                                    // Sign Up: Navigate to email verification
+                                    context.go('/verify-email?email=${Uri.encodeComponent(_emailController.text.trim())}');
                                   }
                                 }
                               } catch (e) {

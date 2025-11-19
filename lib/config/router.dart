@@ -7,6 +7,9 @@ import '../screens/user_profile_screen.dart';
 import '../screens/doctor_profile_screen.dart';
 import '../screens/profile_completion_screen.dart';
 import '../screens/forgot_password_screen.dart';
+import '../screens/email_verification_screen.dart';
+import '../screens/verify_password_reset_screen.dart';
+import '../screens/reset_password_screen.dart';
 
 class AppRouter {
   static final GoRouter router = GoRouter(
@@ -51,6 +54,31 @@ class AppRouter {
         path: '/forgot-password',
         name: 'forgot-password',
         builder: (context, state) => const ForgotPasswordScreen(),
+      ),
+      GoRoute(
+        path: '/verify-email',
+        name: 'verify-email',
+        builder: (context, state) {
+          final email = state.uri.queryParameters['email'] ?? '';
+          return EmailVerificationScreen(email: email);
+        },
+      ),
+      GoRoute(
+        path: '/verify-password-reset',
+        name: 'verify-password-reset',
+        builder: (context, state) {
+          final email = state.uri.queryParameters['email'] ?? '';
+          return VerifyPasswordResetScreen(email: email);
+        },
+      ),
+      GoRoute(
+        path: '/reset-password',
+        name: 'reset-password',
+        builder: (context, state) {
+          final email = state.uri.queryParameters['email'] ?? '';
+          final code = state.uri.queryParameters['code'] ?? '';
+          return ResetPasswordScreen(email: email, code: code);
+        },
       ),
     ],
     errorBuilder: (context, state) =>

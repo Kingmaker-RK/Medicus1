@@ -8,6 +8,194 @@ Medicus is a medical translation application designed to facilitate communicatio
 
 ## Recent Updates
 
+### Email Verification & Password Reset (2025-11-19)
+
+#### Complete Authentication System with Email Verification
+
+**Description:** Implemented a comprehensive authentication system with email verification for sign-ups and a complete forgot password flow with 6-digit verification codes.
+
+**New Features:**
+
+**1. Sign-Up Email Verification**
+- After signing up, users receive a 6-digit verification code via email
+- Users must verify their email before accessing profile completion
+- Auto-focus on first input field for better UX
+- Auto-submit when all 6 digits are entered
+- 60-second countdown timer for resend functionality
+- Clear error messages with automatic field reset on invalid code
+
+**2. Forgot Password Flow**
+- Complete password reset process with multiple security steps
+- Users enter email → Receive 6-digit reset code → Create new password
+- Password strength indicator with real-time validation
+- Password requirements: Minimum 6 characters, one uppercase, one number
+- Visual strength meter (Weak/Medium/Strong)
+- Password match validation for confirmation field
+- Success dialog with navigation back to sign-in
+
+**User Flows:**
+
+**Sign-Up Flow:**
+1. User enters email and password on Welcome screen
+2. Clicks "Sign Up" → Account created in Firebase
+3. Redirected to Email Verification screen (`/verify-email`)
+4. User receives 6-digit code via email (printed to console for testing)
+5. User enters code in 6-digit input fields
+6. Upon successful verification → Redirected to Profile Completion
+7. Complete profile → Access main app
+
+**Forgot Password Flow:**
+1. User clicks "Forgot Password?" link on Welcome screen (appears after 1 failed login)
+2. Redirected to Forgot Password screen (`/forgot-password`)
+3. User enters email address
+4. Clicks "Send Reset Code" → 6-digit code sent via email
+5. Redirected to Password Reset Verification screen (`/verify-password-reset`)
+6. User enters 6-digit reset code
+7. Upon verification → Redirected to Reset Password screen (`/reset-password`)
+8. User enters new password with confirmation
+9. Password validated (strength, matching, requirements)
+10. Clicks "Reset Password" → Success dialog appears
+11. User clicks "Go to Sign In" → Redirected to Welcome screen
+
+**Technical Implementation:**
+
+**New Service:**
+- `lib/services/auth_service.dart` - Firebase Authentication service with:
+  - `signUpWithEmailPassword()` - Create account and generate verification code
+  - `verifyEmailWithCode()` - Verify 6-digit email code
+  - `resendVerificationCode()` - Resend verification code
+  - `sendPasswordResetCode()` - Generate and send reset code
+  - `verifyPasswordResetCode()` - Verify reset code
+  - `resetPasswordWithCode()` - Update password after verification
+  - In-memory code storage (use backend in production)
+  - Comprehensive Firebase exception handling
+
+**New Screens:**
+- `lib/screens/email_verification_screen.dart`
+  - 6-digit code input with auto-focus and auto-submit
+  - Resend code with 60-second countdown
+  - Real-time validation and error handling
+  - Clean, user-friendly interface
+
+- `lib/screens/verify_password_reset_screen.dart`
+  - Similar 6-digit code interface for password reset
+  - Countdown timer for resend
+  - Navigation to reset password screen upon success
+
+- `lib/screens/reset_password_screen.dart`
+  - New password and confirm password fields
+  - Real-time password strength indicator
+  - Visual requirements checklist
+  - Password visibility toggles
+  - Success dialog with navigation
+
+**Updated Files:**
+- `lib/providers/user_provider.dart`
+  - Added `verifyEmail()` method
+  - Added `resendVerificationCode()` method
+  - Added `sendPasswordResetCode()` method
+  - Added `verifyPasswordResetCode()` method
+  - Added `resetPassword()` method
+  - Integrated AuthService for Firebase operations
+  - Updated `signUp()` to use Firebase authentication
+
+- `lib/screens/welcome_screen.dart` (line 305)
+  - Sign-up now redirects to `/verify-email` with email parameter
+  - Forgot Password link appears after failed login attempt
+
+- `lib/screens/forgot_password_screen.dart`
+  - Updated to send 6-digit code instead of link
+  - Redirects to verification screen with email parameter
+  - Better error handling and user feedback
+
+- `lib/config/router.dart`
+  - Added `/verify-email` route with email query parameter
+  - Added `/verify-password-reset` route with email query parameter
+  - Added `/reset-password` route with email and code query parameters
+
+- `router.json`
+  - Added 3 new routes with descriptions
+  - Total routes: 11
+
+**Security Features:**
+- 6-digit numeric codes for verification (100,000-999,999)
+- Codes stored temporarily in memory (move to backend/database in production)
+- Firebase authentication exception handling
+- Email validation before sending codes
+- Password strength requirements enforced
+- Password confirmation validation
+- Automatic code cleanup after successful verification
+
+**UI/UX Enhancements:**
+- Consistent design with hospital background and semi-transparent overlay
+- Medicus logo on all authentication screens
+- Auto-focus on first input field
+- Auto-advance between digit input fields
+- Auto-submit when all digits entered
+- Visual feedback for password strength
+- Checkmarks for password requirements
+- Color-coded strength indicator (red/orange/green)
+- Loading states with circular progress indicators
+- Success dialogs with clear next steps
+- Back button navigation on all screens
+- Resend code with countdown prevention
+- Clear error messages with field reset
+
+**Email Integration (Testing Mode):**
+- Currently prints verification codes to console
+- Format: Clear separator lines with email and code
+- Production: Replace with SendGrid, AWS SES, or similar service
+- See console output at lines 49-52 and 131-134 in `auth_service.dart`
+
+**Password Requirements:**
+- Minimum 6 characters
+- At least one uppercase letter (A-Z)
+- At least one number (0-9)
+- Visual checklist shows which requirements are met
+- Real-time validation feedback
+
+**Error Handling:**
+- Invalid email format
+- User not found
+- Invalid verification codes
+- Expired or missing codes
+- Network errors
+- Firebase authentication errors
+- User-friendly error messages
+- Automatic field reset on errors
+
+**Files Created:**
+1. `lib/services/auth_service.dart` - Firebase authentication service
+2. `lib/screens/email_verification_screen.dart` - Email verification UI
+3. `lib/screens/verify_password_reset_screen.dart` - Password reset verification UI
+4. `lib/screens/reset_password_screen.dart` - New password creation UI
+
+**Dependencies Used:**
+- `firebase_auth: ^5.3.4` - Firebase authentication
+- `firebase_core: ^3.9.0` - Firebase core functionality
+- `shared_preferences: ^2.3.4` - Local storage
+- `go_router: ^14.6.2` - Navigation with query parameters
+
+**Testing Instructions:**
+1. Sign up with a new email
+2. Check console for 6-digit verification code
+3. Enter code to verify email
+4. Try forgot password flow
+5. Check console for reset code
+6. Complete password reset
+7. Sign in with new password
+
+**Production Deployment Notes:**
+- Replace console.print with actual email service integration
+- Move verification code storage to backend/database
+- Add code expiration (e.g., 10 minutes)
+- Implement rate limiting for code requests
+- Add CAPTCHA to prevent abuse
+- Consider SMS as alternative to email
+- Log all authentication events for security monitoring
+
+---
+
 ### Authentication Flow Improvement (2025-11-19)
 
 #### Profile Completion Logic Enhancement

@@ -40,7 +40,25 @@
       "path": "/forgot-password",
       "name": "forgot-password",
       "screen": "ForgotPasswordScreen",
-      "description": "Password reset screen where users can request a password reset link"
+      "description": "Password reset screen where users can request a password reset code via email"
+    },
+    {
+      "path": "/verify-email",
+      "name": "verify-email",
+      "screen": "EmailVerificationScreen",
+      "description": "Email verification screen where new users enter the 6-digit code sent to their email"
+    },
+    {
+      "path": "/verify-password-reset",
+      "name": "verify-password-reset",
+      "screen": "VerifyPasswordResetScreen",
+      "description": "Password reset verification screen where users enter the 6-digit reset code"
+    },
+    {
+      "path": "/reset-password",
+      "name": "reset-password",
+      "screen": "ResetPasswordScreen",
+      "description": "New password creation screen with password strength validation and confirmation"
     }
   ]
 }

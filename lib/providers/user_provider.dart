@@ -2,8 +2,11 @@ import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../models/user_model.dart';
 import '../constants/app_constants.dart';
+import '../services/auth_service.dart';
 
 class UserProvider with ChangeNotifier {
+  final AuthService _authService = AuthService();
+
   UserModel? _currentUser;
   String _selectedLanguage = 'en';
   bool _isLoading = false;
@@ -123,32 +126,137 @@ class UserProvider with ChangeNotifier {
         throw Exception('Password must be at least 6 characters');
       }
 
-      // TODO: Implement actual sign-up with Firebase or your backend
-      await Future.delayed(const Duration(seconds: 1)); // Simulate API call
-
-      _currentUser = UserModel(
-        id: DateTime.now().millisecondsSinceEpoch.toString(),
+      // Sign up with Firebase
+      final user = await _authService.signUpWithEmailPassword(
         email: email,
-        role: role,
-        languageCode: _selectedLanguage,
+        password: password,
       );
 
-      // Save to storage
-      final prefs = await SharedPreferences.getInstance();
-      await prefs.setBool(AppConstants.keyIsLoggedIn, true);
-      await prefs.setString(AppConstants.keyUserId, _currentUser!.id!);
-      await prefs.setString(AppConstants.keyUserRole, role);
-      await prefs.setBool(AppConstants.keyIsSignUp, true); // Mark as sign-up
+      if (user != null) {
+        _currentUser = UserModel(
+          id: user.uid,
+          email: email,
+          role: role,
+          languageCode: _selectedLanguage,
+        );
 
-      // Save Remember Me preference
-      await prefs.setBool('rememberMe', rememberMe);
-      if (rememberMe) {
-        await prefs.setString('savedEmail', email);
-      } else {
-        await prefs.remove('savedEmail');
+        // Save to storage
+        final prefs = await SharedPreferences.getInstance();
+        await prefs.setBool(AppConstants.keyIsLoggedIn, true);
+        await prefs.setString(AppConstants.keyUserId, user.uid);
+        await prefs.setString(AppConstants.keyUserRole, role);
+        await prefs.setBool(AppConstants.keyIsSignUp, true); // Mark as sign-up
+
+        // Save Remember Me preference
+        await prefs.setBool('rememberMe', rememberMe);
+        if (rememberMe) {
+          await prefs.setString('savedEmail', email);
+        } else {
+          await prefs.remove('savedEmail');
+        }
       }
     } catch (e) {
       print('Error signing up: $e');
+      rethrow;
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
+
+  // Verify email with 6-digit code
+  Future<void> verifyEmail({
+    required String email,
+    required String code,
+  }) async {
+    _isLoading = true;
+    notifyListeners();
+
+    try {
+      await _authService.verifyEmailWithCode(
+        email: email,
+        code: code,
+      );
+    } catch (e) {
+      print('Error verifying email: $e');
+      rethrow;
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
+
+  // Resend verification code
+  Future<void> resendVerificationCode(String email) async {
+    _isLoading = true;
+    notifyListeners();
+
+    try {
+      await _authService.resendVerificationCode(email);
+    } catch (e) {
+      print('Error resending verification code: $e');
+      rethrow;
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
+
+  // Send password reset code
+  Future<void> sendPasswordResetCode(String email) async {
+    _isLoading = true;
+    notifyListeners();
+
+    try {
+      await _authService.sendPasswordResetCode(email);
+    } catch (e) {
+      print('Error sending password reset code: $e');
+      rethrow;
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
+
+  // Verify password reset code
+  Future<bool> verifyPasswordResetCode({
+    required String email,
+    required String code,
+  }) async {
+    _isLoading = true;
+    notifyListeners();
+
+    try {
+      return await _authService.verifyPasswordResetCode(
+        email: email,
+        code: code,
+      );
+    } catch (e) {
+      print('Error verifying password reset code: $e');
+      rethrow;
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
+
+  // Reset password
+  Future<void> resetPassword({
+    required String email,
+    required String code,
+    required String newPassword,
+  }) async {
+    _isLoading = true;
+    notifyListeners();
+
+    try {
+      await _authService.resetPasswordWithCode(
+        email: email,
+        code: code,
+        newPassword: newPassword,
+      );
+    } catch (e) {
+      print('Error resetting password: $e');
       rethrow;
     } finally {
       _isLoading = false;

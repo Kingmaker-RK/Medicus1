@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
+import '../providers/user_provider.dart';
 import '../widgets/medicus_logo.dart';
 import '../constants/colors.dart';
 
@@ -21,7 +23,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
     super.dispose();
   }
 
-  Future<void> _sendResetLink() async {
+  Future<void> _sendResetCode() async {
     if (!_formKey.currentState!.validate()) {
       return;
     }
@@ -31,28 +33,28 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
     });
 
     try {
-      // Simulate API call
-      await Future.delayed(const Duration(seconds: 2));
+      final userProvider = Provider.of<UserProvider>(context, listen: false);
+      await userProvider.sendPasswordResetCode(_emailController.text.trim());
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('Password reset link sent! Check your email.'),
+            content: Text('Password reset code sent! Check your email.'),
             backgroundColor: Colors.green,
           ),
         );
 
-        // Navigate back after short delay
-        await Future.delayed(const Duration(seconds: 1));
+        // Navigate to password reset verification screen
+        await Future.delayed(const Duration(milliseconds: 500));
         if (mounted) {
-          context.go('/');
+          context.go('/verify-password-reset?email=${Uri.encodeComponent(_emailController.text.trim())}');
         }
       }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Error: ${e.toString()}'),
+            content: Text(e.toString().replaceAll('Exception: ', '')),
             backgroundColor: Colors.red,
           ),
         );
@@ -153,9 +155,9 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                       ),
                       const SizedBox(height: 24),
 
-                      // Send Reset Link button
+                      // Send Reset Code button
                       ElevatedButton(
-                        onPressed: _isLoading ? null : _sendResetLink,
+                        onPressed: _isLoading ? null : _sendResetCode,
                         style: ElevatedButton.styleFrom(
                           backgroundColor: AppColors.primary,
                           foregroundColor: Colors.white,
@@ -169,7 +171,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                                 color: Colors.white,
                               )
                             : const Text(
-                                'Send Reset Link',
+                                'Send Reset Code',
                                 style: TextStyle(
                                   fontSize: 16,
                                   fontWeight: FontWeight.bold,
