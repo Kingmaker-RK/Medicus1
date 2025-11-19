@@ -637,6 +637,7 @@ class _TranslationScreenState extends State<TranslationScreen>
             children: [
               TextField(
                 controller: _inputController,
+                maxLength: 500,
                 maxLines: null,
                 minLines: 3,
                 style: const TextStyle(
@@ -649,6 +650,7 @@ class _TranslationScreenState extends State<TranslationScreen>
                   hintStyle: TextStyle(color: AppColors.textHint, fontSize: 16),
                   border: InputBorder.none,
                   contentPadding: const EdgeInsets.fromLTRB(20, 48, 20, 20),
+                  counterText: '',
                 ),
                 onChanged: (text) {
                   setState(() {}); // Update character count
@@ -693,7 +695,7 @@ class _TranslationScreenState extends State<TranslationScreen>
               children: [
                 // Character counter
                 Text(
-                  '$characterCount characters',
+                  '$characterCount/500',
                   style: TextStyle(
                     fontSize: 12,
                     color: AppColors.textSecondary,

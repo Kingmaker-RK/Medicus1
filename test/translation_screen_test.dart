@@ -380,7 +380,7 @@ void main() {
       expect(iconWidget.color, equals(AppColors.accent));
     });
 
-    testWidgets('Verify Input Text Field properties (reduced size)', (WidgetTester tester) async {
+    testWidgets('Verify Input Text Field properties and character limit', (WidgetTester tester) async {
       await tester.pumpWidget(createTestScreen());
       await tester.pump();
       await tester.pump(const Duration(milliseconds: 100));
@@ -392,9 +392,21 @@ void main() {
       // Get the TextField widget
       TextField inputTextField = tester.widget(inputFieldFinder);
 
-      // Verify minLines is 3 (Input field size wasn't reduced, only output)
+      // Verify minLines is 3
       expect(inputTextField.minLines, equals(3));
-      expect(inputTextField.maxLines, isNull);
+      expect(inputTextField.maxLines, isNull); // maxLines is null for expandable field
+      
+      // Verify maxLength is 500
+      expect(inputTextField.maxLength, equals(500));
+      
+      // Verify initial character count
+      expect(find.text('0/500'), findsOneWidget);
+      
+      // Enter some text and verify counter
+      await tester.enterText(inputFieldFinder, 'Hello');
+      await tester.pump();
+      
+      expect(find.text('5/500'), findsOneWidget);
     });
 
     testWidgets('Verify Output Result is shown in a TextField', (WidgetTester tester) async {
