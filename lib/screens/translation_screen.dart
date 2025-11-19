@@ -136,58 +136,96 @@ class _TranslationScreenState extends State<TranslationScreen>
         ],
       ),
       // Floating microphone button
-      floatingActionButton: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          // Conversation Mode Toggle
-          Container(
-            margin: const EdgeInsets.only(bottom: 16),
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(24),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.1),
-                  blurRadius: 8,
-                  offset: const Offset(0, 2),
-                ),
-              ],
-            ),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(
-                  'Conversation Mode',
-                  style: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w600,
-                    color: _isConversationMode
-                        ? AppColors.accent
-                        : AppColors.textSecondary,
+      floatingActionButton: Container(
+        width: MediaQuery.of(context).size.width,
+        padding: const EdgeInsets.symmetric(horizontal: 24),
+        margin: const EdgeInsets.only(bottom: 16),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            // Conversation Mode Toggle (Left)
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(24),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.1),
+                    blurRadius: 8,
+                    offset: const Offset(0, 2),
                   ),
-                ),
-                const SizedBox(width: 12),
-                SizedBox(
-                  height: 32,
-                  child: FittedBox(
-                    fit: BoxFit.fill,
-                    child: Switch.adaptive(
-                      value: _isConversationMode,
-                      activeColor: AppColors.accent,
-                      onChanged: (value) {
-                        setState(() {
-                          _isConversationMode = value;
-                        });
-                      },
+                ],
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    'Mode',
+                    style: TextStyle(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w600,
+                      color: _isConversationMode
+                          ? AppColors.accent
+                          : AppColors.textSecondary,
                     ),
                   ),
-                ),
-              ],
+                  const SizedBox(width: 8),
+                  SizedBox(
+                    height: 24,
+                    width: 36,
+                    child: FittedBox(
+                      fit: BoxFit.fill,
+                      child: Switch.adaptive(
+                        value: _isConversationMode,
+                        activeColor: AppColors.accent,
+                        onChanged: (value) {
+                          setState(() {
+                            _isConversationMode = value;
+                          });
+                        },
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ),
-          ),
-          _buildFloatingMicButton(translationProvider),
-        ],
+
+            // Microphone (Middle)
+            _buildFloatingMicButton(translationProvider),
+
+            // Camera (Right)
+            Container(
+              width: 56,
+              height: 56,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: Colors.white,
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.1),
+                    blurRadius: 8,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
+              ),
+              child: IconButton(
+                onPressed: () {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('Camera feature coming soon'),
+                      duration: Duration(seconds: 1),
+                    ),
+                  );
+                },
+                icon: const Icon(Icons.camera_alt_rounded),
+                color: AppColors.accent,
+                iconSize: 28,
+              ),
+            ),
+          ],
+        ),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       endDrawer: _buildHistoryDrawer(translationProvider),
@@ -252,7 +290,7 @@ class _TranslationScreenState extends State<TranslationScreen>
     UserProvider userProvider,
   ) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
       decoration: BoxDecoration(
         color: Colors.white,
         boxShadow: [
@@ -279,85 +317,85 @@ class _TranslationScreenState extends State<TranslationScreen>
                 ),
               ),
 
-          // Swap button with animation
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 12),
-            child: Tooltip(
-              message: 'Swap languages',
-              child: Material(
-                color: Colors.transparent,
-                child: InkWell(
-                  onTap: () async {
-                    // Ask user if they want to re-translate
-                    if (translationProvider.currentTranslation != null) {
-                      final shouldRetranslate = await showDialog<bool>(
-                        context: context,
-                        builder: (context) => AlertDialog(
-                          title: const Text('Swap Languages'),
-                          content: const Text(
-                            'Would you like to re-translate the text with swapped languages?',
-                          ),
-                          actions: [
-                            TextButton(
-                              onPressed: () => Navigator.pop(context, false),
-                              child: const Text('Just Swap'),
-                            ),
-                            ElevatedButton(
-                              onPressed: () => Navigator.pop(context, true),
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: AppColors.accent,
+              // Swap button with animation
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 12),
+                child: Tooltip(
+                  message: 'Swap languages',
+                  child: Material(
+                    color: Colors.transparent,
+                    child: InkWell(
+                      onTap: () async {
+                        // Ask user if they want to re-translate
+                        if (translationProvider.currentTranslation != null) {
+                          final shouldRetranslate = await showDialog<bool>(
+                            context: context,
+                            builder: (context) => AlertDialog(
+                              title: const Text('Swap Languages'),
+                              content: const Text(
+                                'Would you like to re-translate the text with swapped languages?',
                               ),
-                              child: const Text('Swap & Translate'),
+                              actions: [
+                                TextButton(
+                                  onPressed: () => Navigator.pop(context, false),
+                                  child: const Text('Just Swap'),
+                                ),
+                                ElevatedButton(
+                                  onPressed: () => Navigator.pop(context, true),
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: AppColors.accent,
+                                  ),
+                                  child: const Text('Swap & Translate'),
+                                ),
+                              ],
                             ),
-                          ],
-                        ),
-                      );
+                          );
 
-                      if (shouldRetranslate != null) {
-                        await translationProvider.swapLanguages(
-                          retranslate: shouldRetranslate,
-                        );
-                        if (shouldRetranslate &&
-                            translationProvider.currentTranslation != null) {
-                          _inputController.text =
-                              translationProvider.currentInput;
+                          if (shouldRetranslate != null) {
+                            await translationProvider.swapLanguages(
+                              retranslate: shouldRetranslate,
+                            );
+                            if (shouldRetranslate &&
+                                translationProvider.currentTranslation != null) {
+                              _inputController.text =
+                                  translationProvider.currentInput;
+                            }
+                          }
+                        } else {
+                          await translationProvider.swapLanguages();
                         }
-                      }
-                    } else {
-                      await translationProvider.swapLanguages();
-                    }
-                  },
-                  borderRadius: BorderRadius.circular(8),
-                  child: Container(
-                    padding: const EdgeInsets.all(8),
-                    decoration: BoxDecoration(
-                      border: Border.all(color: AppColors.border),
+                      },
                       borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: Icon(
-                      Icons.swap_horiz_rounded,
-                      color: AppColors.accent,
-                      size: 24,
+                      child: Container(
+                        padding: const EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                          border: Border.all(color: AppColors.border),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Icon(
+                          Icons.swap_horiz_rounded,
+                          color: AppColors.accent,
+                          size: 24,
+                        ),
+                      ),
                     ),
                   ),
                 ),
               ),
-            ),
-          ),
 
-          // Target language
-          Expanded(
-            child: _buildModernLanguageDropdown(
-              value: translationProvider.targetLanguage,
-              onChanged: (value) {
-                if (value != null) {
-                  translationProvider.setTargetLanguage(value);
-                }
-              },
-            ),
+              // Target language
+              Expanded(
+                child: _buildModernLanguageDropdown(
+                  value: translationProvider.targetLanguage,
+                  onChanged: (value) {
+                    if (value != null) {
+                      translationProvider.setTargetLanguage(value);
+                    }
+                  },
+                ),
+              ),
+            ],
           ),
-        ],
-      ),
         ],
       ),
     );
@@ -368,7 +406,7 @@ class _TranslationScreenState extends State<TranslationScreen>
     required ValueChanged<String?> onChanged,
   }) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       decoration: BoxDecoration(
         color: AppColors.inputBackground,
         borderRadius: BorderRadius.circular(12),
