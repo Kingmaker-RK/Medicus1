@@ -131,8 +131,12 @@ Translations (numbered format):''';
         var line = lines[i].trim();
         // Remove number prefix like "1. " or "1) "
         line = line.replaceFirst(RegExp(r'^\d+[\.\)]\s*'), '');
-        // Remove quotes if present
-        line = line.replaceAll(RegExp(r'^["\'`]|["\'`]$'), '');
+        // Remove surrounding quotes if present
+        if ((line.startsWith('"') && line.endsWith('"')) ||
+            (line.startsWith("'") && line.endsWith("'")) ||
+            (line.startsWith('`') && line.endsWith('`'))) {
+          line = line.substring(1, line.length - 1);
+        }
 
         results[uncachedTexts[i]] = line;
 
