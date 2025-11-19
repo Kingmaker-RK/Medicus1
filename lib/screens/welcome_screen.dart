@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../providers/user_provider.dart';
 import '../widgets/medicus_logo.dart';
+import '../widgets/hospital_background.dart';
 import '../constants/colors.dart';
 import '../constants/app_constants.dart';
 
@@ -56,25 +57,15 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
     final userProvider = Provider.of<UserProvider>(context);
 
     return Scaffold(
-      body: Container(
-        decoration: const BoxDecoration(
-          image: DecorationImage(
-            image: AssetImage('assets/images/hospital_background.jpg'),
-            fit: BoxFit.cover,
-            // If image doesn't load, will show background color
-            onError: null,
-          ),
-        ),
-        child: Container(
-          // Semi-transparent overlay for better readability
-          decoration: BoxDecoration(color: Colors.white.withOpacity(0.85)),
-          child: SafeArea(
-            child: SingleChildScrollView(
-              child: Padding(
-                padding: const EdgeInsets.all(24.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
+      body: HospitalBackground(
+        opacity: 0.15,
+        child: SafeArea(
+          child: SingleChildScrollView(
+            child: Padding(
+              padding: const EdgeInsets.all(24.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
                     // Language selector at top left
                     Row(
                       children: [
@@ -372,8 +363,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                         ),
                       ),
                     ),
-                  ],
-                ),
+                ],
               ),
             ),
           ),
@@ -466,7 +456,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 20),
         decoration: BoxDecoration(
-          color: isSelected ? color.withOpacity(0.1) : Colors.transparent,
+          color: isSelected ? color.withValues(alpha: 0.1) : Colors.transparent,
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
             color: isSelected ? color : Colors.transparent,
