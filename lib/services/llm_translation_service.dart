@@ -169,6 +169,15 @@ Translations (numbered format):''';
     return lang['name'] ?? 'English';
   }
 
+  /// Get cached translation if available
+  String? getCachedTranslation(String text, String targetLanguageCode) {
+    if (_translationCache.containsKey(targetLanguageCode) &&
+        _translationCache[targetLanguageCode]!.containsKey(text)) {
+      return _translationCache[targetLanguageCode]![text];
+    }
+    return null;
+  }
+
   /// Clear translation cache
   void clearCache() {
     _translationCache.clear();

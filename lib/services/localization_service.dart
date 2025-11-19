@@ -56,10 +56,9 @@ class LocalizationService {
     }
 
     // Try to get from cache
-    final cache = _llmService._translationCache;
-    if (cache.containsKey(_currentLanguageCode) &&
-        cache[_currentLanguageCode]!.containsKey(text)) {
-      return cache[_currentLanguageCode]![text]!;
+    final cachedTranslation = _llmService.getCachedTranslation(text, _currentLanguageCode);
+    if (cachedTranslation != null) {
+      return cachedTranslation;
     }
 
     // Not in cache, trigger async translation in background

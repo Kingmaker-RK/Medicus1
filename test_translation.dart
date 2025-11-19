@@ -113,7 +113,7 @@ void main() async {
 
   print('Simulating language changes:');
   for (var targetLang in ['es', 'hi', 'fr']) {
-    await localizationService.changeLanguage(targetLang);
+    await localizationService.setLanguage(targetLang);
     print('   • Changed to: $targetLang (${localizationService.currentLanguageCode})');
   }
   print('');
