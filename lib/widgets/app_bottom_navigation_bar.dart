@@ -70,38 +70,41 @@ class AppBottomNavigationBar extends StatelessWidget {
 
   Widget _buildCenterButton(BuildContext context) {
     return Expanded(
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          InkWell(
-            onTap: () => context.push('/services'),
-            borderRadius: BorderRadius.circular(30),
-            child: Container(
-              padding: const EdgeInsets.all(4),
-              decoration: BoxDecoration(
-                color: currentIndex == 4
-                    ? AppColors.primary.withOpacity(0.1)
-                    : Colors.transparent,
-                borderRadius: BorderRadius.circular(30),
+      child: InkWell(
+        onTap: () => context.push('/services'),
+        borderRadius: BorderRadius.circular(12),
+        child: Container(
+          padding: const EdgeInsets.symmetric(vertical: 8),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: currentIndex == 4
+                      ? AppColors.primary.withOpacity(0.1)
+                      : Colors.transparent,
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: const BenzeneIcon(
+                  size: 24,
+                ),
               ),
-              child: const BenzeneIcon(
-                size: 50,
+              const SizedBox(height: 4),
+              Text(
+                'Services',
+                style: TextStyle(
+                  fontSize: 12,
+                  fontWeight:
+                      currentIndex == 4 ? FontWeight.w600 : FontWeight.normal,
+                  color: currentIndex == 4
+                      ? AppColors.primary
+                      : AppColors.textSecondary,
+                ),
               ),
-            ),
+            ],
           ),
-          const SizedBox(height: 4),
-          Text(
-            'Services',
-            style: TextStyle(
-              fontSize: 12,
-              fontWeight:
-                  currentIndex == 4 ? FontWeight.w600 : FontWeight.normal,
-              color: currentIndex == 4
-                  ? AppColors.primary
-                  : AppColors.textSecondary,
-            ),
-          ),
-        ],
+        ),
       ),
     );
   }

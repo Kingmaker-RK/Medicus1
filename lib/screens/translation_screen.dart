@@ -178,36 +178,6 @@ class _TranslationScreenState extends State<TranslationScreen>
             },
           ),
         ),
-        // Role indicator chip
-        Container(
-          margin: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-          decoration: BoxDecoration(
-            color: Colors.white.withOpacity(0.2),
-            borderRadius: BorderRadius.circular(20),
-          ),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Icon(
-                userProvider.currentUser?.role == AppConstants.roleDoctor
-                    ? Icons.local_hospital_rounded
-                    : Icons.person_rounded,
-                size: 16,
-              ),
-              const SizedBox(width: 6),
-              Text(
-                userProvider.currentUser?.role == AppConstants.roleDoctor
-                    ? 'Doctor'
-                    : 'Patient',
-                style: const TextStyle(
-                  fontSize: 12,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-            ],
-          ),
-        ),
         IconButton(
           icon: const Icon(Icons.settings_rounded),
           onPressed: () {
