@@ -5,7 +5,7 @@ import 'package:firebase_auth_mocks/firebase_auth_mocks.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:medicus/providers/user_provider.dart';
 import 'package:medicus/providers/translation_provider.dart';
-import 'package:medicus/providers/user_profile_provider.dart';
+import 'package:medicus/providers/patient_profile_provider.dart';
 import 'package:medicus/providers/doctor_profile_provider.dart';
 import 'package:medicus/config/router.dart';
 import 'package:medicus/constants/colors.dart';
@@ -48,7 +48,7 @@ Widget createTestApp({
   required Widget child,
   UserProvider? userProvider,
   TranslationProvider? translationProvider,
-  UserProfileProvider? userProfileProvider,
+  PatientProfileProvider? userProfileProvider,
   DoctorProfileProvider? doctorProfileProvider,
 }) {
   return MultiProvider(
@@ -59,8 +59,8 @@ Widget createTestApp({
       ChangeNotifierProvider<TranslationProvider>(
         create: (_) => translationProvider ?? TranslationProvider(),
       ),
-      ChangeNotifierProvider<UserProfileProvider>(
-        create: (_) => userProfileProvider ?? UserProfileProvider(),
+      ChangeNotifierProvider<PatientProfileProvider>(
+        create: (_) => userProfileProvider ?? PatientProfileProvider(),
       ),
       ChangeNotifierProvider<DoctorProfileProvider>(
         create: (_) => doctorProfileProvider ?? DoctorProfileProvider(),
@@ -87,7 +87,7 @@ Widget createMedicusAppForTest() {
     providers: [
       ChangeNotifierProvider(create: (_) => UserProvider()),
       ChangeNotifierProvider(create: (_) => TranslationProvider()),
-      ChangeNotifierProvider(create: (_) => UserProfileProvider()),
+      ChangeNotifierProvider(create: (_) => PatientProfileProvider()),
       ChangeNotifierProvider(create: (_) => DoctorProfileProvider()),
     ],
     child: MaterialApp.router(

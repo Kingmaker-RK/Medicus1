@@ -4,7 +4,7 @@ import 'package:lucide_icons/lucide_icons.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 import '../providers/patient_profile_provider.dart';
-import '../models/user_profile_model.dart';
+import '../models/patient_profile_model.dart';
 import '../constants/colors.dart';
 
 class PatientProfileScreen extends StatefulWidget {

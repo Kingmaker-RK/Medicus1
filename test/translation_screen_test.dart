@@ -5,21 +5,23 @@ import 'package:provider/provider.dart';
 import 'package:medicus/screens/translation_screen.dart';
 import 'package:medicus/providers/translation_provider.dart';
 import 'package:medicus/providers/user_provider.dart';
-import 'package:medicus/providers/user_profile_provider.dart';
+import 'package:medicus/providers/patient_profile_provider.dart';
 import 'package:medicus/providers/doctor_profile_provider.dart';
+import 'package:medicus/providers/user_provider.dart';
+import 'package:medicus/providers/translation_provider.dart';
+import 'package:medicus/models/patient_profile_model.dart';
+import 'package:medicus/models/doctor_profile_model.dart';
 import 'package:medicus/models/user_model.dart';
 import 'package:medicus/models/translation_result.dart';
-import 'package:medicus/models/user_profile_model.dart';
-import 'package:medicus/models/doctor_profile_model.dart';
 import 'package:medicus/constants/app_constants.dart';
 import 'package:medicus/constants/colors.dart';
 
-// Fake UserProfileProvider
-class FakeUserProfileProvider extends ChangeNotifier implements UserProfileProvider {
-  UserProfileModel _profile = UserProfileModel();
+// Fake PatientProfileProvider
+class FakePatientProfileProvider extends ChangeNotifier implements PatientProfileProvider {
+  PatientProfileModel _profile = PatientProfileModel();
 
   @override
-  UserProfileModel get profile => _profile;
+  PatientProfileModel get profile => _profile;
 
   @override
   bool get isLoading => false;
@@ -317,13 +319,13 @@ void main() {
   group('TranslationScreen Tests', () {
     late FakeUserProvider userProvider;
     late FakeTranslationProvider translationProvider;
-    late FakeUserProfileProvider userProfileProvider;
+    late FakePatientProfileProvider userProfileProvider;
     late FakeDoctorProfileProvider doctorProfileProvider;
 
     setUp(() {
       userProvider = FakeUserProvider();
       translationProvider = FakeTranslationProvider();
-      userProfileProvider = FakeUserProfileProvider();
+      userProfileProvider = FakePatientProfileProvider();
       doctorProfileProvider = FakeDoctorProfileProvider();
     });
 
@@ -332,7 +334,7 @@ void main() {
         providers: [
           ChangeNotifierProvider<UserProvider>.value(value: userProvider),
           ChangeNotifierProvider<TranslationProvider>.value(value: translationProvider),
-          ChangeNotifierProvider<UserProfileProvider>.value(value: userProfileProvider),
+          ChangeNotifierProvider<PatientProfileProvider>.value(value: userProfileProvider),
           ChangeNotifierProvider<DoctorProfileProvider>.value(value: doctorProfileProvider),
         ],
         child: MaterialApp(

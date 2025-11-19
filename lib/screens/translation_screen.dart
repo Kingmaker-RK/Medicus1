@@ -6,7 +6,7 @@ import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
 import '../providers/translation_provider.dart';
 import '../providers/user_provider.dart';
-import '../providers/user_profile_provider.dart';
+import '../providers/patient_profile_provider.dart';
 import '../providers/doctor_profile_provider.dart';
 import '../constants/colors.dart';
 import '../constants/app_constants.dart';
@@ -308,7 +308,7 @@ class _TranslationScreenState extends State<TranslationScreen>
               }
             }
           } else {
-            final userProfileProvider = Provider.of<UserProfileProvider>(
+            final userProfileProvider = Provider.of<PatientProfileProvider>(
               context,
             );
             final profile = userProfileProvider.profile;
