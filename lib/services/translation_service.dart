@@ -13,6 +13,12 @@ class TranslationService {
   final Dio _dio = Dio();
   final DeepLTranslationService _deeplService = DeepLTranslationService();
   final LLMTranslationService _llmService = LLMTranslationService();
+  bool _forceMockTranslation = false;
+
+  void forceMockTranslation(bool force) {
+    _forceMockTranslation = force;
+  }
+
 
   /// Recognize handwriting from image bytes using LLM
   Future<String> recognizeHandwriting(Uint8List imageBytes) async {
@@ -43,6 +49,9 @@ class TranslationService {
     required String targetLanguage,
     bool isMedicalContext = true,
   }) async {
+    if (_forceMockTranslation) {
+      return _mockTranslation(text, sourceLanguage, targetLanguage);
+    }
     try {
       // 1. Try DeepL API (highest quality, priority #1)
       if (_deeplService.isAvailable) {

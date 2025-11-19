@@ -8,6 +8,7 @@ import '../widgets/hospital_background.dart';
 import '../widgets/translated_widget.dart';
 import '../constants/colors.dart';
 import '../constants/app_constants.dart';
+import 'package:medicus/screens/language_selection_screen.dart';
 import '../services/localization_service.dart';
 
 class WelcomeScreen extends StatefulWidget {
@@ -418,7 +419,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
   }
 
   Widget _buildLanguageSelector(UserProvider userProvider) {
-    return PopupMenuButton<String>(
+    return IconButton(
       icon: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
@@ -433,16 +434,13 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
           ),
         ],
       ),
-      onSelected: (String languageCode) {
-        userProvider.changeLanguage(languageCode);
-      },
-      itemBuilder: (BuildContext context) {
-        return AppConstants.supportedLanguages.map((lang) {
-          return PopupMenuItem<String>(
-            value: lang['code'],
-            child: Text('${lang['nativeName']} (${lang['name']})'),
-          );
-        }).toList();
+      onPressed: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => const LanguageSelectionScreen(),
+          ),
+        );
       },
     );
   }

@@ -81,7 +81,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       ListTile(
                         leading: const Icon(Icons.person),
                         title: const AutoTranslateText('User Role'),
-                        subtitle: Text(
+                        subtitle: AutoTranslateText(
                           userProvider.currentUser?.role.toUpperCase() ??
                               'Guest',
                         ),
@@ -90,7 +90,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       ListTile(
                         leading: const Icon(Icons.email),
                         title: const AutoTranslateText('Email'),
-                        subtitle: Text(
+                        subtitle: AutoTranslateText(
                           userProvider.currentUser?.email ?? 'Guest User',
                         ),
                       ),
@@ -119,7 +119,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       ListTile(
                         leading: const Icon(Icons.language),
                         title: const AutoTranslateText('App Language'),
-                        subtitle: Text(
+                        subtitle: AutoTranslateText(
                           _getLanguageName(userProvider.selectedLanguage),
                         ),
                         trailing: const Icon(Icons.arrow_forward_ios, size: 16),
@@ -205,7 +205,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       ListTile(
                         leading: const Icon(Icons.info),
                         title: const AutoTranslateText('App Version'),
-                        subtitle: Text(AppConstants.appVersion),
+                        subtitle: AutoTranslateText(AppConstants.appVersion),
                       ),
                       ListTile(
                         leading: const Icon(Icons.medical_services),
@@ -323,8 +323,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
               final isSelected = lang['code'] == userProvider.selectedLanguage;
 
               return ListTile(
-                title: Text(lang['nativeName'] ?? ''),
-                subtitle: Text(lang['name'] ?? ''),
+                title: AutoTranslateText(lang['nativeName'] ?? ''),
+                subtitle: AutoTranslateText(lang['name'] ?? ''),
                 trailing: isSelected
                     ? Icon(Icons.check, color: AppColors.primary)
                     : null,

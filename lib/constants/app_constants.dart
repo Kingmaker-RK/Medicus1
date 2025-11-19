@@ -31,7 +31,8 @@ class AppConstants {
   // IMPORTANT: Replace with your actual DeepL API key
   // Get your API key from: https://www.deepl.com/pro-api
   // DeepL provides high-quality neural machine translation for 30+ languages
-  static const String deeplApiKey = 'YOUR_DEEPL_API_KEY';
+  // PLEASE REPLACE THIS WITH YOUR ACTUAL DEEPL API KEY
+  static const String deeplApiKey = 'YOUR_DEEPL_API_KEY_HERE';
 
   // Supported Languages - 200+ languages including all Indian languages
   // Language codes follow ISO 639-1 standard
@@ -49,7 +50,9 @@ class AppConstants {
     {'code': 'ay', 'name': 'Aymara', 'nativeName': 'aymar aru'},
     {'code': 'az', 'name': 'Azerbaijani', 'nativeName': 'azərbaycan dili'},
     {'code': 'ba', 'name': 'Bashkir', 'nativeName': 'башҡорт теле'},
+    {'code': 'bar', 'name': 'Bavarian', 'nativeName': 'Boarisch'},
     {'code': 'be', 'name': 'Belarusian', 'nativeName': 'беларуская мова'},
+    {'code': 'ber', 'name': 'Berber', 'nativeName': 'Tamaziɣt'},
     {'code': 'bg', 'name': 'Bulgarian', 'nativeName': 'български език'},
     {'code': 'bh', 'name': 'Bihari', 'nativeName': 'भोजपुरी'},
     {'code': 'bi', 'name': 'Bislama', 'nativeName': 'Bislama'},
@@ -57,6 +60,7 @@ class AppConstants {
     {'code': 'bn', 'name': 'Bengali', 'nativeName': 'বাংলা'},
     {'code': 'bo', 'name': 'Tibetan', 'nativeName': 'བོད་ཡིག'},
     {'code': 'br', 'name': 'Breton', 'nativeName': 'brezhoneg'},
+    {'code': 'brx', 'name': 'Bodo', 'nativeName': 'बर’'},
     {'code': 'bs', 'name': 'Bosnian', 'nativeName': 'bosanski jezik'},
     {'code': 'ca', 'name': 'Catalan', 'nativeName': 'Català'},
     {'code': 'ce', 'name': 'Chechen', 'nativeName': 'нохчийн мотт'},
@@ -69,6 +73,7 @@ class AppConstants {
     {'code': 'cy', 'name': 'Welsh', 'nativeName': 'Cymraeg'},
     {'code': 'da', 'name': 'Danish', 'nativeName': 'dansk'},
     {'code': 'de', 'name': 'German', 'nativeName': 'Deutsch'},
+    {'code': 'doi', 'name': 'Dogri', 'nativeName': 'डोगरी'},
     {'code': 'dv', 'name': 'Divehi', 'nativeName': 'ދިވެހި'},
     {'code': 'dz', 'name': 'Dzongkha', 'nativeName': 'རྫོང་ཁ'},
     {'code': 'ee', 'name': 'Ewe', 'nativeName': 'Ɛʋɛgbɛ'},
@@ -84,6 +89,7 @@ class AppConstants {
     {'code': 'fj', 'name': 'Fijian', 'nativeName': 'vosa Vakaviti'},
     {'code': 'fo', 'name': 'Faroese', 'nativeName': 'Føroyskt'},
     {'code': 'fr', 'name': 'French', 'nativeName': 'français'},
+    {'code': 'ful', 'name': 'Fula', 'nativeName': 'Pulaar'},
     {'code': 'fy', 'name': 'Western Frisian', 'nativeName': 'Frysk'},
     {'code': 'ga', 'name': 'Irish', 'nativeName': 'Gaeilge'},
     {'code': 'gd', 'name': 'Gaelic', 'nativeName': 'Gàidhlig'},
@@ -120,6 +126,7 @@ class AppConstants {
     {'code': 'km', 'name': 'Khmer', 'nativeName': 'ភាសាខ្មែរ'},
     {'code': 'kn', 'name': 'Kannada', 'nativeName': 'ಕನ್ನಡ'},
     {'code': 'ko', 'name': 'Korean', 'nativeName': '한국어'},
+    {'code': 'kok', 'name': 'Konkani', 'nativeName': 'कोंकणी'},
     {'code': 'kr', 'name': 'Kanuri', 'nativeName': 'Kanuri'},
     {'code': 'ks', 'name': 'Kashmiri', 'nativeName': 'कश्मीरी'},
     {'code': 'ku', 'name': 'Kurdish', 'nativeName': 'Kurdî'},
@@ -135,12 +142,14 @@ class AppConstants {
     {'code': 'lt', 'name': 'Lithuanian', 'nativeName': 'Lietuvių'},
     {'code': 'lu', 'name': 'Luba-Katanga', 'nativeName': 'Tshiluba'},
     {'code': 'lv', 'name': 'Latvian', 'nativeName': 'Latviešu'},
+    {'code': 'mai', 'name': 'Maithili', 'nativeName': 'मैथिली'},
     {'code': 'mg', 'name': 'Malagasy', 'nativeName': 'Malagasy'},
     {'code': 'mh', 'name': 'Marshallese', 'nativeName': 'Kajin M̧ajeļ'},
     {'code': 'mi', 'name': 'Māori', 'nativeName': 'Te Reo Māori'},
     {'code': 'mk', 'name': 'Macedonian', 'nativeName': 'македонски јазик'},
     {'code': 'ml', 'name': 'Malayalam', 'nativeName': 'മലയാളം'},
     {'code': 'mn', 'name': 'Mongolian', 'nativeName': 'монгол'},
+    {'code': 'mni', 'name': 'Meiteilon (Manipuri)', 'nativeName': 'ꯃꯤꯇꯩꯂꯣꯟ'},
     {'code': 'mr', 'name': 'Marathi', 'nativeName': 'मराठी'},
     {'code': 'ms', 'name': 'Malay', 'nativeName': 'Bahasa Melayu'},
     {'code': 'mt', 'name': 'Maltese', 'nativeName': 'Malti'},
@@ -173,6 +182,7 @@ class AppConstants {
     {'code': 'ru', 'name': 'Russian', 'nativeName': 'русский язык'},
     {'code': 'rw', 'name': 'Kinyarwanda', 'nativeName': 'Kinyarwanda'},
     {'code': 'sa', 'name': 'Sanskrit', 'nativeName': 'संस्कृतम्'},
+    {'code': 'sat', 'name': 'Santali', 'nativeName': 'ᱥᱟᱱᱛᱟᱲᱤ'},
     {'code': 'sc', 'name': 'Sardinian', 'nativeName': 'Sardu'},
     {'code': 'sd', 'name': 'Sindhi', 'nativeName': 'سنڌي'},
     {'code': 'se', 'name': 'Northern Sami', 'nativeName': 'Sámegiella'},
