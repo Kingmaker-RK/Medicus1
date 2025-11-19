@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
 import '../providers/user_provider.dart';
 import '../services/permission_service.dart';
+import '../widgets/translated_widget.dart';
 import '../constants/colors.dart';
 import '../constants/app_constants.dart';
 
@@ -60,7 +61,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
       appBar: AppBar(
         backgroundColor: AppColors.primary,
         foregroundColor: Colors.white,
-        title: const Text('Settings'),
+        title: const AutoTranslateText('Settings'),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () {
@@ -72,153 +73,161 @@ class _SettingsScreenState extends State<SettingsScreen> {
           ? const Center(child: CircularProgressIndicator())
           : ListView(
               children: [
-                // User Section
-                _buildSection(
-                  title: 'Account',
-                  children: [
-                    ListTile(
-                      leading: const Icon(Icons.person),
-                      title: const Text('User Role'),
-                      subtitle: Text(
-                        userProvider.currentUser?.role.toUpperCase() ?? 'Guest',
-                      ),
-                      trailing: const Icon(Icons.arrow_forward_ios, size: 16),
-                    ),
-                    ListTile(
-                      leading: const Icon(Icons.email),
-                      title: const Text('Email'),
-                      subtitle: Text(
-                        userProvider.currentUser?.email ?? 'Guest User',
-                      ),
-                    ),
-                    if (userProvider.isLoggedIn)
+                // User Section with translation
+                LanguageBuilder(
+                  builder: (context, _) => _buildSection(
+                    title: 'Account',
+                    children: [
                       ListTile(
-                        leading: const Icon(Icons.logout),
-                        title: const Text('Logout'),
-                        onTap: () async {
-                          await userProvider.logout();
-                          if (mounted) {
-                            context.go('/');
-                          }
+                        leading: const Icon(Icons.person),
+                        title: const AutoTranslateText('User Role'),
+                        subtitle: Text(
+                          userProvider.currentUser?.role.toUpperCase() ?? 'Guest',
+                        ),
+                        trailing: const Icon(Icons.arrow_forward_ios, size: 16),
+                      ),
+                      ListTile(
+                        leading: const Icon(Icons.email),
+                        title: const AutoTranslateText('Email'),
+                        subtitle: Text(
+                          userProvider.currentUser?.email ?? 'Guest User',
+                        ),
+                      ),
+                      if (userProvider.isLoggedIn)
+                        ListTile(
+                          leading: const Icon(Icons.logout),
+                          title: const AutoTranslateText('Logout'),
+                          onTap: () async {
+                            await userProvider.logout();
+                            if (mounted) {
+                              context.go('/');
+                            }
+                          },
+                        ),
+                    ],
+                  ),
+                ),
+
+                const Divider(),
+
+                // Language Section with translation
+                LanguageBuilder(
+                  builder: (context, _) => _buildSection(
+                    title: 'Language',
+                    children: [
+                      ListTile(
+                        leading: const Icon(Icons.language),
+                        title: const AutoTranslateText('App Language'),
+                        subtitle: Text(
+                          _getLanguageName(userProvider.selectedLanguage),
+                        ),
+                        trailing: const Icon(Icons.arrow_forward_ios, size: 16),
+                        onTap: () {
+                          _showLanguageDialog(userProvider);
                         },
                       ),
-                  ],
+                    ],
+                  ),
                 ),
 
                 const Divider(),
 
-                // Language Section
-                _buildSection(
-                  title: 'Language',
-                  children: [
-                    ListTile(
-                      leading: const Icon(Icons.language),
-                      title: const Text('App Language'),
-                      subtitle: Text(
-                        _getLanguageName(userProvider.selectedLanguage),
+                // Permissions Section with translation
+                LanguageBuilder(
+                  builder: (context, _) => _buildSection(
+                    title: 'Permissions',
+                    children: [
+                      _buildPermissionTile(
+                        icon: Icons.mic,
+                        title: 'Microphone',
+                        subtitle: 'Required for voice translation',
+                        granted: _permissions['microphone'] ?? false,
+                        onTap: () async {
+                          await _permissionService.requestMicrophonePermission();
+                          await _checkPermissions();
+                        },
                       ),
-                      trailing: const Icon(Icons.arrow_forward_ios, size: 16),
-                      onTap: () {
-                        _showLanguageDialog(userProvider);
-                      },
-                    ),
-                  ],
-                ),
-
-                const Divider(),
-
-                // Permissions Section
-                _buildSection(
-                  title: 'Permissions',
-                  children: [
-                    _buildPermissionTile(
-                      icon: Icons.mic,
-                      title: 'Microphone',
-                      subtitle: 'Required for voice translation',
-                      granted: _permissions['microphone'] ?? false,
-                      onTap: () async {
-                        await _permissionService.requestMicrophonePermission();
-                        await _checkPermissions();
-                      },
-                    ),
-                    _buildPermissionTile(
-                      icon: Icons.camera_alt,
-                      title: 'Camera',
-                      subtitle: 'Optional for visual assistance',
-                      granted: _permissions['camera'] ?? false,
-                      onTap: () async {
-                        await _permissionService.requestCameraPermission();
-                        await _checkPermissions();
-                      },
-                    ),
-                    _buildPermissionTile(
-                      icon: Icons.location_on,
-                      title: 'Location',
-                      subtitle: 'Optional for nearby facilities',
-                      granted: _permissions['location'] ?? false,
-                      onTap: () async {
-                        await _permissionService.requestLocationPermission();
-                        await _checkPermissions();
-                      },
-                    ),
-                    _buildPermissionTile(
-                      icon: Icons.notifications,
-                      title: 'Notifications',
-                      subtitle: 'Get important updates',
-                      granted: _permissions['notification'] ?? false,
-                      onTap: () async {
-                        await _permissionService
-                            .requestNotificationPermission();
-                        await _checkPermissions();
-                      },
-                    ),
-                    ListTile(
-                      leading: const Icon(Icons.settings),
-                      title: const Text('Open System Settings'),
-                      subtitle: const Text('Manage all permissions'),
-                      trailing: const Icon(Icons.arrow_forward_ios, size: 16),
-                      onTap: () async {
-                        await _permissionService.openAppSettings();
-                      },
-                    ),
-                  ],
-                ),
-
-                const Divider(),
-
-                // About Section
-                _buildSection(
-                  title: 'About',
-                  children: [
-                    ListTile(
-                      leading: const Icon(Icons.info),
-                      title: const Text('App Version'),
-                      subtitle: Text(AppConstants.appVersion),
-                    ),
-                    ListTile(
-                      leading: const Icon(Icons.medical_services),
-                      title: const Text('About Medicus'),
-                      subtitle: const Text(
-                        'Breaking language barriers in healthcare',
+                      _buildPermissionTile(
+                        icon: Icons.camera_alt,
+                        title: 'Camera',
+                        subtitle: 'Optional for visual assistance',
+                        granted: _permissions['camera'] ?? false,
+                        onTap: () async {
+                          await _permissionService.requestCameraPermission();
+                          await _checkPermissions();
+                        },
                       ),
-                    ),
-                    ListTile(
-                      leading: const Icon(Icons.help),
-                      title: const Text('Help & Support'),
-                      trailing: const Icon(Icons.arrow_forward_ios, size: 16),
-                      onTap: () {
-                        // TODO: Implement help screen
-                      },
-                    ),
-                    ListTile(
-                      leading: const Icon(Icons.privacy_tip),
-                      title: const Text('Privacy Policy'),
-                      trailing: const Icon(Icons.arrow_forward_ios, size: 16),
-                      onTap: () {
-                        // TODO: Implement privacy policy screen
-                      },
-                    ),
-                  ],
+                      _buildPermissionTile(
+                        icon: Icons.location_on,
+                        title: 'Location',
+                        subtitle: 'Optional for nearby facilities',
+                        granted: _permissions['location'] ?? false,
+                        onTap: () async {
+                          await _permissionService.requestLocationPermission();
+                          await _checkPermissions();
+                        },
+                      ),
+                      _buildPermissionTile(
+                        icon: Icons.notifications,
+                        title: 'Notifications',
+                        subtitle: 'Get important updates',
+                        granted: _permissions['notification'] ?? false,
+                        onTap: () async {
+                          await _permissionService
+                              .requestNotificationPermission();
+                          await _checkPermissions();
+                        },
+                      ),
+                      ListTile(
+                        leading: const Icon(Icons.settings),
+                        title: const AutoTranslateText('Open System Settings'),
+                        subtitle: const AutoTranslateText('Manage all permissions'),
+                        trailing: const Icon(Icons.arrow_forward_ios, size: 16),
+                        onTap: () async {
+                          await _permissionService.openAppSettings();
+                        },
+                      ),
+                    ],
+                  ),
+                ),
+
+                const Divider(),
+
+                // About Section with translation
+                LanguageBuilder(
+                  builder: (context, _) => _buildSection(
+                    title: 'About',
+                    children: [
+                      ListTile(
+                        leading: const Icon(Icons.info),
+                        title: const AutoTranslateText('App Version'),
+                        subtitle: Text(AppConstants.appVersion),
+                      ),
+                      ListTile(
+                        leading: const Icon(Icons.medical_services),
+                        title: const AutoTranslateText('About Medicus'),
+                        subtitle: const AutoTranslateText(
+                          'Breaking language barriers in healthcare',
+                        ),
+                      ),
+                      ListTile(
+                        leading: const Icon(Icons.help),
+                        title: const AutoTranslateText('Help & Support'),
+                        trailing: const Icon(Icons.arrow_forward_ios, size: 16),
+                        onTap: () {
+                          // TODO: Implement help screen
+                        },
+                      ),
+                      ListTile(
+                        leading: const Icon(Icons.privacy_tip),
+                        title: const AutoTranslateText('Privacy Policy'),
+                        trailing: const Icon(Icons.arrow_forward_ios, size: 16),
+                        onTap: () {
+                          // TODO: Implement privacy policy screen
+                        },
+                      ),
+                    ],
+                  ),
                 ),
               ],
             ),
@@ -234,7 +243,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
       children: [
         Padding(
           padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
-          child: Text(
+          child: AutoTranslateText(
             title,
             style: TextStyle(
               fontSize: 14,
@@ -257,8 +266,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
   }) {
     return ListTile(
       leading: Icon(icon),
-      title: Text(title),
-      subtitle: Text(subtitle),
+      title: AutoTranslateText(title),
+      subtitle: AutoTranslateText(subtitle),
       trailing: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
@@ -270,7 +279,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   : AppColors.error.withOpacity(0.1),
               borderRadius: BorderRadius.circular(4),
             ),
-            child: Text(
+            child: AutoTranslateText(
               granted ? 'Granted' : 'Denied',
               style: TextStyle(
                 fontSize: 12,
@@ -299,7 +308,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Select Language'),
+        title: const AutoTranslateText('Select Language'),
         content: SizedBox(
           width: double.maxFinite,
           child: ListView.builder(
@@ -316,9 +325,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     ? Icon(Icons.check, color: AppColors.primary)
                     : null,
                 selected: isSelected,
-                onTap: () {
-                  userProvider.changeLanguage(lang['code']!);
-                  Navigator.pop(context);
+                onTap: () async {
+                  await userProvider.changeLanguage(lang['code']!);
+                  if (mounted) {
+                    Navigator.pop(context);
+                  }
                 },
               );
             },
@@ -329,7 +340,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
             onPressed: () {
               Navigator.pop(context);
             },
-            child: const Text('Cancel'),
+            child: const AutoTranslateText('Cancel'),
           ),
         ],
       ),

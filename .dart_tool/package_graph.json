@@ -19,6 +19,7 @@
         "font_awesome_flutter",
         "go_router",
         "google_fonts",
+        "google_generative_ai",
         "google_sign_in",
         "http",
         "intl",
@@ -236,6 +237,13 @@
         "flutter",
         "path",
         "vector_math"
+      ]
+    },
+    {
+      "name": "google_generative_ai",
+      "version": "0.4.7",
+      "dependencies": [
+        "http"
       ]
     },
     {

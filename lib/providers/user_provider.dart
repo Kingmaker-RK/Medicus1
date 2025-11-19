@@ -3,9 +3,11 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../models/user_model.dart';
 import '../constants/app_constants.dart';
 import '../services/auth_service.dart';
+import '../services/localization_service.dart';
 
 class UserProvider with ChangeNotifier {
   final AuthService _authService = AuthService();
+  final LocalizationService _localizationService = LocalizationService();
 
   UserModel? _currentUser;
   String _selectedLanguage = 'en';
@@ -22,6 +24,9 @@ class UserProvider with ChangeNotifier {
     notifyListeners();
 
     try {
+      // Initialize localization service
+      _localizationService.initialize();
+
       final prefs = await SharedPreferences.getInstance();
       final isLoggedIn = prefs.getBool(AppConstants.keyIsLoggedIn) ?? false;
 
@@ -47,6 +52,9 @@ class UserProvider with ChangeNotifier {
       if (savedLanguage != null) {
         _selectedLanguage = savedLanguage;
       }
+
+      // Set initial language in localization service
+      await _localizationService.setLanguage(_selectedLanguage);
     } catch (e) {
       print('Error initializing user: $e');
     } finally {
@@ -294,7 +302,7 @@ class UserProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  // Change language
+  // Change language with immediate UI update
   Future<void> changeLanguage(String languageCode) async {
     _selectedLanguage = languageCode;
 
@@ -305,6 +313,10 @@ class UserProvider with ChangeNotifier {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString(AppConstants.keyLanguage, languageCode);
 
+    // Update localization service for instant UI translation
+    await _localizationService.setLanguage(languageCode);
+
+    // Notify listeners to rebuild UI with new language
     notifyListeners();
   }
 

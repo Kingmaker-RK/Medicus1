@@ -55,6 +55,9 @@ dependencies:
   http: ^1.2.2
   dio: ^5.7.0
 
+  # Google Generative AI (Gemini) for advanced LLM translation
+  google_generative_ai: ^0.4.6
+
   # 3D Rendering
   flutter_cube: ^0.1.1
   model_viewer_plus: ^1.8.0

@@ -5,6 +5,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../providers/user_provider.dart';
 import '../widgets/medicus_logo.dart';
 import '../widgets/hospital_background.dart';
+import '../widgets/translated_widget.dart';
 import '../constants/colors.dart';
 import '../constants/app_constants.dart';
 
@@ -82,8 +83,8 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                   const Center(child: MedicusLogo(size: 70, showText: true)),
                   const SizedBox(height: 12),
 
-                  // Welcome text - More compact
-                  Text(
+                  // Welcome text - More compact with instant translation
+                  AutoTranslateText(
                     'Welcome to Medicus',
                     style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                       fontWeight: FontWeight.bold,
@@ -92,7 +93,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                     textAlign: TextAlign.center,
                   ),
                   const SizedBox(height: 4),
-                  Text(
+                  AutoTranslateText(
                     'Breaking language barriers in healthcare',
                     style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                       color: AppColors.textSecondary,
@@ -105,107 +106,129 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                   _buildRoleSelector(),
                   const SizedBox(height: 16),
 
-                  // Sign in / Sign up toggle
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      TextButton(
-                        onPressed: () {
-                          setState(() {
-                            _isSignIn = true;
-                          });
-                        },
-                        child: Text(
-                          'Sign In',
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: _isSignIn
-                                ? FontWeight.bold
-                                : FontWeight.normal,
-                            color: _isSignIn
-                                ? AppColors.primary
-                                : AppColors.textSecondary,
+                  // Sign in / Sign up toggle with translation
+                  LanguageBuilder(
+                    builder: (context, _) => Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        TextButton(
+                          onPressed: () {
+                            setState(() {
+                              _isSignIn = true;
+                            });
+                          },
+                          child: AutoTranslateText(
+                            'Sign In',
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: _isSignIn
+                                  ? FontWeight.bold
+                                  : FontWeight.normal,
+                              color: _isSignIn
+                                  ? AppColors.primary
+                                  : AppColors.textSecondary,
+                            ),
                           ),
                         ),
-                      ),
-                      const SizedBox(width: 16),
-                      Text(
-                        '|',
-                        style: TextStyle(color: AppColors.textSecondary),
-                      ),
-                      const SizedBox(width: 16),
-                      TextButton(
-                        onPressed: () {
-                          setState(() {
-                            _isSignIn = false;
-                          });
-                        },
-                        child: Text(
-                          'Sign Up',
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: !_isSignIn
-                                ? FontWeight.bold
-                                : FontWeight.normal,
-                            color: !_isSignIn
-                                ? AppColors.primary
-                                : AppColors.textSecondary,
+                        const SizedBox(width: 16),
+                        Text(
+                          '|',
+                          style: TextStyle(color: AppColors.textSecondary),
+                        ),
+                        const SizedBox(width: 16),
+                        TextButton(
+                          onPressed: () {
+                            setState(() {
+                              _isSignIn = false;
+                            });
+                          },
+                          child: AutoTranslateText(
+                            'Sign Up',
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: !_isSignIn
+                                  ? FontWeight.bold
+                                  : FontWeight.normal,
+                              color: !_isSignIn
+                                  ? AppColors.primary
+                                  : AppColors.textSecondary,
+                            ),
                           ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                   const SizedBox(height: 16),
 
-                  // Email field
-                  TextField(
-                    controller: _emailController,
-                    decoration: InputDecoration(
-                      labelText: 'Email',
-                      prefixIcon: const Icon(Icons.email),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      filled: true,
-                      fillColor: Colors.white,
-                      contentPadding: const EdgeInsets.symmetric(
-                        vertical: 12,
-                        horizontal: 16,
-                      ),
+                  // Email field with translation
+                  LanguageBuilder(
+                    builder: (context, _) => FutureBuilder<String>(
+                      future: context.read<UserProvider>().selectedLanguage == 'en'
+                          ? Future.value('Email')
+                          : 'Email'.tr(),
+                      initialData: 'Email',
+                      builder: (context, snapshot) {
+                        return TextField(
+                          controller: _emailController,
+                          decoration: InputDecoration(
+                            labelText: snapshot.data ?? 'Email',
+                            prefixIcon: const Icon(Icons.email),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            filled: true,
+                            fillColor: Colors.white,
+                            contentPadding: const EdgeInsets.symmetric(
+                              vertical: 12,
+                              horizontal: 16,
+                            ),
+                          ),
+                          keyboardType: TextInputType.emailAddress,
+                        );
+                      },
                     ),
-                    keyboardType: TextInputType.emailAddress,
                   ),
                   const SizedBox(height: 12),
 
-                  // Password field
-                  TextField(
-                    controller: _passwordController,
-                    obscureText: _obscurePassword,
-                    decoration: InputDecoration(
-                      labelText: 'Password',
-                      prefixIcon: const Icon(Icons.lock),
-                      suffixIcon: IconButton(
-                        icon: Icon(
-                          _obscurePassword
-                              ? Icons.visibility_off
-                              : Icons.visibility,
-                          color: AppColors.textSecondary,
-                        ),
-                        onPressed: () {
-                          setState(() {
-                            _obscurePassword = !_obscurePassword;
-                          });
-                        },
-                      ),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      filled: true,
-                      fillColor: Colors.white,
-                      contentPadding: const EdgeInsets.symmetric(
-                        vertical: 12,
-                        horizontal: 16,
-                      ),
+                  // Password field with translation
+                  LanguageBuilder(
+                    builder: (context, _) => FutureBuilder<String>(
+                      future: context.read<UserProvider>().selectedLanguage == 'en'
+                          ? Future.value('Password')
+                          : 'Password'.tr(),
+                      initialData: 'Password',
+                      builder: (context, snapshot) {
+                        return TextField(
+                          controller: _passwordController,
+                          obscureText: _obscurePassword,
+                          decoration: InputDecoration(
+                            labelText: snapshot.data ?? 'Password',
+                            prefixIcon: const Icon(Icons.lock),
+                            suffixIcon: IconButton(
+                              icon: Icon(
+                                _obscurePassword
+                                    ? Icons.visibility_off
+                                    : Icons.visibility,
+                                color: AppColors.textSecondary,
+                              ),
+                              onPressed: () {
+                                setState(() {
+                                  _obscurePassword = !_obscurePassword;
+                                });
+                              },
+                            ),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            filled: true,
+                            fillColor: Colors.white,
+                            contentPadding: const EdgeInsets.symmetric(
+                              vertical: 12,
+                              horizontal: 16,
+                            ),
+                          ),
+                        );
+                      },
                     ),
                   ),
                   const SizedBox(height: 12),
@@ -216,56 +239,60 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        // Remember Me Checkbox
-                        Row(
-                          children: [
-                            SizedBox(
-                              height: 20,
-                              width: 20,
-                              child: Checkbox(
-                                value: _rememberMe,
-                                onChanged: (value) {
-                                  setState(() {
-                                    _rememberMe = value ?? false;
-                                  });
-                                },
-                                activeColor: AppColors.primary,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(4),
+                        // Remember Me Checkbox with translation
+                        LanguageBuilder(
+                          builder: (context, _) => Row(
+                            children: [
+                              SizedBox(
+                                height: 20,
+                                width: 20,
+                                child: Checkbox(
+                                  value: _rememberMe,
+                                  onChanged: (value) {
+                                    setState(() {
+                                      _rememberMe = value ?? false;
+                                    });
+                                  },
+                                  activeColor: AppColors.primary,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(4),
+                                  ),
+                                  materialTapTargetSize:
+                                      MaterialTapTargetSize.shrinkWrap,
                                 ),
-                                materialTapTargetSize:
-                                    MaterialTapTargetSize.shrinkWrap,
                               ),
-                            ),
-                            const SizedBox(width: 8),
-                            Text(
-                              'Remember me',
-                              style: TextStyle(
-                                fontSize: 14,
-                                color: AppColors.textSecondary,
-                                fontWeight: FontWeight.normal,
+                              const SizedBox(width: 8),
+                              AutoTranslateText(
+                                'Remember me',
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  color: AppColors.textSecondary,
+                                  fontWeight: FontWeight.normal,
+                                ),
                               ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
 
-                        // Forgot Password Link (conditionally shown)
+                        // Forgot Password Link (conditionally shown) with translation
                         if (_showForgotPassword)
-                          TextButton(
-                            onPressed: () {
-                              context.go('/forgot-password');
-                            },
-                            style: TextButton.styleFrom(
-                              padding: EdgeInsets.zero,
-                              minimumSize: const Size(0, 0),
-                              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                            ),
-                            child: Text(
-                              'Forgot Password?',
-                              style: TextStyle(
-                                fontSize: 14,
-                                fontWeight: FontWeight.w500,
-                                color: AppColors.primary,
+                          LanguageBuilder(
+                            builder: (context, _) => TextButton(
+                              onPressed: () {
+                                context.go('/forgot-password');
+                              },
+                              style: TextButton.styleFrom(
+                                padding: EdgeInsets.zero,
+                                minimumSize: const Size(0, 0),
+                                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                              ),
+                              child: AutoTranslateText(
+                                'Forgot Password?',
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w500,
+                                  color: AppColors.primary,
+                                ),
                               ),
                             ),
                           ),
@@ -346,7 +373,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                               strokeWidth: 2,
                             ),
                           )
-                        : Text(
+                        : AutoTranslateText(
                             _isSignIn ? 'Sign In' : 'Sign Up',
                             style: const TextStyle(
                               fontSize: 15,
@@ -356,7 +383,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                   ),
                   const SizedBox(height: 12),
 
-                  // Continue as guest button
+                  // Continue as guest button with translation
                   OutlinedButton(
                     onPressed: () async {
                       await userProvider.continueAsGuest(_selectedRole);
@@ -372,7 +399,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                       ),
                       side: BorderSide(color: AppColors.primary),
                     ),
-                    child: const Text(
+                    child: const AutoTranslateText(
                       'Continue as Guest',
                       style: TextStyle(
                         fontSize: 15,
@@ -488,7 +515,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
               color: isSelected ? color : AppColors.textSecondary,
             ),
             const SizedBox(height: 6),
-            Text(
+            AutoTranslateText(
               label,
               style: TextStyle(
                 fontSize: 15,
