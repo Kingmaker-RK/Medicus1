@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'config/router.dart';
 import 'providers/user_provider.dart';
 import 'providers/translation_provider.dart';
@@ -8,14 +9,15 @@ import 'providers/user_profile_provider.dart';
 import 'providers/doctor_profile_provider.dart';
 import 'constants/colors.dart';
 import 'constants/app_constants.dart';
+import 'firebase_options.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // TODO: Initialize Firebase
-  // await Firebase.initializeApp(
-  //   options: DefaultFirebaseOptions.currentPlatform,
-  // );
+  // Initialize Firebase
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
 
   runApp(const MedicusApp());
 }
