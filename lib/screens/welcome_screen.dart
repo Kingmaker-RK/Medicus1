@@ -75,18 +75,17 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    // Logo at top with 200 units spacing
-                    const SizedBox(height: 200),
-                    const Center(child: MedicusLogo(size: 90, showText: true)),
-                    const SizedBox(height: 30),
-
-                    // Language selector moved below logo
+                    // Language selector at top left
                     Row(
                       children: [
                         _buildLanguageSelector(userProvider),
                         const Spacer(),
                       ],
                     ),
+                    const SizedBox(height: 40),
+
+                    // Logo
+                    const Center(child: MedicusLogo(size: 120, showText: true)),
                     const SizedBox(height: 20),
 
                     // Welcome text
