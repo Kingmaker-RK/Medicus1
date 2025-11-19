@@ -382,7 +382,7 @@ class _TranslationScreenState extends State<TranslationScreen>
   ) {
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16),
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 5),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(24),
@@ -466,7 +466,7 @@ class _TranslationScreenState extends State<TranslationScreen>
                         child: Icon(
                           Icons.swap_horiz_rounded,
                           color: AppColors.accent,
-                          size: 20,
+                          size: 13,
                         ),
                       ),
                     ),
@@ -486,7 +486,7 @@ class _TranslationScreenState extends State<TranslationScreen>
             ],
           ),
 
-          const SizedBox(height: 16), // Reduced spacing between sections
+          const SizedBox(height: 10), // Reduced spacing between sections
 
           // Action Buttons (Merged from FAB)
           Row(
@@ -495,8 +495,8 @@ class _TranslationScreenState extends State<TranslationScreen>
             children: [
               // Conversation Mode
               Container(
-                width: 45,
-                height: 45,
+                width: 29,
+                height: 29,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
                   color: _isConversationMode ? AppColors.accent : Colors.grey[50],
@@ -518,23 +518,23 @@ class _TranslationScreenState extends State<TranslationScreen>
                   icon: Icon(
                     Icons.record_voice_over_rounded,
                     color: _isConversationMode ? Colors.white : AppColors.accent,
-                    size: 20,
+                    size: 13,
                   ),
                   tooltip: 'Conversation Mode',
                 ),
               ),
 
-              const SizedBox(width: 72),
+              const SizedBox(width: 47),
 
               // Microphone (Middle)
               _buildFloatingMicButton(translationProvider),
 
-              const SizedBox(width: 72),
+              const SizedBox(width: 47),
 
               // Camera
               Container(
-                width: 45,
-                height: 45,
+                width: 29,
+                height: 29,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
                   color: Colors.grey[50],
@@ -543,7 +543,7 @@ class _TranslationScreenState extends State<TranslationScreen>
                 child: IconButton(
                   onPressed: () => _pickAndExtractImage(source: ImageSource.camera),
                   icon: Icon(Icons.camera_alt_rounded, color: AppColors.accent),
-                  iconSize: 22,
+                  iconSize: 14,
                   tooltip: 'Take Photo',
                 ),
               ),
@@ -1117,8 +1117,8 @@ class _TranslationScreenState extends State<TranslationScreen>
             await translationProvider.stopListening();
           },
           child: Container(
-            width: 51,
-            height: 51,
+            width: 33,
+            height: 33,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
               color: translationProvider.isListening
@@ -1141,7 +1141,7 @@ class _TranslationScreenState extends State<TranslationScreen>
                   translationProvider.isListening
                       ? Icons.mic_rounded
                       : Icons.mic_none_rounded,
-                  size: 22,
+                  size: 14,
                   color: Colors.white,
                 ),
                 if (translationProvider.isListening)
