@@ -67,7 +67,7 @@ class _DentistScreenState extends State<DentistScreen> {
       appBar: AppBar(
         backgroundColor: AppColors.primary,
         foregroundColor: Colors.white,
-        title: const Text('Find a Dentist'),
+        title: const AutoTranslateAutoTranslateText('Find a Dentist'),
         centerTitle: true,
       ),
       body: Column(
@@ -346,7 +346,7 @@ class _DentistScreenState extends State<DentistScreen> {
                   child: OutlinedButton.icon(
                     onPressed: () {},
                     icon: const Icon(Icons.phone_rounded, size: 18),
-                    label: const Text('Call'),
+                    label: const AutoTranslateAutoTranslateText('Call'),
                     style: OutlinedButton.styleFrom(
                       foregroundColor: AppColors.primary,
                       side: BorderSide(color: AppColors.primary),
@@ -359,13 +359,13 @@ class _DentistScreenState extends State<DentistScreen> {
                     onPressed: () {
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
-                          content: Text('Booking appointment with ${dentist['dentist']}'),
+                          content: AutoTranslateAutoTranslateText('Booking appointment with ${dentist['dentist']}'),
                           backgroundColor: AppColors.success,
                         ),
                       );
                     },
                     icon: const Icon(Icons.calendar_today_rounded, size: 18),
-                    label: const Text('Book'),
+                    label: const AutoTranslateAutoTranslateText('Book'),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: AppColors.primary,
                       foregroundColor: Colors.white,

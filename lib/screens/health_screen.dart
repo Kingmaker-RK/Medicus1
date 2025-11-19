@@ -51,7 +51,7 @@ class _HealthScreenState extends State<HealthScreen> {
           if (mounted) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
-                content: const Text('Health data updated'),
+                content: const AutoTranslateAutoTranslateAutoTranslateText('Health data updated'),
                 backgroundColor: AppColors.success,
                 behavior: SnackBarBehavior.floating,
                 duration: const Duration(seconds: 2),
@@ -714,13 +714,13 @@ class _HealthScreenState extends State<HealthScreen> {
             const SizedBox(height: 20),
             ListTile(
               leading: Icon(Icons.sync_rounded, color: AppColors.primary),
-              title: const Text('Sync Data'),
-              subtitle: const Text('Refresh health data from devices'),
+              title: const AutoTranslateAutoTranslateAutoTranslateText('Sync Data'),
+              subtitle: const AutoTranslateAutoTranslateAutoTranslateText('Refresh health data from devices'),
               onTap: () {
                 Navigator.pop(context);
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
-                    content: const Text('Syncing health data...'),
+                    content: const AutoTranslateAutoTranslateAutoTranslateText('Syncing health data...'),
                     backgroundColor: AppColors.primary,
                   ),
                 );
@@ -728,8 +728,8 @@ class _HealthScreenState extends State<HealthScreen> {
             ),
             ListTile(
               leading: Icon(Icons.settings_rounded, color: AppColors.primary),
-              title: const Text('Data Sources'),
-              subtitle: const Text('Manage connected devices'),
+              title: const AutoTranslateAutoTranslateAutoTranslateText('Data Sources'),
+              subtitle: const AutoTranslateAutoTranslateAutoTranslateText('Manage connected devices'),
               onTap: () {
                 Navigator.pop(context);
               },
@@ -739,8 +739,8 @@ class _HealthScreenState extends State<HealthScreen> {
                 Icons.privacy_tip_rounded,
                 color: AppColors.primary,
               ),
-              title: const Text('Privacy'),
-              subtitle: const Text('Control data sharing'),
+              title: const AutoTranslateAutoTranslateAutoTranslateText('Privacy'),
+              subtitle: const AutoTranslateAutoTranslateAutoTranslateText('Control data sharing'),
               onTap: () {
                 Navigator.pop(context);
               },

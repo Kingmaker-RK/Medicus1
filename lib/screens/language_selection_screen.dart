@@ -45,7 +45,7 @@ class _LanguageSelectionScreenState extends State<LanguageSelectionScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Select Language'),
+        title: const AutoTranslateAutoTranslateAutoTranslateText('Select Language'),
       ),
       body: Column(
         children: [

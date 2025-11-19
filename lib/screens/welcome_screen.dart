@@ -163,76 +163,34 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                   const SizedBox(height: 16),
 
                   // Email field with translation
-                  LanguageBuilder(
-                    builder: (context, _) => FutureBuilder<String>(
-                      future: context.read<UserProvider>().selectedLanguage == 'en'
-                          ? Future.value('Email')
-                          : 'Email'.tr(),
-                      initialData: 'Email',
-                      builder: (context, snapshot) {
-                        return TextField(
-                          controller: _emailController,
-                          decoration: InputDecoration(
-                            labelText: snapshot.data ?? 'Email',
-                            prefixIcon: const Icon(Icons.email),
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            filled: true,
-                            fillColor: Colors.white,
-                            contentPadding: const EdgeInsets.symmetric(
-                              vertical: 12,
-                              horizontal: 16,
-                            ),
-                          ),
-                          keyboardType: TextInputType.emailAddress,
-                        );
-                      },
-                    ),
-                  ),
+                  TranslatedInputDecoration(
+                  labelText: 'Email',
+                  controller: _emailController,
+                  prefixIcon: const Icon(Icons.email),
+                  keyboardType: TextInputType.emailAddress,
+                ),
                   const SizedBox(height: 12),
 
                   // Password field with translation
-                  LanguageBuilder(
-                    builder: (context, _) => FutureBuilder<String>(
-                      future: context.read<UserProvider>().selectedLanguage == 'en'
-                          ? Future.value('Password')
-                          : 'Password'.tr(),
-                      initialData: 'Password',
-                      builder: (context, snapshot) {
-                        return TextField(
-                          controller: _passwordController,
-                          obscureText: _obscurePassword,
-                          decoration: InputDecoration(
-                            labelText: snapshot.data ?? 'Password',
-                            prefixIcon: const Icon(Icons.lock),
-                            suffixIcon: IconButton(
-                              icon: Icon(
-                                _obscurePassword
-                                    ? Icons.visibility_off
-                                    : Icons.visibility,
-                                color: AppColors.textSecondary,
-                              ),
-                              onPressed: () {
-                                setState(() {
-                                  _obscurePassword = !_obscurePassword;
-                                });
-                              },
-                            ),
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            filled: true,
-                            fillColor: Colors.white,
-                            contentPadding: const EdgeInsets.symmetric(
-                              vertical: 12,
-                              horizontal: 16,
-                            ),
-                          ),
-                        );
-                      },
+                  TranslatedInputDecoration(
+                  labelText: 'Password',
+                  controller: _passwordController,
+                  obscureText: _obscurePassword,
+                  prefixIcon: const Icon(Icons.lock),
+                  suffixIcon: IconButton(
+                    icon: Icon(
+                      _obscurePassword
+                          ? Icons.visibility_off
+                          : Icons.visibility,
+                      color: AppColors.textSecondary,
                     ),
+                    onPressed: () {
+                      setState(() {
+                        _obscurePassword = !_obscurePassword;
+                      });
+                    },
                   ),
+                ),
                   const SizedBox(height: 12),
 
                   // Remember Me + Forgot Password Row
@@ -347,9 +305,10 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                               if (mounted) {
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   SnackBar(
-                                    content: Text(
+                                    content: AutoTranslateText(
                                       _isSignIn
                                           ? 'Login failed. Please check your credentials.'
+                                          -
                                           : 'Sign up failed. Please try again.',
                                     ),
                                     backgroundColor: Colors.red,

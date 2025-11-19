@@ -46,7 +46,7 @@ class _BloodDonationScreenState extends State<BloodDonationScreen> {
       appBar: AppBar(
         backgroundColor: AppColors.primary,
         foregroundColor: Colors.white,
-        title: const Text('Blood Donation'),
+        title: const AutoTranslateAutoTranslateText('Blood Donation'),
         centerTitle: true,
         actions: [
           IconButton(
@@ -89,7 +89,7 @@ class _BloodDonationScreenState extends State<BloodDonationScreen> {
                       items: bloodTypes.map((String type) {
                         return DropdownMenuItem<String>(
                           value: type,
-                          child: Text('Blood Type: $type'),
+                          child: AutoTranslateAutoTranslateText('Blood Type: $type'),
                         );
                       }).toList(),
                       onChanged: (String? newValue) {
@@ -121,7 +121,7 @@ class _BloodDonationScreenState extends State<BloodDonationScreen> {
         },
         backgroundColor: Colors.red,
         icon: const Icon(Icons.favorite_rounded),
-        label: const Text('Check Eligibility'),
+        label: const AutoTranslateAutoTranslateText('Check Eligibility'),
       ),
     );
   }
@@ -252,7 +252,7 @@ class _BloodDonationScreenState extends State<BloodDonationScreen> {
                 child: OutlinedButton.icon(
                   onPressed: () {},
                   icon: const Icon(Icons.phone_rounded, size: 18),
-                  label: const Text('Call'),
+                  label: const AutoTranslateAutoTranslateText('Call'),
                   style: OutlinedButton.styleFrom(
                     foregroundColor: AppColors.primary,
                     side: BorderSide(color: AppColors.primary),
@@ -265,13 +265,13 @@ class _BloodDonationScreenState extends State<BloodDonationScreen> {
                   onPressed: () {
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
-                        content: Text('Booking appointment at ${center['name']}'),
+                        content: AutoTranslateAutoTranslateText('Booking appointment at ${center['name']}'),
                         backgroundColor: AppColors.success,
                       ),
                     );
                   },
                   icon: const Icon(Icons.calendar_today_rounded, size: 18),
-                  label: const Text('Book'),
+                  label: const AutoTranslateAutoTranslateText('Book'),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.primary,
                     foregroundColor: Colors.white,
@@ -344,7 +344,7 @@ class _BloodDonationScreenState extends State<BloodDonationScreen> {
                       borderRadius: BorderRadius.circular(12),
                     ),
                   ),
-                  child: const Text('I\'m Eligible'),
+                  child: const AutoTranslateAutoTranslateText('I\'m Eligible'),
                 ),
               ),
             ],

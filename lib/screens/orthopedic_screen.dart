@@ -31,7 +31,7 @@ class _OrthopedicScreenState extends State<OrthopedicScreen>
       appBar: AppBar(
         backgroundColor: AppColors.primary,
         foregroundColor: Colors.white,
-        title: const Text('Orthopedic Examination'),
+        title: const AutoTranslateAutoTranslateText('Orthopedic Examination'),
         centerTitle: true,
         bottom: TabBar(
           controller: _tabController,
@@ -312,13 +312,13 @@ class _OrthopedicScreenState extends State<OrthopedicScreen>
               onPressed: () {
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
-                    content: const Text('Starting new examination'),
+                    content: const AutoTranslateAutoTranslateText('Starting new examination'),
                     backgroundColor: AppColors.success,
                   ),
                 );
               },
               icon: const Icon(Icons.add_rounded),
-              label: const Text('Start New Examination'),
+              label: const AutoTranslateAutoTranslateText('Start New Examination'),
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppColors.primary,
                 foregroundColor: Colors.white,

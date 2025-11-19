@@ -80,7 +80,7 @@ class _FitPhysicScreenState extends State<FitPhysicScreen> {
       appBar: AppBar(
         backgroundColor: AppColors.primary,
         foregroundColor: Colors.white,
-        title: const Text('FitPhysic'),
+        title: const AutoTranslateAutoTranslateText('FitPhysic'),
         centerTitle: true,
         actions: [
           IconButton(
@@ -156,7 +156,7 @@ class _FitPhysicScreenState extends State<FitPhysicScreen> {
         },
         backgroundColor: Colors.green,
         icon: const Icon(Icons.trending_up_rounded),
-        label: const Text('My Progress'),
+        label: const AutoTranslateAutoTranslateText('My Progress'),
       ),
     );
   }
@@ -376,7 +376,7 @@ class _FitPhysicScreenState extends State<FitPhysicScreen> {
                     Navigator.pop(context);
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
-                        content: Text('Started: ${program['title']}'),
+                        content: AutoTranslateAutoTranslateText('Started: ${program['title']}'),
                         backgroundColor: AppColors.success,
                       ),
                     );

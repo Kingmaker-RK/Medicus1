@@ -64,7 +64,7 @@ class _ProfileCompletionScreenState extends State<ProfileCompletionScreen> {
       appBar: AppBar(
         backgroundColor: AppColors.primary,
         foregroundColor: Colors.white,
-        title: const Text('Complete Your Profile'),
+        title: const AutoTranslateAutoTranslateText('Complete Your Profile'),
         automaticallyImplyLeading: false, // Prevent back navigation
       ),
       body: SingleChildScrollView(
@@ -382,7 +382,7 @@ class _ProfileCompletionScreenState extends State<ProfileCompletionScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Error saving profile: $e'),
+            content: AutoTranslateAutoTranslateText('Error saving profile: $e'),
             backgroundColor: AppColors.error,
           ),
         );

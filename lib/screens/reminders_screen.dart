@@ -113,7 +113,7 @@ class _RemindersScreenState extends State<RemindersScreen> {
         },
         backgroundColor: AppColors.primary,
         icon: const Icon(Icons.add_rounded),
-        label: const Text('Add Reminder'),
+        label: const AutoTranslateAutoTranslateAutoTranslateText('Add Reminder'),
       ),
       bottomNavigationBar: const AppBottomNavigationBar(currentIndex: 3),
     );
@@ -471,7 +471,7 @@ class _RemindersScreenState extends State<RemindersScreen> {
             children: [
               Icon(Icons.add_alert_rounded, color: AppColors.primary),
               const SizedBox(width: 12),
-              const Text('Add Reminder'),
+              const AutoTranslateAutoTranslateAutoTranslateText('Add Reminder'),
             ],
           ),
           content: SingleChildScrollView(
@@ -552,7 +552,7 @@ class _RemindersScreenState extends State<RemindersScreen> {
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),
-              child: const Text('Cancel'),
+              child: const AutoTranslateAutoTranslateAutoTranslateText('Cancel'),
             ),
             ElevatedButton(
               onPressed: () {
@@ -572,7 +572,7 @@ class _RemindersScreenState extends State<RemindersScreen> {
                   Navigator.pop(context);
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
-                      content: const Text('Reminder added successfully'),
+                      content: const AutoTranslateAutoTranslateAutoTranslateText('Reminder added successfully'),
                       backgroundColor: AppColors.success,
                       behavior: SnackBarBehavior.floating,
                     ),
@@ -583,7 +583,7 @@ class _RemindersScreenState extends State<RemindersScreen> {
                 backgroundColor: AppColors.primary,
                 foregroundColor: Colors.white,
               ),
-              child: const Text('Add'),
+              child: const AutoTranslateAutoTranslateAutoTranslateText('Add'),
             ),
           ],
         ),
@@ -608,7 +608,7 @@ class _RemindersScreenState extends State<RemindersScreen> {
           children: [
             Icon(Icons.edit_rounded, color: AppColors.accent),
             const SizedBox(width: 12),
-            const Text('Edit Reminder'),
+            const AutoTranslateAutoTranslateAutoTranslateText('Edit Reminder'),
           ],
         ),
         content: Column(
@@ -640,7 +640,7 @@ class _RemindersScreenState extends State<RemindersScreen> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
+            child: const AutoTranslateAutoTranslateAutoTranslateText('Cancel'),
           ),
           ElevatedButton(
             onPressed: () {
@@ -651,7 +651,7 @@ class _RemindersScreenState extends State<RemindersScreen> {
               Navigator.pop(context);
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
-                  content: const Text('Reminder updated'),
+                  content: const AutoTranslateAutoTranslateAutoTranslateText('Reminder updated'),
                   backgroundColor: AppColors.success,
                   behavior: SnackBarBehavior.floating,
                 ),
@@ -661,7 +661,7 @@ class _RemindersScreenState extends State<RemindersScreen> {
               backgroundColor: AppColors.accent,
               foregroundColor: Colors.white,
             ),
-            child: const Text('Save'),
+            child: const AutoTranslateAutoTranslateAutoTranslateText('Save'),
           ),
         ],
       ),
@@ -680,7 +680,7 @@ class _RemindersScreenState extends State<RemindersScreen> {
           children: [
             Icon(Icons.warning_rounded, color: AppColors.error),
             const SizedBox(width: 12),
-            const Text('Delete Reminder'),
+            const AutoTranslateAutoTranslateAutoTranslateText('Delete Reminder'),
           ],
         ),
         content: Text(
@@ -689,7 +689,7 @@ class _RemindersScreenState extends State<RemindersScreen> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
+            child: const AutoTranslateAutoTranslateText('Cancel'),
           ),
           ElevatedButton(
             onPressed: () {
@@ -699,7 +699,7 @@ class _RemindersScreenState extends State<RemindersScreen> {
               Navigator.pop(context);
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
-                  content: const Text('Reminder deleted'),
+                  content: const AutoTranslateAutoTranslateText('Reminder deleted'),
                   backgroundColor: AppColors.error,
                   behavior: SnackBarBehavior.floating,
                 ),
@@ -709,7 +709,7 @@ class _RemindersScreenState extends State<RemindersScreen> {
               backgroundColor: AppColors.error,
               foregroundColor: Colors.white,
             ),
-            child: const Text('Delete'),
+            child: const AutoTranslateAutoTranslateText('Delete'),
           ),
         ],
       ),
@@ -749,8 +749,8 @@ class _RemindersScreenState extends State<RemindersScreen> {
                 ),
                 child: Icon(Icons.check_rounded, color: AppColors.success),
               ),
-              title: const Text('Aspirin - 100mg'),
-              subtitle: const Text('Taken at 08:00 AM'),
+              title: const AutoTranslateAutoTranslateText('Aspirin - 100mg'),
+              subtitle: const AutoTranslateAutoTranslateText('Taken at 08:00 AM'),
             ),
             ListTile(
               leading: Container(
@@ -761,8 +761,8 @@ class _RemindersScreenState extends State<RemindersScreen> {
                 ),
                 child: Icon(Icons.check_rounded, color: AppColors.success),
               ),
-              title: const Text('Vitamin D - 1000 IU'),
-              subtitle: const Text('Taken at 09:00 AM'),
+              title: const AutoTranslateAutoTranslateText('Vitamin D - 1000 IU'),
+              subtitle: const AutoTranslateAutoTranslateText('Taken at 09:00 AM'),
             ),
             ListTile(
               leading: Container(
@@ -773,8 +773,8 @@ class _RemindersScreenState extends State<RemindersScreen> {
                 ),
                 child: Icon(Icons.close_rounded, color: AppColors.error),
               ),
-              title: const Text('Blood Pressure Check'),
-              subtitle: const Text('Missed at 06:00 PM'),
+              title: const AutoTranslateAutoTranslateText('Blood Pressure Check'),
+              subtitle: const AutoTranslateAutoTranslateText('Missed at 06:00 PM'),
             ),
           ],
         ),

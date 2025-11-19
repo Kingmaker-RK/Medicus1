@@ -33,7 +33,7 @@ class _ERezeptScreenState extends State<ERezeptScreen> {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text('${type == 'prescription' ? 'Prescription' : 'Insurance card'} photo captured'),
+              content: AutoTranslateAutoTranslateText('${type == 'prescription' ? 'Prescription' : 'Insurance card'} photo captured'),
               backgroundColor: AppColors.success,
             ),
           );
@@ -43,7 +43,7 @@ class _ERezeptScreenState extends State<ERezeptScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Error capturing photo: $e'),
+            content: AutoTranslateAutoTranslateText('Error capturing photo: $e'),
             backgroundColor: AppColors.error,
           ),
         );
@@ -58,7 +58,7 @@ class _ERezeptScreenState extends State<ERezeptScreen> {
       appBar: AppBar(
         backgroundColor: AppColors.primary,
         foregroundColor: Colors.white,
-        title: const Text('E-Rezept'),
+        title: const AutoTranslateAutoTranslateText('E-Rezept'),
         centerTitle: true,
       ),
       body: SingleChildScrollView(

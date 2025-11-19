@@ -86,7 +86,7 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
         // Show success message
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('Email verified successfully!'),
+            content: AutoTranslateAutoTranslateText('Email verified successfully!'),
             backgroundColor: Colors.green,
           ),
         );
@@ -129,7 +129,7 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('Verification code sent!'),
+            content: AutoTranslateAutoTranslateText('Verification code sent!'),
             backgroundColor: Colors.green,
           ),
         );

@@ -132,7 +132,7 @@ class _HandwritingInputWidgetState extends State<HandwritingInputWidget> {
               TextButton.icon(
                 onPressed: _clear,
                 icon: const Icon(Icons.delete_outline),
-                label: const Text('Clear'),
+                label: const AutoTranslateAutoTranslateText('Clear'),
                 style: TextButton.styleFrom(
                   foregroundColor: AppColors.error,
                 ),
@@ -141,7 +141,7 @@ class _HandwritingInputWidgetState extends State<HandwritingInputWidget> {
               ElevatedButton.icon(
                 onPressed: _captureAndSubmit,
                 icon: const Icon(Icons.check_rounded),
-                label: const Text('Done'),
+                label: const AutoTranslateAutoTranslateText('Done'),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.accent,
                   foregroundColor: Colors.white,

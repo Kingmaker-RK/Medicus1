@@ -236,21 +236,21 @@ class _TranslationScreenState extends State<TranslationScreen>
                       final shouldRetranslate = await showDialog<bool>(
                         context: context,
                         builder: (context) => AlertDialog(
-                          title: const Text('Swap Languages'),
+                          title: const AutoTranslateAutoTranslateText('Swap Languages'),
                           content: const Text(
                             'Would you like to re-translate the text with swapped languages?',
                           ),
                           actions: [
                             TextButton(
                               onPressed: () => Navigator.pop(context, false),
-                              child: const Text('Just Swap'),
+                              child: const AutoTranslateAutoTranslateText('Just Swap'),
                             ),
                             ElevatedButton(
                               onPressed: () => Navigator.pop(context, true),
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: AppColors.accent,
                               ),
-                              child: const Text('Swap & Translate'),
+                              child: const AutoTranslateAutoTranslateText('Swap & Translate'),
                             ),
                           ],
                         ),
@@ -437,7 +437,7 @@ class _TranslationScreenState extends State<TranslationScreen>
                       setState(() {});
                     },
                     icon: const Icon(Icons.close_rounded, size: 18),
-                    label: const Text('Clear'),
+                    label: const AutoTranslateAutoTranslateText('Clear'),
                     style: TextButton.styleFrom(
                       foregroundColor: AppColors.textSecondary,
                     ),
@@ -466,7 +466,7 @@ class _TranslationScreenState extends State<TranslationScreen>
                           ),
                         )
                       : const Icon(Icons.translate_rounded, size: 18),
-                  label: const Text('Translate'),
+                  label: const AutoTranslateAutoTranslateText('Translate'),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.accent,
                     foregroundColor: Colors.white,
@@ -569,7 +569,7 @@ class _TranslationScreenState extends State<TranslationScreen>
                           );
                         },
                         icon: const Icon(Icons.copy_rounded, size: 18),
-                        label: const Text('Copy'),
+                        label: const AutoTranslateAutoTranslateText('Copy'),
                         style: TextButton.styleFrom(
                           foregroundColor: AppColors.accent,
                         ),
@@ -1119,14 +1119,14 @@ class _TranslationScreenState extends State<TranslationScreen>
                           showDialog(
                             context: context,
                             builder: (context) => AlertDialog(
-                              title: const Text('Clear History'),
+                              title: const AutoTranslateAutoTranslateText('Clear History'),
                               content: const Text(
                                 'Are you sure you want to clear all translation history?',
                               ),
                               actions: [
                                 TextButton(
                                   onPressed: () => Navigator.pop(context),
-                                  child: const Text('Cancel'),
+                                  child: const AutoTranslateAutoTranslateText('Cancel'),
                                 ),
                                 ElevatedButton(
                                   onPressed: () {
@@ -1136,7 +1136,7 @@ class _TranslationScreenState extends State<TranslationScreen>
                                   style: ElevatedButton.styleFrom(
                                     backgroundColor: AppColors.error,
                                   ),
-                                  child: const Text('Clear All'),
+                                  child: const AutoTranslateAutoTranslateText('Clear All'),
                                 ),
                               ],
                             ),

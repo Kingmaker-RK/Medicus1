@@ -21,7 +21,7 @@ class _PregnancyTrackerScreenState extends State<PregnancyTrackerScreen> {
       appBar: AppBar(
         backgroundColor: AppColors.primary,
         foregroundColor: Colors.white,
-        title: const Text('Pregnancy Tracker'),
+        title: const AutoTranslateAutoTranslateText('Pregnancy Tracker'),
         centerTitle: true,
         actions: [
           IconButton(
@@ -149,7 +149,7 @@ class _PregnancyTrackerScreenState extends State<PregnancyTrackerScreen> {
               child: ElevatedButton.icon(
                 onPressed: () {},
                 icon: const Icon(Icons.add_rounded),
-                label: const Text('Log Symptoms'),
+                label: const AutoTranslateAutoTranslateText('Log Symptoms'),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.primary,
                   foregroundColor: Colors.white,

@@ -19,7 +19,7 @@ class DoctorProfileScreen extends StatelessWidget {
       appBar: AppBar(
         backgroundColor: AppColors.primary,
         foregroundColor: Colors.white,
-        title: const Text('Doctor Profile'),
+        title: const AutoTranslateAutoTranslateText('Doctor Profile'),
         actions: [
           IconButton(
             icon: const Icon(Icons.edit),
@@ -215,7 +215,7 @@ class DoctorProfileScreen extends StatelessWidget {
       }
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error picking image: $e')),
+        SnackBar(content: AutoTranslateAutoTranslateText('Error picking image: $e')),
       );
     }
   }
@@ -232,7 +232,7 @@ class DoctorProfileScreen extends StatelessWidget {
               children: [
                 ListTile(
                   leading: const Icon(Icons.camera_alt),
-                  title: const Text('Take a photo'),
+                  title: const AutoTranslateAutoTranslateText('Take a photo'),
                   onTap: () {
                     Navigator.pop(context);
                     _pickImage(context, provider, ImageSource.camera);
@@ -240,7 +240,7 @@ class DoctorProfileScreen extends StatelessWidget {
                 ),
                 ListTile(
                   leading: const Icon(Icons.image),
-                  title: const Text('Choose from gallery'),
+                  title: const AutoTranslateAutoTranslateText('Choose from gallery'),
                   onTap: () {
                     Navigator.pop(context);
                     _pickImage(context, provider, ImageSource.gallery);
@@ -352,7 +352,7 @@ class DoctorProfileScreen extends StatelessWidget {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Edit Profile'),
+        title: const AutoTranslateAutoTranslateText('Edit Profile'),
         content: SingleChildScrollView(
           child: Column(
             mainAxisSize: MainAxisSize.min,
@@ -428,7 +428,7 @@ class DoctorProfileScreen extends StatelessWidget {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
+            child: const AutoTranslateAutoTranslateText('Cancel'),
           ),
           ElevatedButton(
             onPressed: () async {
@@ -448,12 +448,12 @@ class DoctorProfileScreen extends StatelessWidget {
                 await provider.updateProfile(updatedProfile);
                 Navigator.pop(context);
                 ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Profile updated successfully')),
+                  const SnackBar(content: AutoTranslateAutoTranslateText('Profile updated successfully')),
                 );
               } catch (e) {
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
-                    content: Text('Error updating profile: $e'),
+                    content: AutoTranslateAutoTranslateText('Error updating profile: $e'),
                     backgroundColor: Colors.red,
                   ),
                 );
@@ -463,7 +463,7 @@ class DoctorProfileScreen extends StatelessWidget {
               backgroundColor: AppColors.primary,
               foregroundColor: Colors.white,
             ),
-            child: const Text('Save'),
+            child: const AutoTranslateAutoTranslateText('Save'),
           ),
         ],
       ),

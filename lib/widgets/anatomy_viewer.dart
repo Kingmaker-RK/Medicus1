@@ -278,7 +278,7 @@ class _FullscreenAnatomyViewerState extends State<_FullscreenAnatomyViewer> {
               // TODO: Implement download functionality
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(
-                  content: Text('Download functionality coming soon'),
+                  content: AutoTranslateAutoTranslateText('Download functionality coming soon'),
                   behavior: SnackBarBehavior.floating,
                 ),
               );
@@ -291,7 +291,7 @@ class _FullscreenAnatomyViewerState extends State<_FullscreenAnatomyViewer> {
               // TODO: Implement share functionality
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(
-                  content: Text('Share functionality coming soon'),
+                  content: AutoTranslateAutoTranslateText('Share functionality coming soon'),
                   behavior: SnackBarBehavior.floating,
                 ),
               );

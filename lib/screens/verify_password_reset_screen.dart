@@ -89,7 +89,7 @@ class _VerifyPasswordResetScreenState extends State<VerifyPasswordResetScreen> {
         // Show success message
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('Code verified! Enter your new password.'),
+            content: AutoTranslateAutoTranslateAutoTranslateText('Code verified! Enter your new password.'),
             backgroundColor: Colors.green,
           ),
         );
@@ -134,7 +134,7 @@ class _VerifyPasswordResetScreenState extends State<VerifyPasswordResetScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('Reset code sent!'),
+            content: AutoTranslateAutoTranslateAutoTranslateText('Reset code sent!'),
             backgroundColor: Colors.green,
           ),
         );

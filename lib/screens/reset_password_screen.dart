@@ -89,7 +89,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
               children: [
                 Icon(Icons.check_circle, color: Colors.green, size: 32),
                 const SizedBox(width: 12),
-                const Text('Success!'),
+                const AutoTranslateAutoTranslateText('Success!'),
               ],
             ),
             content: const Text(
@@ -108,7 +108,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                     borderRadius: BorderRadius.circular(12),
                   ),
                 ),
-                child: const Text('Go to Sign In'),
+                child: const AutoTranslateAutoTranslateText('Go to Sign In'),
               ),
             ],
           ),

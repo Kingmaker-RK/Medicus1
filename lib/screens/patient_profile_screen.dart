@@ -40,7 +40,7 @@ class _PatientProfileScreenState extends State<PatientProfileScreen>
       appBar: AppBar(
         backgroundColor: AppColors.primary,
         foregroundColor: Colors.white,
-        title: const Text('Patient Profile'),
+        title: const AutoTranslateAutoTranslateText('Patient Profile'),
         bottom: TabBar(
           controller: _tabController,
           isScrollable: true,
@@ -175,9 +175,9 @@ class _PatientProfileScreenState extends State<PatientProfileScreen>
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const SizedBox(height: 4),
-            Text('Issue Date: ${cert.issueDate}'),
+            AutoTranslateAutoTranslateText('Issue Date: ${cert.issueDate}'),
             if (cert.expiryDate.isNotEmpty)
-              Text('Expiry Date: ${cert.expiryDate}'),
+              AutoTranslateAutoTranslateText('Expiry Date: ${cert.expiryDate}'),
           ],
         ),
         trailing: IconButton(
@@ -186,7 +186,7 @@ class _PatientProfileScreenState extends State<PatientProfileScreen>
             // TODO: Implement download functionality
             ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(
-                content: Text('Download functionality coming soon'),
+                content: AutoTranslateAutoTranslateText('Download functionality coming soon'),
               ),
             );
           },
@@ -238,7 +238,7 @@ class _PatientProfileScreenState extends State<PatientProfileScreen>
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const SizedBox(height: 4),
-            Text('Period: ${note.startDate} to ${note.endDate}'),
+            AutoTranslateAutoTranslateText('Period: ${note.startDate} to ${note.endDate}'),
             const SizedBox(height: 4),
             Row(
               children: [
@@ -313,8 +313,8 @@ class _PatientProfileScreenState extends State<PatientProfileScreen>
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const SizedBox(height: 4),
-            Text('Amount: ${reimbursement.amount}'),
-            Text('Date: ${reimbursement.date}'),
+            AutoTranslateAutoTranslateText('Amount: ${reimbursement.amount}'),
+            AutoTranslateAutoTranslateText('Date: ${reimbursement.date}'),
             const SizedBox(height: 4),
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
@@ -375,8 +375,8 @@ class _PatientProfileScreenState extends State<PatientProfileScreen>
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const SizedBox(height: 4),
-            Text('From: ${message.sender}'),
-            Text('Date: ${message.date}'),
+            AutoTranslateAutoTranslateText('From: ${message.sender}'),
+            AutoTranslateAutoTranslateText('Date: ${message.date}'),
             const SizedBox(height: 4),
             Text(message.message, maxLines: 2, overflow: TextOverflow.ellipsis),
           ],
@@ -557,7 +557,7 @@ class _PatientProfileScreenState extends State<PatientProfileScreen>
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Close'),
+            child: const AutoTranslateAutoTranslateText('Close'),
           ),
         ],
       ),
@@ -572,7 +572,7 @@ class _PatientProfileScreenState extends State<PatientProfileScreen>
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Submit Sick Note'),
+        title: const AutoTranslateAutoTranslateText('Submit Sick Note'),
         content: SingleChildScrollView(
           child: Column(
             mainAxisSize: MainAxisSize.min,
@@ -605,7 +605,7 @@ class _PatientProfileScreenState extends State<PatientProfileScreen>
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
+            child: const AutoTranslateAutoTranslateText('Cancel'),
           ),
           ElevatedButton(
             onPressed: () {
@@ -623,7 +623,7 @@ class _PatientProfileScreenState extends State<PatientProfileScreen>
                 Navigator.pop(context);
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(
-                    content: Text('Sick note submitted successfully'),
+                    content: AutoTranslateAutoTranslateText('Sick note submitted successfully'),
                   ),
                 );
               }
@@ -632,7 +632,7 @@ class _PatientProfileScreenState extends State<PatientProfileScreen>
               backgroundColor: AppColors.primary,
               foregroundColor: Colors.white,
             ),
-            child: const Text('Submit'),
+            child: const AutoTranslateAutoTranslateText('Submit'),
           ),
         ],
       ),
@@ -646,7 +646,7 @@ class _PatientProfileScreenState extends State<PatientProfileScreen>
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Submit Reimbursement'),
+        title: const AutoTranslateAutoTranslateText('Submit Reimbursement'),
         content: SingleChildScrollView(
           child: Column(
             mainAxisSize: MainAxisSize.min,
@@ -670,7 +670,7 @@ class _PatientProfileScreenState extends State<PatientProfileScreen>
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
+            child: const AutoTranslateAutoTranslateText('Cancel'),
           ),
           ElevatedButton(
             onPressed: () {
@@ -687,7 +687,7 @@ class _PatientProfileScreenState extends State<PatientProfileScreen>
                 Navigator.pop(context);
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(
-                    content: Text('Reimbursement submitted successfully'),
+                    content: AutoTranslateAutoTranslateText('Reimbursement submitted successfully'),
                   ),
                 );
               }
@@ -696,7 +696,7 @@ class _PatientProfileScreenState extends State<PatientProfileScreen>
               backgroundColor: AppColors.primary,
               foregroundColor: Colors.white,
             ),
-            child: const Text('Submit'),
+            child: const AutoTranslateAutoTranslateText('Submit'),
           ),
         ],
       ),
@@ -710,7 +710,7 @@ class _PatientProfileScreenState extends State<PatientProfileScreen>
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Upload Certificate'),
+        title: const AutoTranslateAutoTranslateText('Upload Certificate'),
         content: SingleChildScrollView(
           child: Column(
             mainAxisSize: MainAxisSize.min,
@@ -735,7 +735,7 @@ class _PatientProfileScreenState extends State<PatientProfileScreen>
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
+            child: const AutoTranslateAutoTranslateText('Cancel'),
           ),
           ElevatedButton(
             onPressed: () {
@@ -751,7 +751,7 @@ class _PatientProfileScreenState extends State<PatientProfileScreen>
                 Navigator.pop(context);
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(
-                    content: Text('Certificate uploaded successfully'),
+                    content: AutoTranslateAutoTranslateText('Certificate uploaded successfully'),
                   ),
                 );
               }
@@ -760,7 +760,7 @@ class _PatientProfileScreenState extends State<PatientProfileScreen>
               backgroundColor: AppColors.primary,
               foregroundColor: Colors.white,
             ),
-            child: const Text('Upload'),
+            child: const AutoTranslateAutoTranslateText('Upload'),
           ),
         ],
       ),
@@ -780,7 +780,7 @@ class _PatientProfileScreenState extends State<PatientProfileScreen>
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error picking image: $e')),
+          SnackBar(content: AutoTranslateAutoTranslateText('Error picking image: $e')),
         );
       }
     }
@@ -795,7 +795,7 @@ class _PatientProfileScreenState extends State<PatientProfileScreen>
               children: [
                 ListTile(
                   leading: const Icon(LucideIcons.camera),
-                  title: const Text('Take a photo'),
+                  title: const AutoTranslateAutoTranslateText('Take a photo'),
                   onTap: () {
                     Navigator.pop(context);
                     _pickImage(provider, ImageSource.camera);
@@ -803,7 +803,7 @@ class _PatientProfileScreenState extends State<PatientProfileScreen>
                 ),
                 ListTile(
                   leading: const Icon(LucideIcons.image),
-                  title: const Text('Choose from gallery'),
+                  title: const AutoTranslateAutoTranslateText('Choose from gallery'),
                   onTap: () {
                     Navigator.pop(context);
                     _pickImage(provider, ImageSource.gallery);
