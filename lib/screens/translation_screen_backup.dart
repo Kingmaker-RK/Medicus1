@@ -197,7 +197,7 @@ class _TranslationScreenState extends State<TranslationScreen>
     UserProvider userProvider,
   ) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
       decoration: BoxDecoration(
         color: Colors.white,
         boxShadow: [
