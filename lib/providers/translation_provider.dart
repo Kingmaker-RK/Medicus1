@@ -218,6 +218,12 @@ class TranslationProvider with ChangeNotifier {
     notifyListeners();
   }
 
+  // Clear last error
+  void clearError() {
+    _lastError = null;
+    notifyListeners();
+  }
+
   @override
   void dispose() {
     _speechService.dispose();
