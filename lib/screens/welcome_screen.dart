@@ -75,17 +75,18 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    // Language selector at top left
+                    // Logo at top with 200 units spacing
+                    const SizedBox(height: 200),
+                    const Center(child: MedicusLogo(size: 90, showText: true)),
+                    const SizedBox(height: 30),
+
+                    // Language selector moved below logo
                     Row(
                       children: [
                         _buildLanguageSelector(userProvider),
                         const Spacer(),
                       ],
                     ),
-                    const SizedBox(height: 40),
-
-                    // Logo
-                    const Center(child: MedicusLogo(size: 120, showText: true)),
                     const SizedBox(height: 20),
 
                     // Welcome text
@@ -302,7 +303,9 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                                   );
                                   if (mounted && userProvider.isLoggedIn) {
                                     // Sign Up: Navigate to email verification
-                                    context.go('/verify-email?email=${Uri.encodeComponent(_emailController.text.trim())}');
+                                    context.go(
+                                      '/verify-email?email=${Uri.encodeComponent(_emailController.text.trim())}',
+                                    );
                                   }
                                 }
                               } catch (e) {
