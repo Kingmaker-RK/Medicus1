@@ -151,9 +151,9 @@ class _TranslationScreenState extends State<TranslationScreen>
       floatingActionButton: Container(
         width: MediaQuery.of(context).size.width,
         padding: const EdgeInsets.symmetric(horizontal: 24),
-        margin: const EdgeInsets.only(bottom: 16),
+        margin: const EdgeInsets.only(bottom: 4),
         child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             // Conversation Mode (Left)
@@ -190,8 +190,12 @@ class _TranslationScreenState extends State<TranslationScreen>
               ),
             ),
 
+            const SizedBox(width: 24),
+
             // Microphone (Middle)
             _buildFloatingMicButton(translationProvider),
+
+            const SizedBox(width: 24),
 
             // Camera (Right)
             Container(
