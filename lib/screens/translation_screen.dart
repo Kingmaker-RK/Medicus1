@@ -7,6 +7,7 @@ import 'package:go_router/go_router.dart';
 import '../providers/translation_provider.dart';
 import '../providers/user_provider.dart';
 import '../providers/user_profile_provider.dart';
+import '../providers/doctor_profile_provider.dart';
 import '../constants/colors.dart';
 import '../constants/app_constants.dart';
 import '../widgets/anatomy_viewer.dart';
@@ -287,8 +288,36 @@ class _TranslationScreenState extends State<TranslationScreen>
       leadingWidth: 100,
       leading: Builder(
         builder: (context) {
-          final userProfileProvider = Provider.of<UserProfileProvider>(context);
-          final profile = userProfileProvider.profile;
+          final isDoctor =
+              userProvider.currentUser?.role == AppConstants.roleDoctor;
+          ImageProvider? backgroundImage;
+          bool hasProfilePicture = false;
+
+          if (isDoctor) {
+            final doctorProfileProvider = Provider.of<DoctorProfileProvider>(
+              context,
+            );
+            final profile = doctorProfileProvider.profile;
+            if (profile.profilePictureUrl != null &&
+                profile.profilePictureUrl!.isNotEmpty) {
+              hasProfilePicture = true;
+              if (profile.profilePictureUrl!.startsWith('http')) {
+                backgroundImage = NetworkImage(profile.profilePictureUrl!);
+              } else {
+                backgroundImage = FileImage(File(profile.profilePictureUrl!));
+              }
+            }
+          } else {
+            final userProfileProvider = Provider.of<UserProfileProvider>(
+              context,
+            );
+            final profile = userProfileProvider.profile;
+            if (profile.profilePicturePath.isNotEmpty) {
+              hasProfilePicture = true;
+              backgroundImage = FileImage(File(profile.profilePicturePath));
+            }
+          }
+
           return Row(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -300,15 +329,19 @@ class _TranslationScreenState extends State<TranslationScreen>
               ),
               const SizedBox(width: 4),
               InkWell(
-                onTap: () => context.push('/profile'),
+                onTap: () {
+                  if (isDoctor) {
+                    context.push('/doctor-profile');
+                  } else {
+                    context.push('/profile');
+                  }
+                },
                 customBorder: const CircleBorder(),
                 child: CircleAvatar(
                   radius: 16,
                   backgroundColor: Colors.white.withOpacity(0.2),
-                  backgroundImage: profile.profilePicturePath.isNotEmpty
-                      ? FileImage(File(profile.profilePicturePath))
-                      : null,
-                  child: profile.profilePicturePath.isEmpty
+                  backgroundImage: backgroundImage,
+                  child: !hasProfilePicture
                       ? const Icon(
                           Icons.person_rounded,
                           size: 20,

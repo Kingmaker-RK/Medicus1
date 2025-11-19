@@ -6,9 +6,11 @@ import 'package:medicus/screens/translation_screen.dart';
 import 'package:medicus/providers/translation_provider.dart';
 import 'package:medicus/providers/user_provider.dart';
 import 'package:medicus/providers/user_profile_provider.dart';
+import 'package:medicus/providers/doctor_profile_provider.dart';
 import 'package:medicus/models/user_model.dart';
 import 'package:medicus/models/translation_result.dart';
 import 'package:medicus/models/user_profile_model.dart';
+import 'package:medicus/models/doctor_profile_model.dart';
 import 'package:medicus/constants/app_constants.dart';
 import 'package:medicus/constants/colors.dart';
 
@@ -69,6 +71,46 @@ class FakeUserProfileProvider extends ChangeNotifier implements UserProfileProvi
   Future<void> addMailboxMessage(MailboxMessage message) async {}
   @override
   Future<void> markMessageAsRead(String messageId) async {}
+}
+
+// Fake DoctorProfileProvider
+class FakeDoctorProfileProvider extends ChangeNotifier implements DoctorProfileProvider {
+  DoctorProfileModel _profile = DoctorProfileModel();
+
+  @override
+  DoctorProfileModel get profile => _profile;
+
+  @override
+  bool get isLoading => false;
+
+  @override
+  Future<void> initialize() async {}
+
+  @override
+  Future<void> updateProfile(DoctorProfileModel newProfile) async {
+    _profile = newProfile;
+    notifyListeners();
+  }
+
+  @override
+  Future<void> updateProfilePicture(String url) async {
+    _profile = _profile.copyWith(profilePictureUrl: url);
+    notifyListeners();
+  }
+  
+  // Stubs
+  @override
+  Future<void> updateClinicAddress(String address) async {}
+  @override
+  Future<void> updateExperience(int years) async {}
+  @override
+  Future<void> updateName(String name) async {}
+  @override
+  Future<void> updateQualification(String qualification) async {}
+  @override
+  Future<void> updateSpeciality(String speciality) async {}
+  @override
+  Future<void> clearProfile() async {}
 }
 
 // Fake UserProvider
@@ -276,11 +318,13 @@ void main() {
     late FakeUserProvider userProvider;
     late FakeTranslationProvider translationProvider;
     late FakeUserProfileProvider userProfileProvider;
+    late FakeDoctorProfileProvider doctorProfileProvider;
 
     setUp(() {
       userProvider = FakeUserProvider();
       translationProvider = FakeTranslationProvider();
       userProfileProvider = FakeUserProfileProvider();
+      doctorProfileProvider = FakeDoctorProfileProvider();
     });
 
     Widget createTestScreen() {
@@ -289,6 +333,7 @@ void main() {
           ChangeNotifierProvider<UserProvider>.value(value: userProvider),
           ChangeNotifierProvider<TranslationProvider>.value(value: translationProvider),
           ChangeNotifierProvider<UserProfileProvider>.value(value: userProfileProvider),
+          ChangeNotifierProvider<DoctorProfileProvider>.value(value: doctorProfileProvider),
         ],
         child: MaterialApp(
           home: const TranslationScreen(),

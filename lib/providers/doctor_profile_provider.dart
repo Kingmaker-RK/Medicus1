@@ -1,4 +1,6 @@
 import 'package:flutter/foundation.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'dart:convert';
 import '../models/doctor_profile_model.dart';
 
 class DoctorProfileProvider with ChangeNotifier {
@@ -8,17 +10,22 @@ class DoctorProfileProvider with ChangeNotifier {
   DoctorProfileModel get profile => _profile;
   bool get isLoading => _isLoading;
 
-  // Initialize profile (empty initially, user must complete it)
+  // Initialize profile
   Future<void> initialize() async {
     _isLoading = true;
     notifyListeners();
 
     try {
-      // TODO: Load from backend/Firebase/SharedPreferences
-      await Future.delayed(const Duration(milliseconds: 500));
+      final prefs = await SharedPreferences.getInstance();
+      final profileJson = prefs.getString('doctor_profile');
 
-      // Start with empty profile - user must fill it out
-      _profile = DoctorProfileModel();
+      if (profileJson != null) {
+        _profile = DoctorProfileModel.fromJson(
+          json.decode(profileJson) as Map<String, dynamic>,
+        );
+      } else {
+        _profile = DoctorProfileModel();
+      }
     } catch (e) {
       print('Error loading doctor profile: $e');
       _profile = DoctorProfileModel();
@@ -28,15 +35,24 @@ class DoctorProfileProvider with ChangeNotifier {
     }
   }
 
+  // Save profile helper
+  Future<void> _saveProfile() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setString('doctor_profile', json.encode(_profile.toJson()));
+    } catch (e) {
+      print('Error saving doctor profile: $e');
+    }
+  }
+
   // Update profile
   Future<void> updateProfile(DoctorProfileModel newProfile) async {
     _isLoading = true;
     notifyListeners();
 
     try {
-      // TODO: Save to backend/Firebase
-      await Future.delayed(const Duration(milliseconds: 500));
       _profile = newProfile;
+      await _saveProfile();
     } catch (e) {
       print('Error updating doctor profile: $e');
       rethrow;
@@ -72,8 +88,10 @@ class DoctorProfileProvider with ChangeNotifier {
   }
 
   // Clear profile data
-  void clearProfile() {
+  Future<void> clearProfile() async {
     _profile = DoctorProfileModel();
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove('doctor_profile');
     notifyListeners();
   }
 }
