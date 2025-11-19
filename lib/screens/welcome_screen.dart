@@ -62,307 +62,324 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
         child: SafeArea(
           child: SingleChildScrollView(
             child: Padding(
-              padding: const EdgeInsets.all(24.0),
+              padding: const EdgeInsets.symmetric(
+                horizontal: 24.0,
+                vertical: 16.0,
+              ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                    // Language selector at top left
-                    Row(
+                  // Language selector at top left
+                  Row(
+                    children: [
+                      _buildLanguageSelector(userProvider),
+                      const Spacer(),
+                    ],
+                  ),
+                  const SizedBox(height: 16),
+
+                  // Logo - Reduced size and moved up
+                  const Center(child: MedicusLogo(size: 70, showText: true)),
+                  const SizedBox(height: 12),
+
+                  // Welcome text - More compact
+                  Text(
+                    'Welcome to Medicus',
+                    style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.textPrimary,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    'Breaking language barriers in healthcare',
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      color: AppColors.textSecondary,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: 20),
+
+                  // Role selection
+                  _buildRoleSelector(),
+                  const SizedBox(height: 16),
+
+                  // Sign in / Sign up toggle
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      TextButton(
+                        onPressed: () {
+                          setState(() {
+                            _isSignIn = true;
+                          });
+                        },
+                        child: Text(
+                          'Sign In',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: _isSignIn
+                                ? FontWeight.bold
+                                : FontWeight.normal,
+                            color: _isSignIn
+                                ? AppColors.primary
+                                : AppColors.textSecondary,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 16),
+                      Text(
+                        '|',
+                        style: TextStyle(color: AppColors.textSecondary),
+                      ),
+                      const SizedBox(width: 16),
+                      TextButton(
+                        onPressed: () {
+                          setState(() {
+                            _isSignIn = false;
+                          });
+                        },
+                        child: Text(
+                          'Sign Up',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: !_isSignIn
+                                ? FontWeight.bold
+                                : FontWeight.normal,
+                            color: !_isSignIn
+                                ? AppColors.primary
+                                : AppColors.textSecondary,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 16),
+
+                  // Email field
+                  TextField(
+                    controller: _emailController,
+                    decoration: InputDecoration(
+                      labelText: 'Email',
+                      prefixIcon: const Icon(Icons.email),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      filled: true,
+                      fillColor: Colors.white,
+                      contentPadding: const EdgeInsets.symmetric(
+                        vertical: 12,
+                        horizontal: 16,
+                      ),
+                    ),
+                    keyboardType: TextInputType.emailAddress,
+                  ),
+                  const SizedBox(height: 12),
+
+                  // Password field
+                  TextField(
+                    controller: _passwordController,
+                    obscureText: _obscurePassword,
+                    decoration: InputDecoration(
+                      labelText: 'Password',
+                      prefixIcon: const Icon(Icons.lock),
+                      suffixIcon: IconButton(
+                        icon: Icon(
+                          _obscurePassword
+                              ? Icons.visibility_off
+                              : Icons.visibility,
+                          color: AppColors.textSecondary,
+                        ),
+                        onPressed: () {
+                          setState(() {
+                            _obscurePassword = !_obscurePassword;
+                          });
+                        },
+                      ),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      filled: true,
+                      fillColor: Colors.white,
+                      contentPadding: const EdgeInsets.symmetric(
+                        vertical: 12,
+                        horizontal: 16,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+
+                  // Remember Me + Forgot Password Row
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 4),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        _buildLanguageSelector(userProvider),
-                        const Spacer(),
+                        // Remember Me Checkbox
+                        Row(
+                          children: [
+                            SizedBox(
+                              height: 20,
+                              width: 20,
+                              child: Checkbox(
+                                value: _rememberMe,
+                                onChanged: (value) {
+                                  setState(() {
+                                    _rememberMe = value ?? false;
+                                  });
+                                },
+                                activeColor: AppColors.primary,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(4),
+                                ),
+                                materialTapTargetSize:
+                                    MaterialTapTargetSize.shrinkWrap,
+                              ),
+                            ),
+                            const SizedBox(width: 8),
+                            Text(
+                              'Remember me',
+                              style: TextStyle(
+                                fontSize: 14,
+                                color: AppColors.textSecondary,
+                                fontWeight: FontWeight.normal,
+                              ),
+                            ),
+                          ],
+                        ),
+
+                        // Forgot Password Link (conditionally shown)
+                        if (_showForgotPassword)
+                          TextButton(
+                            onPressed: () {
+                              context.go('/forgot-password');
+                            },
+                            style: TextButton.styleFrom(
+                              padding: EdgeInsets.zero,
+                              minimumSize: const Size(0, 0),
+                              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                            ),
+                            child: Text(
+                              'Forgot Password?',
+                              style: TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w500,
+                                color: AppColors.primary,
+                              ),
+                            ),
+                          ),
                       ],
                     ),
-                    const SizedBox(height: 40),
+                  ),
 
-                    // Logo
-                    const Center(child: MedicusLogo(size: 120, showText: true)),
-                    const SizedBox(height: 20),
+                  const SizedBox(height: 16),
 
-                    // Welcome text
-                    Text(
-                      'Welcome to Medicus',
-                      style: Theme.of(context).textTheme.headlineMedium
-                          ?.copyWith(
-                            fontWeight: FontWeight.bold,
-                            color: AppColors.textPrimary,
-                          ),
-                      textAlign: TextAlign.center,
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      'Breaking language barriers in healthcare',
-                      style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                        color: AppColors.textSecondary,
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
-                    const SizedBox(height: 40),
-
-                    // Role selection
-                    _buildRoleSelector(),
-                    const SizedBox(height: 24),
-
-                    // Sign in / Sign up toggle
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        TextButton(
-                          onPressed: () {
-                            setState(() {
-                              _isSignIn = true;
-                            });
-                          },
-                          child: Text(
-                            'Sign In',
-                            style: TextStyle(
-                              fontSize: 18,
-                              fontWeight: _isSignIn
-                                  ? FontWeight.bold
-                                  : FontWeight.normal,
-                              color: _isSignIn
-                                  ? AppColors.primary
-                                  : AppColors.textSecondary,
-                            ),
-                          ),
-                        ),
-                        const SizedBox(width: 20),
-                        Text(
-                          '|',
-                          style: TextStyle(color: AppColors.textSecondary),
-                        ),
-                        const SizedBox(width: 20),
-                        TextButton(
-                          onPressed: () {
-                            setState(() {
-                              _isSignIn = false;
-                            });
-                          },
-                          child: Text(
-                            'Sign Up',
-                            style: TextStyle(
-                              fontSize: 18,
-                              fontWeight: !_isSignIn
-                                  ? FontWeight.bold
-                                  : FontWeight.normal,
-                              color: !_isSignIn
-                                  ? AppColors.primary
-                                  : AppColors.textSecondary,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 24),
-
-                    // Email field
-                    TextField(
-                      controller: _emailController,
-                      decoration: InputDecoration(
-                        labelText: 'Email',
-                        prefixIcon: const Icon(Icons.email),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        filled: true,
-                        fillColor: Colors.white,
-                      ),
-                      keyboardType: TextInputType.emailAddress,
-                    ),
-                    const SizedBox(height: 16),
-
-                    // Password field
-                    TextField(
-                      controller: _passwordController,
-                      obscureText: _obscurePassword,
-                      decoration: InputDecoration(
-                        labelText: 'Password',
-                        prefixIcon: const Icon(Icons.lock),
-                        suffixIcon: IconButton(
-                          icon: Icon(
-                            _obscurePassword
-                                ? Icons.visibility_off
-                                : Icons.visibility,
-                            color: AppColors.textSecondary,
-                          ),
-                          onPressed: () {
-                            setState(() {
-                              _obscurePassword = !_obscurePassword;
-                            });
-                          },
-                        ),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        filled: true,
-                        fillColor: Colors.white,
-                      ),
-                    ),
-                    const SizedBox(height: 16),
-
-                    // Remember Me + Forgot Password Row
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 4),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          // Remember Me Checkbox
-                          Row(
-                            children: [
-                              SizedBox(
-                                height: 20,
-                                width: 20,
-                                child: Checkbox(
-                                  value: _rememberMe,
-                                  onChanged: (value) {
-                                    setState(() {
-                                      _rememberMe = value ?? false;
-                                    });
-                                  },
-                                  activeColor: AppColors.primary,
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(4),
-                                  ),
-                                  materialTapTargetSize:
-                                      MaterialTapTargetSize.shrinkWrap,
-                                ),
-                              ),
-                              const SizedBox(width: 8),
-                              Text(
-                                'Remember me',
-                                style: TextStyle(
-                                  fontSize: 14,
-                                  color: AppColors.textSecondary,
-                                  fontWeight: FontWeight.normal,
-                                ),
-                              ),
-                            ],
-                          ),
-
-                          // Forgot Password Link (conditionally shown)
-                          if (_showForgotPassword)
-                            TextButton(
-                              onPressed: () {
-                                context.go('/forgot-password');
-                              },
-                              style: TextButton.styleFrom(
-                                padding: EdgeInsets.zero,
-                                minimumSize: const Size(0, 0),
-                                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                              ),
-                              child: Text(
-                                'Forgot Password?',
-                                style: TextStyle(
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w500,
-                                  color: AppColors.primary,
-                                ),
-                              ),
-                            ),
-                        ],
-                      ),
-                    ),
-
-                    const SizedBox(height: 24),
-
-                    // Sign in / Sign up button
-                    ElevatedButton(
-                      onPressed: userProvider.isLoading
-                          ? null
-                          : () async {
-                              try {
-                                if (_isSignIn) {
-                                  // Existing user - Sign In
-                                  await userProvider.login(
-                                    email: _emailController.text,
-                                    password: _passwordController.text,
-                                    role: _selectedRole,
-                                    rememberMe: _rememberMe,
-                                  );
-                                  if (mounted && userProvider.isLoggedIn) {
-                                    // Sign In: Skip profile completion, go directly to app
-                                    context.go('/translation');
-                                  }
-                                } else {
-                                  // New user - Sign Up
-                                  await userProvider.signUp(
-                                    email: _emailController.text.trim(),
-                                    password: _passwordController.text,
-                                    role: _selectedRole,
-                                    rememberMe: _rememberMe,
-                                  );
-                                  if (mounted && userProvider.isLoggedIn) {
-                                    // Sign Up: Navigate to email verification
-                                    context.go(
-                                      '/verify-email?email=${Uri.encodeComponent(_emailController.text.trim())}',
-                                    );
-                                  }
+                  // Sign in / Sign up button
+                  ElevatedButton(
+                    onPressed: userProvider.isLoading
+                        ? null
+                        : () async {
+                            try {
+                              if (_isSignIn) {
+                                // Existing user - Sign In
+                                await userProvider.login(
+                                  email: _emailController.text,
+                                  password: _passwordController.text,
+                                  role: _selectedRole,
+                                  rememberMe: _rememberMe,
+                                );
+                                if (mounted && userProvider.isLoggedIn) {
+                                  // Sign In: Skip profile completion, go directly to app
+                                  context.go('/translation');
                                 }
-                              } catch (e) {
-                                setState(() {
-                                  _loginAttempts++;
-                                  if (_loginAttempts >= 1) {
-                                    _showForgotPassword = true;
-                                  }
-                                });
-                                if (mounted) {
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    SnackBar(
-                                      content: Text(
-                                        _isSignIn
-                                            ? 'Login failed. Please check your credentials.'
-                                            : 'Sign up failed. Please try again.',
-                                      ),
-                                      backgroundColor: Colors.red,
-                                    ),
+                              } else {
+                                // New user - Sign Up
+                                await userProvider.signUp(
+                                  email: _emailController.text.trim(),
+                                  password: _passwordController.text,
+                                  role: _selectedRole,
+                                  rememberMe: _rememberMe,
+                                );
+                                if (mounted && userProvider.isLoggedIn) {
+                                  // Sign Up: Navigate to email verification
+                                  context.go(
+                                    '/verify-email?email=${Uri.encodeComponent(_emailController.text.trim())}',
                                   );
                                 }
                               }
-                            },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: AppColors.primary,
-                        foregroundColor: Colors.white,
-                        padding: const EdgeInsets.symmetric(vertical: 16),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
+                            } catch (e) {
+                              setState(() {
+                                _loginAttempts++;
+                                if (_loginAttempts >= 1) {
+                                  _showForgotPassword = true;
+                                }
+                              });
+                              if (mounted) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    content: Text(
+                                      _isSignIn
+                                          ? 'Login failed. Please check your credentials.'
+                                          : 'Sign up failed. Please try again.',
+                                    ),
+                                    backgroundColor: Colors.red,
+                                  ),
+                                );
+                              }
+                            }
+                          },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.primary,
+                      foregroundColor: Colors.white,
+                      padding: const EdgeInsets.symmetric(vertical: 14),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
                       ),
-                      child: userProvider.isLoading
-                          ? const CircularProgressIndicator(color: Colors.white)
-                          : Text(
-                              _isSignIn ? 'Sign In' : 'Sign Up',
-                              style: const TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
-                              ),
+                    ),
+                    child: userProvider.isLoading
+                        ? const SizedBox(
+                            height: 20,
+                            width: 20,
+                            child: CircularProgressIndicator(
+                              color: Colors.white,
+                              strokeWidth: 2,
                             ),
-                    ),
-                    const SizedBox(height: 16),
+                          )
+                        : Text(
+                            _isSignIn ? 'Sign In' : 'Sign Up',
+                            style: const TextStyle(
+                              fontSize: 15,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                  ),
+                  const SizedBox(height: 12),
 
-                    // Continue as guest button
-                    OutlinedButton(
-                      onPressed: () async {
-                        await userProvider.continueAsGuest(_selectedRole);
-                        if (mounted) {
-                          // Guest: Skip profile completion, go directly to app
-                          context.go('/translation');
-                        }
-                      },
-                      style: OutlinedButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(vertical: 16),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        side: BorderSide(color: AppColors.primary),
+                  // Continue as guest button
+                  OutlinedButton(
+                    onPressed: () async {
+                      await userProvider.continueAsGuest(_selectedRole);
+                      if (mounted) {
+                        // Guest: Skip profile completion, go directly to app
+                        context.go('/translation');
+                      }
+                    },
+                    style: OutlinedButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(vertical: 14),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
                       ),
-                      child: const Text(
-                        'Continue as Guest',
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                        ),
+                      side: BorderSide(color: AppColors.primary),
+                    ),
+                    child: const Text(
+                      'Continue as Guest',
+                      style: TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.bold,
                       ),
                     ),
+                  ),
                 ],
               ),
             ),
@@ -454,7 +471,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
       },
       borderRadius: BorderRadius.circular(12),
       child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 20),
+        padding: const EdgeInsets.symmetric(vertical: 16),
         decoration: BoxDecoration(
           color: isSelected ? color.withValues(alpha: 0.1) : Colors.transparent,
           borderRadius: BorderRadius.circular(12),
@@ -467,14 +484,14 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
           children: [
             Icon(
               icon,
-              size: 40,
+              size: 32,
               color: isSelected ? color : AppColors.textSecondary,
             ),
-            const SizedBox(height: 8),
+            const SizedBox(height: 6),
             Text(
               label,
               style: TextStyle(
-                fontSize: 16,
+                fontSize: 15,
                 fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
                 color: isSelected ? color : AppColors.textSecondary,
               ),
