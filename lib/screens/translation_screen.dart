@@ -6,9 +6,10 @@ import '../providers/translation_provider.dart';
 import '../providers/user_provider.dart';
 import '../constants/colors.dart';
 import '../constants/app_constants.dart';
-import '../widgets/anatomy_viewer.dart';
 import '../widgets/app_bottom_navigation_bar.dart';
 
+/// Professional DeepL-inspired Translation Screen
+/// Features: Clean UI, Split-panel layout, Copy/Paste/Speak, Character counter
 class TranslationScreen extends StatefulWidget {
   const TranslationScreen({Key? key}) : super(key: key);
 
@@ -19,6 +20,7 @@ class TranslationScreen extends StatefulWidget {
 class _TranslationScreenState extends State<TranslationScreen>
     with SingleTickerProviderStateMixin {
   final TextEditingController _inputController = TextEditingController();
+  final FocusNode _inputFocusNode = FocusNode();
   String? _previousUserLanguage;
   late AnimationController _micAnimationController;
 
@@ -37,7 +39,6 @@ class _TranslationScreenState extends State<TranslationScreen>
         listen: false,
       );
 
-      // Initialize with the user's selected language
       translationProvider.initialize(
         userLanguage: userProvider.selectedLanguage,
       );
@@ -46,31 +47,28 @@ class _TranslationScreenState extends State<TranslationScreen>
   }
 
   @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-
-    // Listen for changes in user's language preference
-    final userProvider = Provider.of<UserProvider>(context, listen: false);
-    final translationProvider = Provider.of<TranslationProvider>(
-      context,
-      listen: false,
-    );
-
-    // If user changed their language preference, update the translation provider
-    if (_previousUserLanguage != null &&
-        _previousUserLanguage != userProvider.selectedLanguage) {
-      translationProvider.updateSourceLanguageFromUser(
-        userProvider.selectedLanguage,
-      );
-      _previousUserLanguage = userProvider.selectedLanguage;
-    }
-  }
-
-  @override
   void dispose() {
     _inputController.dispose();
+    _inputFocusNode.dispose();
     _micAnimationController.dispose();
     super.dispose();
+  }
+
+  // Paste from clipboard
+  Future<void> _pasteFromClipboard() async {
+    final clipboardData = await Clipboard.getData('text/plain');
+    if (clipboardData != null && clipboardData.text != null) {
+      _inputController.text = clipboardData.text!;
+      setState(() {});
+
+      if (mounted) {
+        final translationProvider = Provider.of<TranslationProvider>(
+          context,
+          listen: false,
+        );
+        translationProvider.updateInput(clipboardData.text!);
+      }
+    }
   }
 
   @override
@@ -102,7 +100,6 @@ class _TranslationScreenState extends State<TranslationScreen>
               duration: const Duration(seconds: 3),
             ),
           );
-          // Clear the error after displaying to prevent repeated displays
           translationProvider.clearError();
         }
       });
@@ -110,76 +107,69 @@ class _TranslationScreenState extends State<TranslationScreen>
 
     return Scaffold(
       backgroundColor: AppColors.background,
-      appBar: _buildModernAppBar(userProvider),
-      drawer: _buildNavigationDrawer(context, userProvider),
+      appBar: _buildAppBar(context, userProvider),
       body: Column(
         children: [
-          // Modern language selector bar
-          _buildModernLanguageBar(translationProvider, userProvider),
+          // Language selector bar
+          _buildLanguageBar(translationProvider, userProvider),
 
           // Main translation area
           Expanded(
             child: Container(
-              padding: EdgeInsets.all(isDesktop ? 24 : 16),
+              padding: EdgeInsets.all(isDesktop ? 32 : 16),
               child: isDesktop
                   ? _buildDesktopLayout(translationProvider)
                   : _buildMobileLayout(translationProvider),
             ),
           ),
-
-          // Medical context section (if available)
-          if (translationProvider.currentTranslation != null)
-            _buildMedicalContextSection(translationProvider),
         ],
       ),
-      // Floating microphone button
-      floatingActionButton: _buildFloatingMicButton(translationProvider),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-      endDrawer: _buildHistoryDrawer(translationProvider),
       bottomNavigationBar: const AppBottomNavigationBar(currentIndex: 0),
     );
   }
 
-  PreferredSizeWidget _buildModernAppBar(UserProvider userProvider) {
+  PreferredSizeWidget _buildAppBar(
+    BuildContext context,
+    UserProvider userProvider,
+  ) {
     return AppBar(
-      backgroundColor: AppColors.primary,
-      foregroundColor: Colors.white,
+      backgroundColor: Colors.white,
+      foregroundColor: AppColors.textPrimary,
       elevation: 0,
-      centerTitle: true,
-      title: const Text(
-        'Medicus',
-        style: TextStyle(
-          fontSize: 24,
-          fontWeight: FontWeight.w700,
-          letterSpacing: 1.2,
-          fontFamily: 'serif',
-          shadows: [
-            Shadow(
-              color: Color.fromRGBO(0, 0, 0, 0.15),
-              offset: Offset(0, 2),
-              blurRadius: 4,
+      title: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Container(
+            padding: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              color: AppColors.accent.withOpacity(0.1),
+              borderRadius: BorderRadius.circular(8),
             ),
-          ],
-        ),
-      ),
-      leading: Builder(
-        builder: (context) => IconButton(
-          icon: const Icon(Icons.menu_rounded),
-          onPressed: () {
-            Scaffold.of(context).openDrawer();
-          },
-        ),
+            child: Icon(
+              Icons.translate_rounded,
+              color: AppColors.accent,
+              size: 24,
+            ),
+          ),
+          const SizedBox(width: 12),
+          const Text(
+            'Medicus Translate',
+            style: TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.w600,
+              color: AppColors.textPrimary,
+            ),
+          ),
+        ],
       ),
       actions: [
-        // History button
-        Builder(
-          builder: (context) => IconButton(
-            icon: const Icon(Icons.history_rounded),
-            tooltip: 'Translation History',
-            onPressed: () {
-              Scaffold.of(context).openEndDrawer();
-            },
-          ),
+        IconButton(
+          icon: const Icon(Icons.history_rounded),
+          tooltip: 'Translation History',
+          onPressed: () {
+            // Show history dialog
+            _showHistoryDialog(context);
+          },
         ),
         IconButton(
           icon: const Icon(Icons.settings_rounded),
@@ -192,27 +182,23 @@ class _TranslationScreenState extends State<TranslationScreen>
     );
   }
 
-  Widget _buildModernLanguageBar(
+  Widget _buildLanguageBar(
     TranslationProvider translationProvider,
     UserProvider userProvider,
   ) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-      decoration: BoxDecoration(
+      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
+      decoration: const BoxDecoration(
         color: Colors.white,
-        boxShadow: [
-          BoxShadow(
-            color: AppColors.shadowLight,
-            offset: const Offset(0, 2),
-            blurRadius: 8,
-          ),
-        ],
+        border: Border(
+          bottom: BorderSide(color: AppColors.borderLight, width: 1),
+        ),
       ),
       child: Row(
         children: [
           // Source language
           Expanded(
-            child: _buildModernLanguageDropdown(
+            child: _buildLanguageDropdown(
               value: translationProvider.sourceLanguage,
               onChanged: (value) {
                 if (value != null) {
@@ -222,66 +208,29 @@ class _TranslationScreenState extends State<TranslationScreen>
             ),
           ),
 
-          // Swap button with animation
+          // Swap button
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 12),
-            child: Tooltip(
-              message: 'Swap languages',
-              child: Material(
-                color: Colors.transparent,
-                child: InkWell(
-                  onTap: () async {
-                    // Ask user if they want to re-translate
-                    if (translationProvider.currentTranslation != null) {
-                      final shouldRetranslate = await showDialog<bool>(
-                        context: context,
-                        builder: (context) => AlertDialog(
-                          title: const Text('Swap Languages'),
-                          content: const Text(
-                            'Would you like to re-translate the text with swapped languages?',
-                          ),
-                          actions: [
-                            TextButton(
-                              onPressed: () => Navigator.pop(context, false),
-                              child: const Text('Just Swap'),
-                            ),
-                            ElevatedButton(
-                              onPressed: () => Navigator.pop(context, true),
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: AppColors.accent,
-                              ),
-                              child: const Text('Swap & Translate'),
-                            ),
-                          ],
-                        ),
-                      );
-
-                      if (shouldRetranslate != null) {
-                        await translationProvider.swapLanguages(
-                          retranslate: shouldRetranslate,
-                        );
-                        if (shouldRetranslate &&
-                            translationProvider.currentTranslation != null) {
-                          _inputController.text =
-                              translationProvider.currentInput;
-                        }
-                      }
-                    } else {
-                      await translationProvider.swapLanguages();
-                    }
-                  },
-                  borderRadius: BorderRadius.circular(8),
-                  child: Container(
-                    padding: const EdgeInsets.all(8),
-                    decoration: BoxDecoration(
-                      border: Border.all(color: AppColors.border),
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: Icon(
-                      Icons.swap_horiz_rounded,
-                      color: AppColors.accent,
-                      size: 24,
-                    ),
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: Material(
+              color: Colors.transparent,
+              child: InkWell(
+                onTap: () async {
+                  await translationProvider.swapLanguages();
+                  if (translationProvider.currentTranslation != null) {
+                    _inputController.text = translationProvider.currentInput;
+                  }
+                },
+                borderRadius: BorderRadius.circular(8),
+                child: Container(
+                  padding: const EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    border: Border.all(color: AppColors.border),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Icon(
+                    Icons.swap_horiz_rounded,
+                    color: AppColors.accent,
+                    size: 24,
                   ),
                 ),
               ),
@@ -290,7 +239,7 @@ class _TranslationScreenState extends State<TranslationScreen>
 
           // Target language
           Expanded(
-            child: _buildModernLanguageDropdown(
+            child: _buildLanguageDropdown(
               value: translationProvider.targetLanguage,
               onChanged: (value) {
                 if (value != null) {
@@ -304,15 +253,15 @@ class _TranslationScreenState extends State<TranslationScreen>
     );
   }
 
-  Widget _buildModernLanguageDropdown({
+  Widget _buildLanguageDropdown({
     required String value,
     required ValueChanged<String?> onChanged,
   }) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
       decoration: BoxDecoration(
         color: AppColors.inputBackground,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(8),
         border: Border.all(color: AppColors.borderLight),
       ),
       child: DropdownButton<String>(
@@ -322,10 +271,11 @@ class _TranslationScreenState extends State<TranslationScreen>
         icon: Icon(
           Icons.keyboard_arrow_down_rounded,
           color: AppColors.textSecondary,
+          size: 20,
         ),
-        style: TextStyle(
+        style: const TextStyle(
           fontSize: 15,
-          fontWeight: FontWeight.w600,
+          fontWeight: FontWeight.w500,
           color: AppColors.textPrimary,
         ),
         onChanged: onChanged,
@@ -341,13 +291,13 @@ class _TranslationScreenState extends State<TranslationScreen>
 
   Widget _buildDesktopLayout(TranslationProvider translationProvider) {
     return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         // Input panel
-        Expanded(child: _buildModernInputCard(translationProvider)),
+        Expanded(child: _buildInputPanel(translationProvider)),
         const SizedBox(width: 24),
         // Output panel
-        Expanded(child: _buildModernOutputCard(translationProvider)),
+        Expanded(child: _buildOutputPanel(translationProvider)),
       ],
     );
   }
@@ -355,42 +305,40 @@ class _TranslationScreenState extends State<TranslationScreen>
   Widget _buildMobileLayout(TranslationProvider translationProvider) {
     return ListView(
       children: [
-        _buildModernInputCard(translationProvider),
+        _buildInputPanel(translationProvider),
         const SizedBox(height: 16),
-        _buildModernOutputCard(translationProvider),
+        _buildOutputPanel(translationProvider),
         const SizedBox(height: 80), // Space for FAB
       ],
     );
   }
 
-  Widget _buildModernInputCard(TranslationProvider translationProvider) {
+  Widget _buildInputPanel(TranslationProvider translationProvider) {
     final characterCount = _inputController.text.length;
+    final wordCount = _inputController.text.trim().isEmpty
+        ? 0
+        : _inputController.text.trim().split(RegExp(r'\s+')).length;
 
     return Container(
-      constraints: const BoxConstraints(minHeight: 300),
+      constraints: const BoxConstraints(minHeight: 400),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: AppColors.shadowMedium,
-            offset: const Offset(0, 4),
-            blurRadius: 12,
-          ),
-        ],
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: AppColors.borderLight, width: 1),
       ),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           // Input text area
           Expanded(
             child: TextField(
               controller: _inputController,
+              focusNode: _inputFocusNode,
               maxLines: null,
               expands: true,
               style: const TextStyle(
                 fontSize: 16,
-                height: 1.5,
+                height: 1.6,
                 color: AppColors.textPrimary,
               ),
               decoration: InputDecoration(
@@ -400,7 +348,7 @@ class _TranslationScreenState extends State<TranslationScreen>
                 contentPadding: const EdgeInsets.all(20),
               ),
               onChanged: (text) {
-                setState(() {}); // Update character count
+                setState(() {});
                 translationProvider.updateInput(text);
               },
             ),
@@ -408,45 +356,105 @@ class _TranslationScreenState extends State<TranslationScreen>
 
           // Bottom toolbar
           Container(
-            padding: const EdgeInsets.all(12),
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
             decoration: BoxDecoration(
               color: AppColors.inputBackground,
               borderRadius: const BorderRadius.only(
-                bottomLeft: Radius.circular(16),
-                bottomRight: Radius.circular(16),
+                bottomLeft: Radius.circular(12),
+                bottomRight: Radius.circular(12),
+              ),
+              border: const Border(
+                top: BorderSide(color: AppColors.borderLight, width: 1),
               ),
             ),
             child: Row(
               children: [
-                // Character counter
+                // Character and word count
                 Text(
-                  '$characterCount characters',
+                  '$characterCount / 5000',
                   style: TextStyle(
                     fontSize: 12,
+                    color: characterCount > 5000
+                        ? AppColors.error
+                        : AppColors.textSecondary,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Container(width: 1, height: 16, color: AppColors.border),
+                const SizedBox(width: 12),
+                Text(
+                  '$wordCount words',
+                  style: const TextStyle(
+                    fontSize: 12,
                     color: AppColors.textSecondary,
+                    fontWeight: FontWeight.w500,
                   ),
                 ),
                 const Spacer(),
 
+                // Paste button
+                IconButton(
+                  onPressed: _pasteFromClipboard,
+                  icon: const Icon(Icons.content_paste_rounded, size: 20),
+                  color: AppColors.textSecondary,
+                  tooltip: 'Paste',
+                  padding: EdgeInsets.zero,
+                  constraints: const BoxConstraints(),
+                ),
+
+                const SizedBox(width: 12),
+
+                // Microphone button
+                IconButton(
+                  onPressed: () async {
+                    if (translationProvider.isListening) {
+                      await translationProvider.stopListening();
+                      if (translationProvider.currentInput.isNotEmpty) {
+                        _inputController.text =
+                            translationProvider.currentInput;
+                      }
+                    } else {
+                      await translationProvider.startListening();
+                    }
+                  },
+                  icon: Icon(
+                    translationProvider.isListening
+                        ? Icons.mic_rounded
+                        : Icons.mic_none_rounded,
+                    size: 20,
+                  ),
+                  color: translationProvider.isListening
+                      ? AppColors.error
+                      : AppColors.textSecondary,
+                  tooltip: translationProvider.isListening
+                      ? 'Stop listening'
+                      : 'Speak',
+                  padding: EdgeInsets.zero,
+                  constraints: const BoxConstraints(),
+                ),
+
+                const SizedBox(width: 12),
+
                 // Clear button
                 if (_inputController.text.isNotEmpty)
-                  TextButton.icon(
+                  IconButton(
                     onPressed: () {
                       _inputController.clear();
                       translationProvider.clearInput();
                       setState(() {});
                     },
-                    icon: const Icon(Icons.close_rounded, size: 18),
-                    label: const Text('Clear'),
-                    style: TextButton.styleFrom(
-                      foregroundColor: AppColors.textSecondary,
-                    ),
+                    icon: const Icon(Icons.close_rounded, size: 20),
+                    color: AppColors.textSecondary,
+                    tooltip: 'Clear',
+                    padding: EdgeInsets.zero,
+                    constraints: const BoxConstraints(),
                   ),
 
-                const SizedBox(width: 8),
+                const SizedBox(width: 16),
 
                 // Translate button
-                ElevatedButton.icon(
+                ElevatedButton(
                   onPressed:
                       translationProvider.isTranslating ||
                           _inputController.text.isEmpty
@@ -456,29 +464,34 @@ class _TranslationScreenState extends State<TranslationScreen>
                             _inputController.text,
                           );
                         },
-                  icon: translationProvider.isTranslating
-                      ? const SizedBox(
-                          width: 18,
-                          height: 18,
-                          child: CircularProgressIndicator(
-                            strokeWidth: 2,
-                            color: Colors.white,
-                          ),
-                        )
-                      : const Icon(Icons.translate_rounded, size: 18),
-                  label: const Text('Translate'),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.accent,
                     foregroundColor: Colors.white,
                     elevation: 0,
                     padding: const EdgeInsets.symmetric(
-                      horizontal: 20,
+                      horizontal: 24,
                       vertical: 12,
                     ),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(8),
                     ),
                   ),
+                  child: translationProvider.isTranslating
+                      ? const SizedBox(
+                          width: 16,
+                          height: 16,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            color: Colors.white,
+                          ),
+                        )
+                      : const Text(
+                          'Translate',
+                          style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
                 ),
               ],
             ),
@@ -488,26 +501,20 @@ class _TranslationScreenState extends State<TranslationScreen>
     );
   }
 
-  Widget _buildModernOutputCard(TranslationProvider translationProvider) {
+  Widget _buildOutputPanel(TranslationProvider translationProvider) {
     final currentTranslation = translationProvider.currentTranslation;
 
     return Container(
-      constraints: const BoxConstraints(minHeight: 300),
+      constraints: const BoxConstraints(minHeight: 400),
       decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: AppColors.shadowMedium,
-            offset: const Offset(0, 4),
-            blurRadius: 12,
-          ),
-        ],
+        color: AppColors.inputBackground,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: AppColors.borderLight, width: 1),
       ),
       child: currentTranslation == null
           ? _buildEmptyState()
           : Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 // Translation text
                 Expanded(
@@ -517,7 +524,7 @@ class _TranslationScreenState extends State<TranslationScreen>
                       currentTranslation.translatedText,
                       style: const TextStyle(
                         fontSize: 16,
-                        height: 1.5,
+                        height: 1.6,
                         color: AppColors.textPrimary,
                       ),
                     ),
@@ -526,22 +533,29 @@ class _TranslationScreenState extends State<TranslationScreen>
 
                 // Bottom toolbar
                 Container(
-                  padding: const EdgeInsets.all(12),
-                  decoration: BoxDecoration(
-                    color: AppColors.inputBackground,
-                    borderRadius: const BorderRadius.only(
-                      bottomLeft: Radius.circular(16),
-                      bottomRight: Radius.circular(16),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 12,
+                  ),
+                  decoration: const BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.only(
+                      bottomLeft: Radius.circular(12),
+                      bottomRight: Radius.circular(12),
+                    ),
+                    border: Border(
+                      top: BorderSide(color: AppColors.borderLight, width: 1),
                     ),
                   ),
                   child: Row(
                     children: [
                       // Word count
                       Text(
-                        '${currentTranslation.translatedText.split(' ').length} words',
-                        style: TextStyle(
+                        '${currentTranslation.translatedText.trim().split(RegExp(r'\s+')).length} words',
+                        style: const TextStyle(
                           fontSize: 12,
                           color: AppColors.textSecondary,
+                          fontWeight: FontWeight.w500,
                         ),
                       ),
                       const Spacer(),
@@ -556,15 +570,19 @@ class _TranslationScreenState extends State<TranslationScreen>
                           );
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
-                              content: const Text(
-                                'Translation copied to clipboard',
+                              content: const Row(
+                                children: [
+                                  Icon(Icons.check_circle, color: Colors.white),
+                                  SizedBox(width: 12),
+                                  Text('Copied to clipboard'),
+                                ],
                               ),
                               behavior: SnackBarBehavior.floating,
+                              backgroundColor: AppColors.success,
+                              duration: const Duration(seconds: 2),
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(8),
                               ),
-                              backgroundColor: AppColors.success,
-                              duration: const Duration(seconds: 2),
                             ),
                           );
                         },
@@ -572,12 +590,16 @@ class _TranslationScreenState extends State<TranslationScreen>
                         label: const Text('Copy'),
                         style: TextButton.styleFrom(
                           foregroundColor: AppColors.accent,
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 8,
+                          ),
                         ),
                       ),
 
                       const SizedBox(width: 8),
 
-                      // Speak button with loading state
+                      // Speak button
                       IconButton(
                         onPressed: () {
                           translationProvider.speakText(
@@ -589,6 +611,7 @@ class _TranslationScreenState extends State<TranslationScreen>
                           translationProvider.isSpeaking
                               ? Icons.stop_circle_outlined
                               : Icons.volume_up_rounded,
+                          size: 20,
                         ),
                         color: translationProvider.isSpeaking
                             ? AppColors.error
@@ -596,6 +619,8 @@ class _TranslationScreenState extends State<TranslationScreen>
                         tooltip: translationProvider.isSpeaking
                             ? 'Stop'
                             : 'Listen',
+                        padding: EdgeInsets.zero,
+                        constraints: const BoxConstraints(),
                       ),
                     ],
                   ),
@@ -620,7 +645,7 @@ class _TranslationScreenState extends State<TranslationScreen>
               ),
               child: Icon(
                 Icons.translate_rounded,
-                size: 64,
+                size: 48,
                 color: AppColors.accent.withOpacity(0.5),
               ),
             ),
@@ -628,15 +653,14 @@ class _TranslationScreenState extends State<TranslationScreen>
             Text(
               'Translation will appear here',
               style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.w600,
+                fontSize: 16,
+                fontWeight: FontWeight.w500,
                 color: AppColors.textSecondary,
               ),
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: 8),
             Text(
-              'Enter text above and click translate',
-              textAlign: TextAlign.center,
+              'Enter text and click translate',
               style: TextStyle(fontSize: 14, color: AppColors.textHint),
             ),
           ],
@@ -645,694 +669,109 @@ class _TranslationScreenState extends State<TranslationScreen>
     );
   }
 
-  Widget _buildMedicalContextSection(TranslationProvider translationProvider) {
-    final currentTranslation = translationProvider.currentTranslation;
-    if (currentTranslation == null) return const SizedBox();
-
-    final hasMedicalTerms = currentTranslation.medicalTerms.isNotEmpty;
-    final hasAnatomyImages = currentTranslation.anatomyImages.isNotEmpty;
-
-    if (!hasMedicalTerms && !hasAnatomyImages) return const SizedBox();
-
-    return Container(
-      margin: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: AppColors.shadowMedium,
-            offset: const Offset(0, 4),
-            blurRadius: 12,
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Header
-          Padding(
-            padding: const EdgeInsets.all(16),
-            child: Row(
-              children: [
-                Container(
-                  padding: const EdgeInsets.all(8),
-                  decoration: BoxDecoration(
-                    color: AppColors.medicalGreen.withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Icon(
-                    Icons.medical_information_rounded,
-                    color: AppColors.medicalGreen,
-                    size: 20,
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Text(
-                  'Medical Context',
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    color: AppColors.textPrimary,
-                  ),
-                ),
-              ],
-            ),
-          ),
-
-          const Divider(height: 1),
-
-          // Content
-          Padding(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Medical terms
-                if (hasMedicalTerms) ...[
-                  Text(
-                    'Medical Terms',
-                    style: TextStyle(
-                      fontSize: 13,
-                      fontWeight: FontWeight.w600,
-                      color: AppColors.textSecondary,
-                      letterSpacing: 0.5,
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-                  Wrap(
-                    spacing: 8,
-                    runSpacing: 8,
-                    children: currentTranslation.medicalTerms.map((term) {
-                      return Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 14,
-                          vertical: 8,
-                        ),
-                        decoration: BoxDecoration(
-                          color: AppColors.medicalGreen.withOpacity(0.1),
-                          borderRadius: BorderRadius.circular(20),
-                          border: Border.all(
-                            color: AppColors.medicalGreen.withOpacity(0.3),
-                          ),
-                        ),
-                        child: Text(
-                          term,
-                          style: TextStyle(
-                            fontSize: 13,
-                            fontWeight: FontWeight.w500,
-                            color: AppColors.medicalGreen.withOpacity(0.9),
-                          ),
-                        ),
-                      );
-                    }).toList(),
-                  ),
-                ],
-
-                // Anatomy visualization
-                if (hasAnatomyImages) ...[
-                  if (hasMedicalTerms) const SizedBox(height: 20),
-                  Text(
-                    'Anatomy Reference',
-                    style: TextStyle(
-                      fontSize: 13,
-                      fontWeight: FontWeight.w600,
-                      color: AppColors.textSecondary,
-                      letterSpacing: 0.5,
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-                  SizedBox(
-                    height: 200,
-                    child: AnatomyViewer(
-                      imageUrls: currentTranslation.anatomyImages,
-                    ),
-                  ),
-                ],
-              ],
-            ),
-          ),
-        ],
-      ),
+  void _showHistoryDialog(BuildContext context) {
+    final translationProvider = Provider.of<TranslationProvider>(
+      context,
+      listen: false,
     );
-  }
 
-  Widget _buildFloatingMicButton(TranslationProvider translationProvider) {
-    return Tooltip(
-      message: translationProvider.isListening
-          ? 'Listening... Tap to stop'
-          : 'Hold to speak',
-      child: ScaleTransition(
-        scale: translationProvider.isListening
-            ? _micAnimationController.drive(
-                Tween<double>(
-                  begin: 1.0,
-                  end: 1.1,
-                ).chain(CurveTween(curve: Curves.easeInOut)),
-              )
-            : AlwaysStoppedAnimation(1.0),
-        child: GestureDetector(
-          onTapDown: (_) async {
-            final success = await translationProvider.startListening();
-            if (!success && mounted) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Row(
-                    children: [
-                      const Icon(Icons.mic_off, color: Colors.white),
-                      const SizedBox(width: 12),
-                      const Expanded(
-                        child: Text(
-                          'Microphone permission required. Please enable in settings.',
-                        ),
-                      ),
-                    ],
-                  ),
-                  backgroundColor: AppColors.error,
-                  behavior: SnackBarBehavior.floating,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  action: SnackBarAction(
-                    label: 'Settings',
-                    textColor: Colors.white,
-                    onPressed: () {
-                      // Open app settings
-                      // This would require permission_handler package
-                    },
-                  ),
-                ),
-              );
-            }
-          },
-          onTapUp: (_) async {
-            await translationProvider.stopListening();
-            if (mounted && translationProvider.currentInput.isNotEmpty) {
-              _inputController.text = translationProvider.currentInput;
-            }
-          },
-          onTapCancel: () async {
-            await translationProvider.stopListening();
-          },
-          child: Container(
-            width: 64,
-            height: 64,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              color: translationProvider.isListening
-                  ? AppColors.error
-                  : AppColors.accent,
-              boxShadow: [
-                BoxShadow(
-                  color: translationProvider.isListening
-                      ? AppColors.error.withOpacity(0.4)
-                      : AppColors.accent.withOpacity(0.4),
-                  blurRadius: translationProvider.isListening ? 24 : 16,
-                  spreadRadius: translationProvider.isListening ? 4 : 0,
-                ),
-              ],
-            ),
-            child: Stack(
-              alignment: Alignment.center,
-              children: [
-                Icon(
-                  translationProvider.isListening
-                      ? Icons.mic_rounded
-                      : Icons.mic_none_rounded,
-                  size: 28,
-                  color: Colors.white,
-                ),
-                if (translationProvider.isListening)
-                  Positioned(
-                    bottom: 8,
-                    child: Container(
-                      width: 4,
-                      height: 4,
-                      decoration: const BoxDecoration(
-                        color: Colors.white,
-                        shape: BoxShape.circle,
-                      ),
-                    ),
-                  ),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildNavigationDrawer(
-    BuildContext context,
-    UserProvider userProvider,
-  ) {
-    return Drawer(
-      child: Column(
-        children: [
-          // Modern drawer header
-          Container(
-            width: double.infinity,
-            padding: const EdgeInsets.fromLTRB(24, 48, 24, 24),
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-                colors: [AppColors.primary, AppColors.primaryLight],
-              ),
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Container(
-                  padding: const EdgeInsets.all(12),
-                  decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.2),
-                    shape: BoxShape.circle,
-                  ),
-                  child: Icon(
-                    userProvider.currentUser?.role == AppConstants.roleDoctor
-                        ? Icons.local_hospital_rounded
-                        : Icons.person_rounded,
-                    size: 32,
-                    color: Colors.white,
-                  ),
-                ),
-                const SizedBox(height: 16),
-                Text(
-                  userProvider.currentUser?.name ?? 'Guest User',
-                  style: const TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
-                  ),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  userProvider.currentUser?.email ??
-                      (userProvider.currentUser?.isGuest == true
-                          ? 'Guest Mode'
-                          : 'No email'),
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: Colors.white.withOpacity(0.9),
-                  ),
-                ),
-              ],
-            ),
-          ),
-
-          // Navigation Items
-          Expanded(
-            child: ListView(
-              padding: const EdgeInsets.symmetric(vertical: 8),
-              children: [
-                _buildDrawerItem(
-                  context: context,
-                  icon: Icons.translate_rounded,
-                  title: 'Translation',
-                  isSelected: true,
-                  onTap: () {
-                    Navigator.pop(context);
-                  },
-                ),
-                _buildDrawerItem(
-                  context: context,
-                  icon:
-                      userProvider.currentUser?.role == AppConstants.roleDoctor
-                      ? Icons.badge_rounded
-                      : Icons.person_outline_rounded,
-                  title:
-                      userProvider.currentUser?.role == AppConstants.roleDoctor
-                      ? 'Doctor Profile'
-                      : 'User Profile',
-                  onTap: () {
-                    Navigator.pop(context);
-                    if (userProvider.currentUser?.role ==
-                        AppConstants.roleDoctor) {
-                      context.push('/doctor-profile');
-                    } else {
-                      context.push('/profile');
-                    }
-                  },
-                ),
-                _buildDrawerItem(
-                  context: context,
-                  icon: Icons.settings_rounded,
-                  title: 'Settings',
-                  onTap: () {
-                    Navigator.pop(context);
-                    context.push('/settings');
-                  },
-                ),
-                const Divider(height: 32),
-                _buildDrawerItem(
-                  context: context,
-                  icon: Icons.swap_horiz_rounded,
-                  title: 'Switch Role',
-                  subtitle:
-                      'Current: ${userProvider.currentUser?.role == AppConstants.roleDoctor ? "Doctor" : "Patient"}',
-                  onTap: () {
-                    final newRole =
-                        userProvider.currentUser?.role ==
-                            AppConstants.roleDoctor
-                        ? AppConstants.rolePatient
-                        : AppConstants.roleDoctor;
-                    userProvider.changeRole(newRole);
-                    Navigator.pop(context);
-                  },
-                ),
-              ],
-            ),
-          ),
-
-          // Bottom section
-          Column(
+    showDialog(
+      context: context,
+      builder: (context) => Dialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        child: Container(
+          width: 600,
+          height: 500,
+          padding: const EdgeInsets.all(24),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Divider(height: 1),
-              _buildDrawerItem(
-                context: context,
-                icon: Icons.info_outline_rounded,
-                title: 'About',
-                onTap: () {
-                  Navigator.pop(context);
-                  showAboutDialog(
-                    context: context,
-                    applicationName: 'Medicus Translation',
-                    applicationVersion: '1.0.0',
-                    applicationLegalese: '© 2024 Medicus',
-                  );
-                },
-              ),
-              if (userProvider.isLoggedIn)
-                _buildDrawerItem(
-                  context: context,
-                  icon: Icons.logout_rounded,
-                  title: 'Logout',
-                  onTap: () async {
-                    Navigator.pop(context);
-                    await userProvider.logout();
-                    context.go('/');
-                  },
-                ),
-              const SizedBox(height: 8),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildDrawerItem({
-    required BuildContext context,
-    required IconData icon,
-    required String title,
-    String? subtitle,
-    bool isSelected = false,
-    required VoidCallback onTap,
-  }) {
-    return ListTile(
-      leading: Icon(
-        icon,
-        color: isSelected ? AppColors.accent : AppColors.textSecondary,
-      ),
-      title: Text(
-        title,
-        style: TextStyle(
-          fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
-          color: isSelected ? AppColors.accent : AppColors.textPrimary,
-        ),
-      ),
-      subtitle: subtitle != null
-          ? Text(
-              subtitle,
-              style: TextStyle(fontSize: 12, color: AppColors.textSecondary),
-            )
-          : null,
-      selected: isSelected,
-      selectedTileColor: AppColors.accent.withOpacity(0.1),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-      contentPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 4),
-      onTap: onTap,
-    );
-  }
-
-  Widget _buildHistoryDrawer(TranslationProvider translationProvider) {
-    return Drawer(
-      child: Column(
-        children: [
-          // History drawer header
-          Container(
-            width: double.infinity,
-            padding: const EdgeInsets.fromLTRB(24, 48, 24, 24),
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-                colors: [AppColors.accent, AppColors.accent.withOpacity(0.8)],
-              ),
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.all(12),
-                      decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.2),
-                        shape: BoxShape.circle,
-                      ),
-                      child: const Icon(
-                        Icons.history_rounded,
-                        size: 28,
-                        color: Colors.white,
-                      ),
+              Row(
+                children: [
+                  Icon(
+                    Icons.history_rounded,
+                    color: AppColors.accent,
+                    size: 28,
+                  ),
+                  const SizedBox(width: 12),
+                  const Text(
+                    'Translation History',
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.w600,
+                      color: AppColors.textPrimary,
                     ),
-                    const Spacer(),
-                    if (translationProvider.translationHistory.isNotEmpty)
-                      IconButton(
-                        icon: const Icon(
-                          Icons.delete_outline,
-                          color: Colors.white,
-                        ),
-                        onPressed: () {
-                          showDialog(
-                            context: context,
-                            builder: (context) => AlertDialog(
-                              title: const Text('Clear History'),
-                              content: const Text(
-                                'Are you sure you want to clear all translation history?',
+                  ),
+                  const Spacer(),
+                  IconButton(
+                    onPressed: () => Navigator.pop(context),
+                    icon: const Icon(Icons.close_rounded),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 16),
+              const Divider(),
+              Expanded(
+                child: translationProvider.translationHistory.isEmpty
+                    ? Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(
+                              Icons.history_rounded,
+                              size: 64,
+                              color: AppColors.textHint,
+                            ),
+                            const SizedBox(height: 16),
+                            Text(
+                              'No translation history',
+                              style: TextStyle(
+                                fontSize: 16,
+                                color: AppColors.textSecondary,
                               ),
-                              actions: [
-                                TextButton(
-                                  onPressed: () => Navigator.pop(context),
-                                  child: const Text('Cancel'),
-                                ),
-                                ElevatedButton(
-                                  onPressed: () {
-                                    translationProvider.clearHistory();
-                                    Navigator.pop(context);
-                                  },
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor: AppColors.error,
-                                  ),
-                                  child: const Text('Clear All'),
-                                ),
-                              ],
+                            ),
+                          ],
+                        ),
+                      )
+                    : ListView.separated(
+                        itemCount:
+                            translationProvider.translationHistory.length,
+                        separatorBuilder: (context, index) => const Divider(),
+                        itemBuilder: (context, index) {
+                          final translation =
+                              translationProvider.translationHistory[index];
+                          return ListTile(
+                            title: Text(
+                              translation.originalText,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                            subtitle: Text(
+                              translation.translatedText,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: const TextStyle(
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                            trailing: IconButton(
+                              icon: const Icon(Icons.arrow_forward_rounded),
+                              onPressed: () {
+                                _inputController.text =
+                                    translation.originalText;
+                                translationProvider.updateInput(
+                                  translation.originalText,
+                                );
+                                Navigator.pop(context);
+                              },
                             ),
                           );
                         },
-                        tooltip: 'Clear history',
                       ),
-                  ],
-                ),
-                const SizedBox(height: 16),
-                const Text(
-                  'Translation History',
-                  style: TextStyle(
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
-                  ),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  '${translationProvider.translationHistory.length} translations',
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: Colors.white.withOpacity(0.9),
-                  ),
-                ),
-              ],
-            ),
+              ),
+            ],
           ),
-
-          // History list
-          Expanded(
-            child: translationProvider.translationHistory.isEmpty
-                ? Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(
-                          Icons.history_rounded,
-                          size: 64,
-                          color: AppColors.textHint,
-                        ),
-                        const SizedBox(height: 16),
-                        Text(
-                          'No translation history',
-                          style: TextStyle(
-                            fontSize: 16,
-                            color: AppColors.textSecondary,
-                          ),
-                        ),
-                        const SizedBox(height: 8),
-                        Text(
-                          'Your translations will appear here',
-                          style: TextStyle(
-                            fontSize: 12,
-                            color: AppColors.textHint,
-                          ),
-                        ),
-                      ],
-                    ),
-                  )
-                : ListView.separated(
-                    padding: const EdgeInsets.all(16),
-                    itemCount: translationProvider.translationHistory.length,
-                    separatorBuilder: (context, index) =>
-                        const Divider(height: 24),
-                    itemBuilder: (context, index) {
-                      final translation =
-                          translationProvider.translationHistory[index];
-                      return InkWell(
-                        onTap: () {
-                          // Load this translation
-                          _inputController.text = translation.originalText;
-                          translationProvider.updateInput(
-                            translation.originalText,
-                          );
-                          Navigator.pop(context);
-                        },
-                        borderRadius: BorderRadius.circular(12),
-                        child: Container(
-                          padding: const EdgeInsets.all(12),
-                          decoration: BoxDecoration(
-                            color: AppColors.inputBackground,
-                            borderRadius: BorderRadius.circular(12),
-                            border: Border.all(color: AppColors.borderLight),
-                          ),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              // Original text
-                              Row(
-                                children: [
-                                  Icon(
-                                    Icons.arrow_forward,
-                                    size: 16,
-                                    color: AppColors.textSecondary,
-                                  ),
-                                  const SizedBox(width: 8),
-                                  Expanded(
-                                    child: Text(
-                                      translation.originalText,
-                                      maxLines: 2,
-                                      overflow: TextOverflow.ellipsis,
-                                      style: TextStyle(
-                                        fontSize: 13,
-                                        color: AppColors.textPrimary,
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              const SizedBox(height: 8),
-                              // Translated text
-                              Row(
-                                children: [
-                                  Icon(
-                                    Icons.arrow_back,
-                                    size: 16,
-                                    color: AppColors.accent,
-                                  ),
-                                  const SizedBox(width: 8),
-                                  Expanded(
-                                    child: Text(
-                                      translation.translatedText,
-                                      maxLines: 2,
-                                      overflow: TextOverflow.ellipsis,
-                                      style: TextStyle(
-                                        fontSize: 13,
-                                        fontWeight: FontWeight.w600,
-                                        color: AppColors.accent,
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              const SizedBox(height: 8),
-                              // Language info
-                              Row(
-                                children: [
-                                  Container(
-                                    padding: const EdgeInsets.symmetric(
-                                      horizontal: 8,
-                                      vertical: 4,
-                                    ),
-                                    decoration: BoxDecoration(
-                                      color: AppColors.primary.withOpacity(0.1),
-                                      borderRadius: BorderRadius.circular(4),
-                                    ),
-                                    child: Text(
-                                      '${translation.sourceLanguage} → ${translation.targetLanguage}',
-                                      style: TextStyle(
-                                        fontSize: 10,
-                                        fontWeight: FontWeight.w600,
-                                        color: AppColors.primary,
-                                      ),
-                                    ),
-                                  ),
-                                  const Spacer(),
-                                  IconButton(
-                                    icon: const Icon(
-                                      Icons.copy_rounded,
-                                      size: 16,
-                                    ),
-                                    padding: EdgeInsets.zero,
-                                    constraints: const BoxConstraints(),
-                                    onPressed: () {
-                                      Clipboard.setData(
-                                        ClipboardData(
-                                          text: translation.translatedText,
-                                        ),
-                                      );
-                                      ScaffoldMessenger.of(
-                                        context,
-                                      ).showSnackBar(
-                                        SnackBar(
-                                          content: const Text(
-                                            'Translation copied',
-                                          ),
-                                          behavior: SnackBarBehavior.floating,
-                                          duration: const Duration(seconds: 1),
-                                          backgroundColor: AppColors.success,
-                                        ),
-                                      );
-                                    },
-                                    tooltip: 'Copy translation',
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
-                        ),
-                      );
-                    },
-                  ),
-          ),
-        ],
+        ),
       ),
     );
   }

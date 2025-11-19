@@ -18,13 +18,20 @@ class AppConstants {
   // Get your API key from: https://console.cloud.google.com/apis/credentials
   // Enable Cloud Translation API: https://console.cloud.google.com/apis/library/translate.googleapis.com
   static const String googleTranslateApiKey = 'YOUR_GOOGLE_TRANSLATE_API_KEY';
-  static const String googleTranslateApiUrl = 'https://translation.googleapis.com/language/translate/v2';
+  static const String googleTranslateApiUrl =
+      'https://translation.googleapis.com/language/translate/v2';
 
   // Google Gemini API Configuration for Advanced LLM Translation
   // IMPORTANT: Replace with your actual Google AI Studio API key
   // Get your API key from: https://aistudio.google.com/app/apikey
   // This provides state-of-the-art translation with cultural context and medical accuracy
   static const String geminiApiKey = 'YOUR_GEMINI_API_KEY';
+
+  // DeepL API Configuration for Professional Translation
+  // IMPORTANT: Replace with your actual DeepL API key
+  // Get your API key from: https://www.deepl.com/pro-api
+  // DeepL provides high-quality neural machine translation for 30+ languages
+  static const String deeplApiKey = 'YOUR_DEEPL_API_KEY';
 
   // Supported Languages - 200+ languages including all Indian languages
   // Language codes follow ISO 639-1 standard
@@ -226,14 +233,38 @@ class AppConstants {
     {'code': 'sgn', 'name': 'Sign Language', 'nativeName': 'Sign Language'},
 
     // Additional Regional Variants
-    {'code': 'pt-BR', 'name': 'Portuguese (Brazil)', 'nativeName': 'Português (Brasil)'},
-    {'code': 'pt-PT', 'name': 'Portuguese (Portugal)', 'nativeName': 'Português (Portugal)'},
-    {'code': 'es-MX', 'name': 'Spanish (Mexico)', 'nativeName': 'Español (México)'},
-    {'code': 'es-AR', 'name': 'Spanish (Argentina)', 'nativeName': 'Español (Argentina)'},
-    {'code': 'fr-CA', 'name': 'French (Canada)', 'nativeName': 'Français (Canada)'},
+    {
+      'code': 'pt-BR',
+      'name': 'Portuguese (Brazil)',
+      'nativeName': 'Português (Brasil)',
+    },
+    {
+      'code': 'pt-PT',
+      'name': 'Portuguese (Portugal)',
+      'nativeName': 'Português (Portugal)',
+    },
+    {
+      'code': 'es-MX',
+      'name': 'Spanish (Mexico)',
+      'nativeName': 'Español (México)',
+    },
+    {
+      'code': 'es-AR',
+      'name': 'Spanish (Argentina)',
+      'nativeName': 'Español (Argentina)',
+    },
+    {
+      'code': 'fr-CA',
+      'name': 'French (Canada)',
+      'nativeName': 'Français (Canada)',
+    },
     {'code': 'en-GB', 'name': 'English (UK)', 'nativeName': 'English (UK)'},
     {'code': 'en-US', 'name': 'English (US)', 'nativeName': 'English (US)'},
-    {'code': 'en-AU', 'name': 'English (Australia)', 'nativeName': 'English (Australia)'},
+    {
+      'code': 'en-AU',
+      'name': 'English (Australia)',
+      'nativeName': 'English (Australia)',
+    },
     {'code': 'zh-HK', 'name': 'Chinese (Hong Kong)', 'nativeName': '中文 (香港)'},
   ];
 

@@ -1,6 +1,8 @@
 import 'package:dio/dio.dart';
 import '../models/translation_result.dart';
 import '../constants/app_constants.dart';
+import 'deepl_translation_service.dart';
+import 'llm_translation_service.dart';
 
 class TranslationService {
   static final TranslationService _instance = TranslationService._internal();
@@ -8,6 +10,8 @@ class TranslationService {
   TranslationService._internal();
 
   final Dio _dio = Dio();
+  final DeepLTranslationService _deeplService = DeepLTranslationService();
+  final LLMTranslationService _llmService = LLMTranslationService();
 
   // Translate text using multiple translation services with fallback chain
   Future<TranslationResult> translateText({
@@ -17,9 +21,49 @@ class TranslationService {
     bool isMedicalContext = true,
   }) async {
     try {
-      // 1. Try Google Translate API (if configured)
+      // 1. Try DeepL API (highest quality, priority #1)
+      if (_deeplService.isAvailable) {
+        try {
+          final deeplResult = await _deeplService.translateText(
+            text: text,
+            sourceLanguage: sourceLanguage,
+            targetLanguage: targetLanguage,
+          );
+          print('✅ Translation completed using DeepL');
+          return deeplResult;
+        } catch (e) {
+          print('⚠️ DeepL translation failed: $e');
+        }
+      }
+
+      // 2. Try Gemini LLM (contextual translation, priority #2)
+      try {
+        _llmService.initialize();
+        final geminiTranslation = await _llmService.translate(
+          text,
+          targetLanguage,
+        );
+
+        final medicalTerms = _mockMedicalTerms(text);
+        final anatomyImages = await getAnatomyImages(medicalTerms);
+
+        print('✅ Translation completed using Gemini LLM');
+        return TranslationResult(
+          originalText: text,
+          translatedText: geminiTranslation,
+          sourceLanguage: sourceLanguage,
+          targetLanguage: targetLanguage,
+          medicalTerms: medicalTerms,
+          anatomyImages: anatomyImages,
+        );
+      } catch (e) {
+        print('⚠️ Gemini LLM translation failed: $e');
+      }
+
+      // 3. Try Google Translate API (if configured)
       final googleApiKey = AppConstants.googleTranslateApiKey;
-      if (googleApiKey.isNotEmpty && googleApiKey != 'YOUR_GOOGLE_TRANSLATE_API_KEY') {
+      if (googleApiKey.isNotEmpty &&
+          googleApiKey != 'YOUR_GOOGLE_TRANSLATE_API_KEY') {
         try {
           final googleResult = await _translateWithGoogle(
             text,
@@ -31,6 +75,7 @@ class TranslationService {
           final medicalTerms = _mockMedicalTerms(text);
           final anatomyImages = await getAnatomyImages(medicalTerms);
 
+          print('✅ Translation completed using Google Translate');
           return TranslationResult(
             originalText: text,
             translatedText: googleResult,
@@ -40,11 +85,11 @@ class TranslationService {
             anatomyImages: anatomyImages,
           );
         } catch (e) {
-          print('Google Translate failed: $e');
+          print('⚠️ Google Translate failed: $e');
         }
       }
 
-      // 2. Try LibreTranslate (Free, no API key needed)
+      // 4. Try LibreTranslate (Free, no API key needed)
       try {
         final libreResult = await _translateWithLibreTranslate(
           text,
@@ -55,6 +100,7 @@ class TranslationService {
         final medicalTerms = _mockMedicalTerms(text);
         final anatomyImages = await getAnatomyImages(medicalTerms);
 
+        print('✅ Translation completed using LibreTranslate');
         return TranslationResult(
           originalText: text,
           translatedText: libreResult,
@@ -64,10 +110,10 @@ class TranslationService {
           anatomyImages: anatomyImages,
         );
       } catch (e) {
-        print('LibreTranslate failed: $e');
+        print('⚠️ LibreTranslate failed: $e');
       }
 
-      // 3. Try MyMemory API (Free, no API key needed)
+      // 5. Try MyMemory API (Free, no API key needed)
       try {
         final myMemoryResult = await _translateWithMyMemory(
           text,
@@ -78,6 +124,7 @@ class TranslationService {
         final medicalTerms = _mockMedicalTerms(text);
         final anatomyImages = await getAnatomyImages(medicalTerms);
 
+        print('✅ Translation completed using MyMemory');
         return TranslationResult(
           originalText: text,
           translatedText: myMemoryResult,
@@ -87,10 +134,10 @@ class TranslationService {
           anatomyImages: anatomyImages,
         );
       } catch (e) {
-        print('MyMemory translation failed: $e');
+        print('⚠️ MyMemory translation failed: $e');
       }
 
-      // 4. Try OpenAI GPT-4 (if configured)
+      // 6. Try OpenAI GPT-4 (if configured)
       final apiKey = AppConstants.openaiApiKey;
       if (apiKey.isNotEmpty && apiKey != 'YOUR_OPENAI_API_KEY') {
         try {
@@ -106,8 +153,10 @@ class TranslationService {
         }
       }
 
-      // 5. Fallback to mock translation for testing
-      print('All translation APIs failed or not configured, using mock translation');
+      // 7. Fallback to mock translation for testing
+      print(
+        '⚠️ All translation APIs failed or not configured, using mock translation',
+      );
       return _mockTranslation(text, sourceLanguage, targetLanguage);
     } catch (e) {
       print('Error translating with GPT-4: $e');
@@ -139,11 +188,7 @@ class TranslationService {
           'target': targetLang,
           'format': 'text',
         },
-        options: Options(
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        ),
+        options: Options(headers: {'Content-Type': 'application/json'}),
       );
 
       if (response.statusCode == 200) {
@@ -182,15 +227,14 @@ class TranslationService {
           'format': 'text',
         },
         options: Options(
-          headers: {
-            'Content-Type': 'application/json',
-          },
+          headers: {'Content-Type': 'application/json'},
           receiveTimeout: const Duration(seconds: 10),
           sendTimeout: const Duration(seconds: 10),
         ),
       );
 
-      if (response.statusCode == 200 && response.data['translatedText'] != null) {
+      if (response.statusCode == 200 &&
+          response.data['translatedText'] != null) {
         return response.data['translatedText'] as String;
       }
 
@@ -213,7 +257,8 @@ class TranslationService {
 
       final langPair = '$sourceLang|$targetLang';
       final encodedText = Uri.encodeComponent(text);
-      final url = 'https://api.mymemory.translated.net/get?q=$encodedText&langpair=$langPair';
+      final url =
+          'https://api.mymemory.translated.net/get?q=$encodedText&langpair=$langPair';
 
       final response = await _dio.get(
         url,
@@ -245,13 +290,15 @@ class TranslationService {
     String apiKey,
   ) async {
     try {
-      final systemPrompt = '''You are a professional medical translator specializing in healthcare communication.
+      final systemPrompt =
+          '''You are a professional medical translator specializing in healthcare communication.
 Your task is to translate medical texts accurately while preserving medical terminology and context.
 Provide translations that are culturally appropriate and medically accurate.
 Extract any medical terms mentioned in the text.
 Identify relevant anatomy parts that should be visualized.''';
 
-      final userPrompt = '''Translate the following medical text from $sourceLanguage to $targetLanguage.
+      final userPrompt =
+          '''Translate the following medical text from $sourceLanguage to $targetLanguage.
 Provide the response in JSON format with these fields:
 - "translatedText": the translated text
 - "medicalTerms": array of medical terms found in the text
@@ -278,7 +325,8 @@ Text to translate: "$text"''';
         ),
       );
 
-      final content = response.data['choices'][0]['message']['content'] as String;
+      final content =
+          response.data['choices'][0]['message']['content'] as String;
 
       // Try to parse as JSON
       try {
@@ -293,7 +341,9 @@ Text to translate: "$text"''';
 
           return TranslationResult(
             originalText: text,
-            translatedText: translatedText.isNotEmpty ? translatedText : content,
+            translatedText: translatedText.isNotEmpty
+                ? translatedText
+                : content,
             sourceLanguage: sourceLanguage,
             targetLanguage: targetLanguage,
             medicalTerms: medicalTerms,
