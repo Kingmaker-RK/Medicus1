@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:lucide_icons/lucide_icons.dart';
+import 'package:image_picker/image_picker.dart';
+import 'dart:io';
 import '../providers/user_profile_provider.dart';
 import '../models/user_profile_model.dart';
 import '../constants/colors.dart';
@@ -58,7 +60,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
       body: TabBarView(
         controller: _tabController,
         children: [
-          _buildPersonalInfoTab(profile),
+          _buildPersonalInfoTab(profile, profileProvider),
           _buildCertificatesTab(profile),
           _buildSickNotesTab(profile, profileProvider),
           _buildReimbursementsTab(profile, profileProvider),
@@ -69,12 +71,49 @@ class _UserProfileScreenState extends State<UserProfileScreen>
     );
   }
 
-  Widget _buildPersonalInfoTab(profile) {
+  Widget _buildPersonalInfoTab(profile, UserProfileProvider provider) {
     return SingleChildScrollView(
       padding: const EdgeInsets.all(16),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
+          Center(
+            child: Stack(
+              children: [
+                CircleAvatar(
+                  radius: 50,
+                  backgroundColor: AppColors.primary.withOpacity(0.1),
+                  backgroundImage: profile.profilePicturePath.isNotEmpty
+                      ? FileImage(File(profile.profilePicturePath))
+                      : null,
+                  child: profile.profilePicturePath.isEmpty
+                      ? Icon(LucideIcons.user,
+                          size: 50, color: AppColors.primary)
+                      : null,
+                ),
+                Positioned(
+                  bottom: 0,
+                  right: 0,
+                  child: GestureDetector(
+                    onTap: () => _showImagePickerOptions(provider),
+                    child: Container(
+                      padding: const EdgeInsets.all(8),
+                      decoration: const BoxDecoration(
+                        color: AppColors.primary,
+                        shape: BoxShape.circle,
+                      ),
+                      child: const Icon(
+                        LucideIcons.camera,
+                        size: 16,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 24),
           _buildSectionCard(
             title: 'Personal Information',
             icon: LucideIcons.user,
@@ -709,6 +748,66 @@ class _UserProfileScreenState extends State<UserProfileScreen>
           ),
         ],
       ),
+    );
+  }
+
+  Future<void> _pickImage(
+    UserProfileProvider provider,
+    ImageSource source,
+  ) async {
+    final picker = ImagePicker();
+    try {
+      final pickedFile = await picker.pickImage(source: source);
+      if (pickedFile != null) {
+        await provider.updateProfilePicture(pickedFile.path);
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error picking image: $e')),
+        );
+      }
+    }
+  }
+
+  void _showImagePickerOptions(UserProfileProvider provider) {
+    showModalBottomSheet(
+      context: context,
+      builder:
+          (context) => SafeArea(
+            child: Wrap(
+              children: [
+                ListTile(
+                  leading: const Icon(LucideIcons.camera),
+                  title: const Text('Take a photo'),
+                  onTap: () {
+                    Navigator.pop(context);
+                    _pickImage(provider, ImageSource.camera);
+                  },
+                ),
+                ListTile(
+                  leading: const Icon(LucideIcons.image),
+                  title: const Text('Choose from gallery'),
+                  onTap: () {
+                    Navigator.pop(context);
+                    _pickImage(provider, ImageSource.gallery);
+                  },
+                ),
+                if (provider.profile.profilePicturePath.isNotEmpty)
+                  ListTile(
+                    leading: const Icon(LucideIcons.trash2, color: Colors.red),
+                    title: const Text(
+                      'Remove photo',
+                      style: TextStyle(color: Colors.red),
+                    ),
+                    onTap: () {
+                      Navigator.pop(context);
+                      provider.updateProfilePicture('');
+                    },
+                  ),
+              ],
+            ),
+          ),
     );
   }
 }

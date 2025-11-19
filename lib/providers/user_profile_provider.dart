@@ -52,13 +52,22 @@ class UserProfileProvider with ChangeNotifier {
     String? secondName,
     String? insuranceNumber,
     String? insuranceProvider,
+    String? profilePicturePath,
   }) async {
     _profile = _profile.copyWith(
       firstName: firstName,
       secondName: secondName,
       insuranceNumber: insuranceNumber,
       insuranceProvider: insuranceProvider,
+      profilePicturePath: profilePicturePath,
     );
+    await _saveProfile();
+    notifyListeners();
+  }
+
+  // Update profile picture
+  Future<void> updateProfilePicture(String path) async {
+    _profile = _profile.copyWith(profilePicturePath: path);
     await _saveProfile();
     notifyListeners();
   }

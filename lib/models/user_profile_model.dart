@@ -3,6 +3,7 @@ class UserProfileModel {
   final String secondName;
   final String insuranceNumber;
   final String insuranceProvider;
+  final String profilePicturePath;
   final List<Certificate> certificates;
   final List<SickNote> sickNotes;
   final List<Reimbursement> reimbursements;
@@ -13,6 +14,7 @@ class UserProfileModel {
     this.secondName = '',
     this.insuranceNumber = '',
     this.insuranceProvider = '',
+    this.profilePicturePath = '',
     this.certificates = const [],
     this.sickNotes = const [],
     this.reimbursements = const [],
@@ -25,6 +27,7 @@ class UserProfileModel {
       secondName: json['secondName'] as String? ?? '',
       insuranceNumber: json['insuranceNumber'] as String? ?? '',
       insuranceProvider: json['insuranceProvider'] as String? ?? '',
+      profilePicturePath: json['profilePicturePath'] as String? ?? '',
       certificates:
           (json['certificates'] as List<dynamic>?)
               ?.map((e) => Certificate.fromJson(e as Map<String, dynamic>))
@@ -54,6 +57,7 @@ class UserProfileModel {
       'secondName': secondName,
       'insuranceNumber': insuranceNumber,
       'insuranceProvider': insuranceProvider,
+      'profilePicturePath': profilePicturePath,
       'certificates': certificates.map((e) => e.toJson()).toList(),
       'sickNotes': sickNotes.map((e) => e.toJson()).toList(),
       'reimbursements': reimbursements.map((e) => e.toJson()).toList(),
@@ -66,6 +70,7 @@ class UserProfileModel {
     String? secondName,
     String? insuranceNumber,
     String? insuranceProvider,
+    String? profilePicturePath,
     List<Certificate>? certificates,
     List<SickNote>? sickNotes,
     List<Reimbursement>? reimbursements,
@@ -76,6 +81,7 @@ class UserProfileModel {
       secondName: secondName ?? this.secondName,
       insuranceNumber: insuranceNumber ?? this.insuranceNumber,
       insuranceProvider: insuranceProvider ?? this.insuranceProvider,
+      profilePicturePath: profilePicturePath ?? this.profilePicturePath,
       certificates: certificates ?? this.certificates,
       sickNotes: sickNotes ?? this.sickNotes,
       reimbursements: reimbursements ?? this.reimbursements,
