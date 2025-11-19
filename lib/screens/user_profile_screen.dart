@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:lucide_icons/lucide_icons.dart';
 import '../providers/user_profile_provider.dart';
 import '../models/user_profile_model.dart';
 import '../constants/colors.dart';
@@ -76,7 +77,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
         children: [
           _buildSectionCard(
             title: 'Personal Information',
-            icon: Icons.person,
+            icon: LucideIcons.user,
             children: [
               _buildInfoRow('First Name', profile.firstName),
               const Divider(),
@@ -109,7 +110,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
       child: ListTile(
         leading: CircleAvatar(
           backgroundColor: AppColors.primary.withOpacity(0.1),
-          child: Icon(Icons.description, color: AppColors.primary),
+          child: Icon(LucideIcons.fileText, color: AppColors.primary),
         ),
         title: Text(
           cert.name,
@@ -125,7 +126,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
           ],
         ),
         trailing: IconButton(
-          icon: const Icon(Icons.download),
+          icon: const Icon(LucideIcons.download),
           onPressed: () {
             // TODO: Implement download functionality
             ScaffoldMessenger.of(context).showSnackBar(
@@ -172,7 +173,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
       child: ListTile(
         leading: CircleAvatar(
           backgroundColor: statusColor.withOpacity(0.1),
-          child: Icon(Icons.medical_services, color: statusColor),
+          child: Icon(LucideIcons.stethoscope, color: statusColor),
         ),
         title: Text(
           note.diagnosis.isNotEmpty ? note.diagnosis : 'Sick Leave',
@@ -245,7 +246,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
       child: ListTile(
         leading: CircleAvatar(
           backgroundColor: AppColors.primary.withOpacity(0.1),
-          child: Icon(Icons.attach_money, color: AppColors.primary),
+          child: Icon(LucideIcons.banknote, color: AppColors.primary),
         ),
         title: Text(
           reimbursement.description.isNotEmpty
@@ -305,7 +306,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
               ? Colors.grey.withOpacity(0.2)
               : AppColors.primary.withOpacity(0.1),
           child: Icon(
-            message.isRead ? Icons.mail_outline : Icons.mail,
+            message.isRead ? LucideIcons.mailOpen : LucideIcons.mail,
             color: message.isRead ? Colors.grey : AppColors.primary,
           ),
         ),
@@ -343,21 +344,21 @@ class _UserProfileScreenState extends State<UserProfileScreen>
         children: [
           _buildSubmitCard(
             title: 'Submit Sick Note',
-            icon: Icons.medical_services,
+            icon: LucideIcons.stethoscope,
             description: 'Upload your medical certificate for sick leave',
             onTap: () => _showSubmitSickNoteDialog(provider),
           ),
           const SizedBox(height: 12),
           _buildSubmitCard(
             title: 'Submit Reimbursement',
-            icon: Icons.receipt_long,
+            icon: LucideIcons.receipt,
             description: 'Request reimbursement for medical expenses',
             onTap: () => _showSubmitReimbursementDialog(provider),
           ),
           const SizedBox(height: 12),
           _buildSubmitCard(
             title: 'Upload Certificate',
-            icon: Icons.upload_file,
+            icon: LucideIcons.upload,
             description: 'Add a new medical certificate or document',
             onTap: () => _showUploadCertificateDialog(provider),
           ),
@@ -408,7 +409,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
                   ],
                 ),
               ),
-              Icon(Icons.arrow_forward_ios, color: AppColors.textSecondary),
+              Icon(LucideIcons.chevronRight, color: AppColors.textSecondary),
             ],
           ),
         ),

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:lucide_icons/lucide_icons.dart';
 import '../constants/colors.dart';
 import '../widgets/app_bottom_navigation_bar.dart';
 
@@ -44,7 +45,7 @@ class ServicesHubScreen extends StatelessWidget {
             const SizedBox(height: 24),
             _buildServiceCard(
               context: context,
-              icon: Icons.medical_services_rounded,
+              icon: LucideIcons.pill,
               title: 'E-Rezept',
               description:
                   'Buy medication as per prescription. Upload prescription and insurance card photos.',
@@ -54,7 +55,7 @@ class ServicesHubScreen extends StatelessWidget {
             const SizedBox(height: 12),
             _buildServiceCard(
               context: context,
-              icon: Icons.pregnant_woman_rounded,
+              icon: LucideIcons.userPlus,
               title: 'Pregnancy Tracker',
               description:
                   'Track your pregnancy journey with weekly updates and health tips.',
@@ -64,7 +65,7 @@ class ServicesHubScreen extends StatelessWidget {
             const SizedBox(height: 12),
             _buildServiceCard(
               context: context,
-              icon: Icons.bloodtype_rounded,
+              icon: LucideIcons.droplet,
               title: 'Blood Donation',
               description:
                   'Find blood donation centers and schedule appointments.',
@@ -74,7 +75,7 @@ class ServicesHubScreen extends StatelessWidget {
             const SizedBox(height: 12),
             _buildServiceCard(
               context: context,
-              icon: Icons.local_hospital_rounded,
+              icon: LucideIcons.smile,
               title: 'Dentist',
               description:
                   'Find dentists in your area by name, location, or pincode.',
@@ -84,7 +85,7 @@ class ServicesHubScreen extends StatelessWidget {
             const SizedBox(height: 12),
             _buildServiceCard(
               context: context,
-              icon: Icons.face_rounded,
+              icon: LucideIcons.scanFace,
               title: 'Dermo',
               description:
                   'Dermatologist treatment. Upload pictures, ask questions, get diagnosis and aftercare.',
@@ -94,7 +95,7 @@ class ServicesHubScreen extends StatelessWidget {
             const SizedBox(height: 12),
             _buildServiceCard(
               context: context,
-              icon: Icons.child_care_rounded,
+              icon: LucideIcons.baby,
               title: 'Baby Tracker',
               description: 'Track your newborn\'s feeding, sleep, and growth.',
               color: Colors.purple,
@@ -103,7 +104,7 @@ class ServicesHubScreen extends StatelessWidget {
             const SizedBox(height: 12),
             _buildServiceCard(
               context: context,
-              icon: Icons.accessibility_new_rounded,
+              icon: LucideIcons.bone,
               title: 'Orthopedic',
               description:
                   'Orthopedic examination tools for doctors. Similar to Orthoexamine.',
@@ -113,7 +114,7 @@ class ServicesHubScreen extends StatelessWidget {
             const SizedBox(height: 12),
             _buildServiceCard(
               context: context,
-              icon: Icons.fitness_center_rounded,
+              icon: LucideIcons.dumbbell,
               title: 'FitPhysic',
               description:
                   'Personal guide for successful rehab with training videos.',
@@ -187,7 +188,7 @@ class ServicesHubScreen extends StatelessWidget {
               ),
             ),
             Icon(
-              Icons.arrow_forward_ios_rounded,
+              LucideIcons.chevronRight,
               color: AppColors.textSecondary,
               size: 18,
             ),

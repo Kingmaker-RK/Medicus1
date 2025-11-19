@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:lucide_icons/lucide_icons.dart';
 import '../constants/colors.dart';
 
 class AppBottomNavigationBar extends StatelessWidget {
@@ -29,7 +30,7 @@ class AppBottomNavigationBar extends StatelessWidget {
             children: [
               _buildNavItem(
                 context: context,
-                icon: Icons.home_rounded,
+                icon: LucideIcons.home,
                 label: 'Home',
                 index: 0,
                 isSelected: currentIndex == 0,
@@ -37,7 +38,7 @@ class AppBottomNavigationBar extends StatelessWidget {
               ),
               _buildNavItem(
                 context: context,
-                icon: Icons.calendar_month_rounded,
+                icon: LucideIcons.calendar,
                 label: 'Appointments',
                 index: 1,
                 isSelected: currentIndex == 1,
@@ -45,7 +46,7 @@ class AppBottomNavigationBar extends StatelessWidget {
               ),
               _buildNavItem(
                 context: context,
-                icon: Icons.medical_services_rounded,
+                icon: LucideIcons.stethoscope,
                 label: 'Services',
                 index: 4,
                 isSelected: currentIndex == 4,
@@ -53,7 +54,7 @@ class AppBottomNavigationBar extends StatelessWidget {
               ),
               _buildNavItem(
                 context: context,
-                icon: Icons.favorite_rounded,
+                icon: LucideIcons.heart,
                 label: 'Health',
                 index: 2,
                 isSelected: currentIndex == 2,
@@ -61,7 +62,7 @@ class AppBottomNavigationBar extends StatelessWidget {
               ),
               _buildNavItem(
                 context: context,
-                icon: Icons.notifications_rounded,
+                icon: LucideIcons.bell,
                 label: 'Reminders',
                 index: 3,
                 isSelected: currentIndex == 3,
