@@ -1,3 +1,4 @@
+import 'package:permission_handler/permission_handler.dart' as ph;
 import 'package:permission_handler/permission_handler.dart';
 
 class PermissionService {
@@ -73,8 +74,8 @@ class PermissionService {
   }
 
   // Open app settings
-  Future<void> openAppSettings() async {
-    await openAppSettings();
+  Future<bool> openSettings() async {
+    return await ph.openAppSettings();
   }
 
   // Check permission status

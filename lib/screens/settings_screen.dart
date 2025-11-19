@@ -188,7 +188,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         ),
                         trailing: const Icon(Icons.arrow_forward_ios, size: 16),
                         onTap: () async {
-                          await _permissionService.openAppSettings();
+                          await _permissionService.openSettings();
                         },
                       ),
                     ],

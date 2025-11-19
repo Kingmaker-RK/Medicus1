@@ -10,6 +10,7 @@ import '../constants/app_constants.dart';
 import '../widgets/anatomy_viewer.dart';
 import '../widgets/app_bottom_navigation_bar.dart';
 import '../widgets/handwriting_input_widget.dart';
+import '../services/permission_service.dart';
 
 class TranslationScreen extends StatefulWidget {
   const TranslationScreen({Key? key}) : super(key: key);
@@ -112,7 +113,45 @@ class _TranslationScreenState extends State<TranslationScreen>
     );
   }
 
+  void _showPermissionDialog() {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Camera Permission Required'),
+        content: const Text(
+          'Please enable camera access in settings to take photos for translation.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel'),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              Navigator.pop(context);
+              PermissionService().openSettings();
+            },
+            child: const Text('Settings'),
+          ),
+        ],
+      ),
+    );
+  }
+
   Future<void> _pickAndExtractImage({ImageSource source = ImageSource.gallery}) async {
+    if (source == ImageSource.camera) {
+      final permissionService = PermissionService();
+      final hasPermission = await permissionService.isCameraGranted();
+      if (!hasPermission) {
+        final granted = await permissionService.requestCameraPermission();
+        if (!granted) {
+          if (!mounted) return;
+          _showPermissionDialog();
+          return;
+        }
+      }
+    }
+
     final ImagePicker picker = ImagePicker();
     final XFile? image = await picker.pickImage(source: source);
 
