@@ -8,6 +8,34 @@ Medicus is a medical translation application designed to facilitate communicatio
 
 ## Recent Updates
 
+### Authentication Enhancement (2025-11-19)
+
+#### Show/Hide Password Feature
+
+**Description:** Users can now toggle password visibility during sign-in by clicking an icon in the password field.
+
+**Location:** Welcome Screen - Password input field (suffix icon)
+
+**User Experience:**
+- Eye icon button appears on the right side of password field
+- Shows "visibility_off" icon when password is hidden (default state)
+- Shows "visibility" icon when password is visible
+- Clicking toggles between showing plain text and obscured password
+- Icon color matches secondary text color for consistency
+
+**Technical Details:**
+- State variable: `_obscurePassword` (default: `true`)
+- TextField's `obscureText` property bound to `_obscurePassword`
+- IconButton in `suffixIcon` with state toggle on press
+- Implemented in `welcome_screen.dart` at lines 25, 186-201
+
+**Security:**
+- Password visibility is session-only (never persisted)
+- Default state is always hidden on screen load
+- User must manually toggle to see password
+
+---
+
 ### Authentication Enhancement (2025-11-18)
 
 #### Remember Me Feature
