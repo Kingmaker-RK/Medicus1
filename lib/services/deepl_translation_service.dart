@@ -98,7 +98,6 @@ class DeepLTranslationService {
       'ja': 'JA',
       'zh': 'ZH',
       'zh-CN': 'ZH',
-      'zh-TW': 'ZH',
       'bg': 'BG',
       'cs': 'CS',
       'da': 'DA',

@@ -1,6 +1,7 @@
 import 'dart:typed_data';
 import 'package:google_generative_ai/google_generative_ai.dart';
 import '../constants/app_constants.dart';
+import 'deepl_translation_service.dart';
 
 /// Advanced LLM-powered translation service using Google Gemini Flash 2.0
 /// Provides instant, contextually accurate translations for 200+ languages
@@ -12,6 +13,7 @@ class LLMTranslationService {
 
   GenerativeModel? _model;
   final Map<String, Map<String, String>> _translationCache = {};
+  final DeepLTranslationService _deepLService = DeepLTranslationService();
 
   /// Initialize the Gemini model
   void initialize() {
@@ -31,6 +33,7 @@ class LLMTranslationService {
     } else {
       print('⚠️ Gemini API key not configured. Using fallback translations.');
     }
+    _deepLService.initialize();
   }
 
   /// Recognize handwriting from image bytes
@@ -99,6 +102,24 @@ class LLMTranslationService {
     if (_translationCache.containsKey(targetLanguageCode) &&
         _translationCache[targetLanguageCode]!.containsKey(text)) {
       return _translationCache[targetLanguageCode]![text]!;
+    }
+
+    // Use DeepL if available and language is supported
+    if (_deepLService.isAvailable &&
+        _deepLService.getSupportedLanguages().toString().contains(targetLanguageCode)) {
+      try {
+        final result = await _deepLService.translateText(
+          text: text,
+          sourceLanguage: 'auto',
+          targetLanguage: targetLanguageCode,
+        );
+        final translatedText = result.translatedText;
+        _translationCache.putIfAbsent(targetLanguageCode, () => {});
+        _translationCache[targetLanguageCode]![text] = translatedText;
+        return translatedText;
+      } catch (e) {
+        print('❌ DeepL translation error, falling back to Gemini: $e');
+      }
     }
 
     // If model not available, return original text

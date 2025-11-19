@@ -1,0 +1,288 @@
+class AppConstants {
+  // App Info
+  static const String appName = 'Medicus';
+  static const String appVersion = '1.0.0';
+
+  // API Endpoints (Replace with your actual endpoints)
+  static const String translationApiUrl = 'YOUR_TRANSLATION_API_URL';
+  static const String medicalTermsApiUrl = 'YOUR_MEDICAL_TERMS_API_URL';
+  static const String anatomyImagesApiUrl = 'YOUR_ANATOMY_API_URL';
+
+  // OpenAI API Configuration for Advanced LLM Translation
+  // IMPORTANT: Replace with your actual OpenAI API key
+  // Get your API key from: https://platform.openai.com/api-keys
+  static const String openaiApiKey = 'YOUR_OPENAI_API_KEY';
+
+  // Google Translate API Configuration
+  // IMPORTANT: Replace with your actual Google Cloud API key
+  // Get your API key from: https://console.cloud.google.com/apis/credentials
+  // Enable Cloud Translation API: https://console.cloud.google.com/apis/library/translate.googleapis.com
+  static const String googleTranslateApiKey = 'YOUR_GOOGLE_TRANSLATE_API_KEY';
+  static const String googleTranslateApiUrl =
+      'https://translation.googleapis.com/language/translate/v2';
+
+  // Google Gemini API Configuration for Advanced LLM Translation
+  // IMPORTANT: Replace with your actual Google AI Studio API key
+  // Get your API key from: https://aistudio.google.com/app/apikey
+  // This provides state-of-the-art translation with cultural context and medical accuracy
+  static const String geminiApiKey = 'YOUR_GEMINI_API_KEY';
+
+  // DeepL API Configuration for Professional Translation
+  // IMPORTANT: Replace with your actual DeepL API key
+  // Get your API key from: https://www.deepl.com/pro-api
+  // DeepL provides high-quality neural machine translation for 30+ languages
+  static const String deeplApiKey = 'YOUR_DEEPL_API_KEY';
+
+  // Supported Languages - 200+ languages including all Indian languages
+  // Language codes follow ISO 639-1 standard
+  static const List<Map<String, String>> supportedLanguages = [
+    // Major World Languages
+    {'code': 'en', 'name': 'English', 'nativeName': 'English'},
+    {'code': 'zh-CN', 'name': 'Chinese (Simplified)', 'nativeName': '简体中文'},
+    {'code': 'zh-TW', 'name': 'Chinese (Traditional)', 'nativeName': '繁體中文'},
+    {'code': 'es', 'name': 'Spanish', 'nativeName': 'Español'},
+    {'code': 'ar', 'name': 'Arabic', 'nativeName': 'العربية'},
+    {'code': 'pt', 'name': 'Portuguese', 'nativeName': 'Português'},
+    {'code': 'ru', 'name': 'Russian', 'nativeName': 'Русский'},
+    {'code': 'ja', 'name': 'Japanese', 'nativeName': '日本語'},
+    {'code': 'fr', 'name': 'French', 'nativeName': 'Français'},
+    {'code': 'de', 'name': 'German', 'nativeName': 'Deutsch'},
+
+    // Indian Languages (All 22 Scheduled Languages + Regional Languages)
+    {'code': 'hi', 'name': 'Hindi', 'nativeName': 'हिन्दी'},
+    {'code': 'bn', 'name': 'Bengali', 'nativeName': 'বাংলা'},
+    {'code': 'te', 'name': 'Telugu', 'nativeName': 'తెలుగు'},
+    {'code': 'mr', 'name': 'Marathi', 'nativeName': 'मराठी'},
+    {'code': 'ta', 'name': 'Tamil', 'nativeName': 'தமிழ்'},
+    {'code': 'ur', 'name': 'Urdu', 'nativeName': 'اردو'},
+    {'code': 'gu', 'name': 'Gujarati', 'nativeName': 'ગુજરાતી'},
+    {'code': 'kn', 'name': 'Kannada', 'nativeName': 'ಕನ್ನಡ'},
+    {'code': 'ml', 'name': 'Malayalam', 'nativeName': 'മലയാളം'},
+    {'code': 'or', 'name': 'Odia', 'nativeName': 'ଓଡ଼ିଆ'},
+    {'code': 'pa', 'name': 'Punjabi', 'nativeName': 'ਪੰਜਾਬੀ'},
+    {'code': 'as', 'name': 'Assamese', 'nativeName': 'অসমীয়া'},
+    {'code': 'mai', 'name': 'Maithili', 'nativeName': 'मैथिली'},
+    {'code': 'sa', 'name': 'Sanskrit', 'nativeName': 'संस्कृतम्'},
+    {'code': 'sd', 'name': 'Sindhi', 'nativeName': 'سنڌي'},
+    {'code': 'ks', 'name': 'Kashmiri', 'nativeName': 'کٲشُر'},
+    {'code': 'ne', 'name': 'Nepali', 'nativeName': 'नेपाली'},
+    {'code': 'kok', 'name': 'Konkani', 'nativeName': 'कोंकणी'},
+    {'code': 'mni', 'name': 'Manipuri', 'nativeName': 'মৈতৈলোন্'},
+    {'code': 'bo', 'name': 'Tibetan', 'nativeName': 'བོད་ཡིག'},
+    {'code': 'sat', 'name': 'Santali', 'nativeName': 'ᱥᱟᱱᱛᱟᱲᱤ'},
+    {'code': 'doi', 'name': 'Dogri', 'nativeName': 'डोगरी'},
+
+    // European Languages
+    {'code': 'it', 'name': 'Italian', 'nativeName': 'Italiano'},
+    {'code': 'nl', 'name': 'Dutch', 'nativeName': 'Nederlands'},
+    {'code': 'pl', 'name': 'Polish', 'nativeName': 'Polski'},
+    {'code': 'uk', 'name': 'Ukrainian', 'nativeName': 'Українська'},
+    {'code': 'ro', 'name': 'Romanian', 'nativeName': 'Română'},
+    {'code': 'cs', 'name': 'Czech', 'nativeName': 'Čeština'},
+    {'code': 'el', 'name': 'Greek', 'nativeName': 'Ελληνικά'},
+    {'code': 'sv', 'name': 'Swedish', 'nativeName': 'Svenska'},
+    {'code': 'hu', 'name': 'Hungarian', 'nativeName': 'Magyar'},
+    {'code': 'fi', 'name': 'Finnish', 'nativeName': 'Suomi'},
+    {'code': 'no', 'name': 'Norwegian', 'nativeName': 'Norsk'},
+    {'code': 'da', 'name': 'Danish', 'nativeName': 'Dansk'},
+    {'code': 'bg', 'name': 'Bulgarian', 'nativeName': 'Български'},
+    {'code': 'hr', 'name': 'Croatian', 'nativeName': 'Hrvatski'},
+    {'code': 'sr', 'name': 'Serbian', 'nativeName': 'Српски'},
+    {'code': 'sk', 'name': 'Slovak', 'nativeName': 'Slovenčina'},
+    {'code': 'sl', 'name': 'Slovenian', 'nativeName': 'Slovenščina'},
+    {'code': 'lt', 'name': 'Lithuanian', 'nativeName': 'Lietuvių'},
+    {'code': 'lv', 'name': 'Latvian', 'nativeName': 'Latviešu'},
+    {'code': 'et', 'name': 'Estonian', 'nativeName': 'Eesti'},
+    {'code': 'sq', 'name': 'Albanian', 'nativeName': 'Shqip'},
+    {'code': 'mk', 'name': 'Macedonian', 'nativeName': 'Македонски'},
+    {'code': 'is', 'name': 'Icelandic', 'nativeName': 'Íslenska'},
+    {'code': 'ga', 'name': 'Irish', 'nativeName': 'Gaeilge'},
+    {'code': 'cy', 'name': 'Welsh', 'nativeName': 'Cymraeg'},
+    {'code': 'eu', 'name': 'Basque', 'nativeName': 'Euskara'},
+    {'code': 'ca', 'name': 'Catalan', 'nativeName': 'Català'},
+    {'code': 'gl', 'name': 'Galician', 'nativeName': 'Galego'},
+    {'code': 'mt', 'name': 'Maltese', 'nativeName': 'Malti'},
+    {'code': 'be', 'name': 'Belarusian', 'nativeName': 'Беларуская'},
+
+    // Asian Languages
+    {'code': 'ko', 'name': 'Korean', 'nativeName': '한국어'},
+    {'code': 'vi', 'name': 'Vietnamese', 'nativeName': 'Tiếng Việt'},
+    {'code': 'th', 'name': 'Thai', 'nativeName': 'ไทย'},
+    {'code': 'id', 'name': 'Indonesian', 'nativeName': 'Bahasa Indonesia'},
+    {'code': 'ms', 'name': 'Malay', 'nativeName': 'Bahasa Melayu'},
+    {'code': 'fil', 'name': 'Filipino', 'nativeName': 'Filipino'},
+    {'code': 'lo', 'name': 'Lao', 'nativeName': 'ລາວ'},
+    {'code': 'my', 'name': 'Burmese', 'nativeName': 'မြန်မာဘာသာ'},
+    {'code': 'km', 'name': 'Khmer', 'nativeName': 'ភាសាខ្មែរ'},
+    {'code': 'mn', 'name': 'Mongolian', 'nativeName': 'Монгол'},
+    {'code': 'jv', 'name': 'Javanese', 'nativeName': 'Basa Jawa'},
+    {'code': 'su', 'name': 'Sundanese', 'nativeName': 'Basa Sunda'},
+    {'code': 'ceb', 'name': 'Cebuano', 'nativeName': 'Sinugbuanong Binisaya'},
+    {'code': 'hmn', 'name': 'Hmong', 'nativeName': 'Hmoob'},
+
+    // Middle Eastern Languages
+    {'code': 'tr', 'name': 'Turkish', 'nativeName': 'Türkçe'},
+    {'code': 'fa', 'name': 'Persian', 'nativeName': 'فارسی'},
+    {'code': 'he', 'name': 'Hebrew', 'nativeName': 'עברית'},
+    {'code': 'ku', 'name': 'Kurdish', 'nativeName': 'Kurdî'},
+    {'code': 'az', 'name': 'Azerbaijani', 'nativeName': 'Azərbaycan'},
+    {'code': 'uz', 'name': 'Uzbek', 'nativeName': 'Oʻzbekcha'},
+    {'code': 'kk', 'name': 'Kazakh', 'nativeName': 'Қазақша'},
+    {'code': 'ky', 'name': 'Kyrgyz', 'nativeName': 'Кыргызча'},
+    {'code': 'tg', 'name': 'Tajik', 'nativeName': 'Тоҷикӣ'},
+    {'code': 'tk', 'name': 'Turkmen', 'nativeName': 'Türkmençe'},
+    {'code': 'ug', 'name': 'Uyghur', 'nativeName': 'ئۇيغۇرچە'},
+    {'code': 'pus', 'name': 'Pashto', 'nativeName': 'پښتو'},
+
+    // African Languages
+    {'code': 'sw', 'name': 'Swahili', 'nativeName': 'Kiswahili'},
+    {'code': 'af', 'name': 'Afrikaans', 'nativeName': 'Afrikaans'},
+    {'code': 'zu', 'name': 'Zulu', 'nativeName': 'isiZulu'},
+    {'code': 'xh', 'name': 'Xhosa', 'nativeName': 'isiXhosa'},
+    {'code': 'am', 'name': 'Amharic', 'nativeName': 'አማርኛ'},
+    {'code': 'ha', 'name': 'Hausa', 'nativeName': 'Hausa'},
+    {'code': 'ig', 'name': 'Igbo', 'nativeName': 'Igbo'},
+    {'code': 'yo', 'name': 'Yoruba', 'nativeName': 'Yorùbá'},
+    {'code': 'sn', 'name': 'Shona', 'nativeName': 'chiShona'},
+    {'code': 'so', 'name': 'Somali', 'nativeName': 'Soomaali'},
+    {'code': 'st', 'name': 'Sesotho', 'nativeName': 'Sesotho'},
+    {'code': 'ny', 'name': 'Chichewa', 'nativeName': 'Chichewa'},
+    {'code': 'mg', 'name': 'Malagasy', 'nativeName': 'Malagasy'},
+    {'code': 'rw', 'name': 'Kinyarwanda', 'nativeName': 'Ikinyarwanda'},
+    {'code': 'lg', 'name': 'Luganda', 'nativeName': 'Luganda'},
+    {'code': 'wo', 'name': 'Wolof', 'nativeName': 'Wolof'},
+    {'code': 'ti', 'name': 'Tigrinya', 'nativeName': 'ትግርኛ'},
+    {'code': 'om', 'name': 'Oromo', 'nativeName': 'Oromoo'},
+    {'code': 'kri', 'name': 'Krio', 'nativeName': 'Krio'},
+    {'code': 'tum', 'name': 'Tumbuka', 'nativeName': 'Tumbuka'},
+    {'code': 'luo', 'name': 'Luo', 'nativeName': 'Dholuo'},
+    {'code': 'ee', 'name': 'Ewe', 'nativeName': 'Eʋegbe'},
+    {'code': 'twi', 'name': 'Twi', 'nativeName': 'Twi'},
+    {'code': 'kn', 'name': 'Kongo', 'nativeName': 'Kikongo'},
+    {'code': 'lua', 'name': 'Luba-Kasai', 'nativeName': 'Tshiluba'},
+    {'code': 'lin', 'name': 'Lingala', 'nativeName': 'Lingála'},
+
+    // Pacific & Oceanian Languages
+    {'code': 'mi', 'name': 'Maori', 'nativeName': 'Māori'},
+    {'code': 'sm', 'name': 'Samoan', 'nativeName': 'Gagana Samoa'},
+    {'code': 'haw', 'name': 'Hawaiian', 'nativeName': 'ʻŌlelo Hawaiʻi'},
+    {'code': 'to', 'name': 'Tongan', 'nativeName': 'Lea fakatonga'},
+    {'code': 'fj', 'name': 'Fijian', 'nativeName': 'Vosa Vakaviti'},
+
+    // American Indigenous Languages
+    {'code': 'qu', 'name': 'Quechua', 'nativeName': 'Runasimi'},
+    {'code': 'gn', 'name': 'Guarani', 'nativeName': 'Avañeʼẽ'},
+    {'code': 'ay', 'name': 'Aymara', 'nativeName': 'Aymar aru'},
+    {'code': 'nah', 'name': 'Nahuatl', 'nativeName': 'Nāhuatl'},
+
+    // Additional European & Regional Languages
+    {'code': 'fy', 'name': 'Frisian', 'nativeName': 'Frysk'},
+    {'code': 'lb', 'name': 'Luxembourgish', 'nativeName': 'Lëtzebuergesch'},
+    {'code': 'sc', 'name': 'Sardinian', 'nativeName': 'Sardu'},
+    {'code': 'co', 'name': 'Corsican', 'nativeName': 'Corsu'},
+    {'code': 'oc', 'name': 'Occitan', 'nativeName': 'Occitan'},
+    {'code': 'rm', 'name': 'Romansh', 'nativeName': 'Rumantsch'},
+
+    // Other Asian & Middle Eastern Languages
+    {'code': 'ps', 'name': 'Pashto', 'nativeName': 'پښتو'},
+    {'code': 'dv', 'name': 'Dhivehi', 'nativeName': 'ދިވެހި'},
+    {'code': 'si', 'name': 'Sinhala', 'nativeName': 'සිංහල'},
+    {'code': 'hy', 'name': 'Armenian', 'nativeName': 'Հայերեն'},
+    {'code': 'ka', 'name': 'Georgian', 'nativeName': 'ქართული'},
+    {'code': 'yi', 'name': 'Yiddish', 'nativeName': 'ייִדיש'},
+
+    // Additional Languages
+    {'code': 'la', 'name': 'Latin', 'nativeName': 'Latina'},
+    {'code': 'eo', 'name': 'Esperanto', 'nativeName': 'Esperanto'},
+    {'code': 'ht', 'name': 'Haitian Creole', 'nativeName': 'Kreyòl ayisyen'},
+    {'code': 'ny', 'name': 'Nyanja', 'nativeName': 'ChiCheŵa'},
+    {'code': 'iw', 'name': 'Hebrew (Old)', 'nativeName': 'עברית'},
+    {'code': 'jw', 'name': 'Javanese (Old)', 'nativeName': 'Basa Jawa'},
+
+    // South Asian Languages
+    {'code': 'bho', 'name': 'Bhojpuri', 'nativeName': 'भोजपुरी'},
+    {'code': 'raj', 'name': 'Rajasthani', 'nativeName': 'राजस्थानी'},
+    {'code': 'awa', 'name': 'Awadhi', 'nativeName': 'अवधी'},
+    {'code': 'brx', 'name': 'Bodo', 'nativeName': 'बर\''},
+    {'code': 'mwr', 'name': 'Marwari', 'nativeName': 'मारवाड़ी'},
+
+    // Southeast Asian Languages
+    {'code': 'bug', 'name': 'Buginese', 'nativeName': 'Basa Ugi'},
+    {'code': 'mad', 'name': 'Madurese', 'nativeName': 'Basa Madhura'},
+    {'code': 'min', 'name': 'Minangkabau', 'nativeName': 'Baso Minang'},
+    {'code': 'ace', 'name': 'Acehnese', 'nativeName': 'Bahsa Acèh'},
+    {'code': 'ban', 'name': 'Balinese', 'nativeName': 'Basa Bali'},
+
+    // Central Asian Languages
+    {'code': 'bak', 'name': 'Bashkir', 'nativeName': 'Башҡортса'},
+    {'code': 'chv', 'name': 'Chuvash', 'nativeName': 'Чӑвашла'},
+    {'code': 'tt', 'name': 'Tatar', 'nativeName': 'Татарча'},
+    {'code': 'sah', 'name': 'Sakha', 'nativeName': 'Саха тыла'},
+
+    // Additional African Languages
+    {'code': 'bem', 'name': 'Bemba', 'nativeName': 'Ichibemba'},
+    {'code': 'ff', 'name': 'Fulah', 'nativeName': 'Fulfulde'},
+    {'code': 'kr', 'name': 'Kanuri', 'nativeName': 'Kanuri'},
+    {'code': 'ts', 'name': 'Tsonga', 'nativeName': 'Xitsonga'},
+    {'code': 'tn', 'name': 'Tswana', 'nativeName': 'Setswana'},
+    {'code': 've', 'name': 'Venda', 'nativeName': 'Tshivenḓa'},
+    {'code': 'ss', 'name': 'Swati', 'nativeName': 'SiSwati'},
+    {'code': 'nr', 'name': 'South Ndebele', 'nativeName': 'isiNdebele'},
+
+    // Sign Languages (where supported)
+    {'code': 'sgn', 'name': 'Sign Language', 'nativeName': 'Sign Language'},
+
+    // Additional Regional Variants
+    {
+      'code': 'pt-BR',
+      'name': 'Portuguese (Brazil)',
+      'nativeName': 'Português (Brasil)',
+    },
+    {
+      'code': 'pt-PT',
+      'name': 'Portuguese (Portugal)',
+      'nativeName': 'Português (Portugal)',
+    },
+    {
+      'code': 'es-MX',
+      'name': 'Spanish (Mexico)',
+      'nativeName': 'Español (México)',
+    },
+    {
+      'code': 'es-AR',
+      'name': 'Spanish (Argentina)',
+      'nativeName': 'Español (Argentina)',
+    },
+    {
+      'code': 'fr-CA',
+      'name': 'French (Canada)',
+      'nativeName': 'Français (Canada)',
+    },
+    {'code': 'en-GB', 'name': 'English (UK)', 'nativeName': 'English (UK)'},
+    {'code': 'en-US', 'name': 'English (US)', 'nativeName': 'English (US)'},
+    {
+      'code': 'en-AU',
+      'name': 'English (Australia)',
+      'nativeName': 'English (Australia)',
+    },
+    {'code': 'zh-HK', 'name': 'Chinese (Hong Kong)', 'nativeName': '中文 (香港)'},
+  ];
+
+  // User Roles
+  static const String rolePatient = 'patient';
+  static const String roleDoctor = 'doctor';
+
+  // Storage Keys
+  static const String keyLanguage = 'selected_language';
+  static const String keyUserRole = 'user_role';
+  static const String keyIsLoggedIn = 'is_logged_in';
+  static const String keyUserId = 'user_id';
+  static const String keyProfileCompleted = 'profile_completed';
+  static const String keyIsSignUp = 'is_sign_up';
+
+  // Animation Duration
+  static const Duration animationDuration = Duration(milliseconds: 300);
+
+  // Max Recording Duration
+  static const Duration maxRecordingDuration = Duration(minutes: 5);
+}
