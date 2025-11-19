@@ -19,6 +19,8 @@ class TranslationScreen extends StatefulWidget {
 class _TranslationScreenState extends State<TranslationScreen>
     with SingleTickerProviderStateMixin {
   final TextEditingController _inputController = TextEditingController();
+  final TextEditingController _outputController = TextEditingController();
+  bool _isConversationMode = false;
   String? _previousUserLanguage;
   late AnimationController _micAnimationController;
 
@@ -69,6 +71,7 @@ class _TranslationScreenState extends State<TranslationScreen>
   @override
   void dispose() {
     _inputController.dispose();
+    _outputController.dispose();
     _micAnimationController.dispose();
     super.dispose();
   }
@@ -208,19 +211,46 @@ class _TranslationScreenState extends State<TranslationScreen>
           ),
         ],
       ),
-      child: Row(
+      child: Column(
         children: [
-          // Source language
-          Expanded(
-            child: _buildModernLanguageDropdown(
-              value: translationProvider.sourceLanguage,
-              onChanged: (value) {
-                if (value != null) {
-                  translationProvider.setSourceLanguage(value);
-                }
-              },
-            ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                'Conversation Mode',
+                style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                  color: _isConversationMode
+                      ? AppColors.accent
+                      : AppColors.textSecondary,
+                ),
+              ),
+              Switch.adaptive(
+                value: _isConversationMode,
+                activeColor: AppColors.accent,
+                onChanged: (value) {
+                  setState(() {
+                    _isConversationMode = value;
+                  });
+                },
+              ),
+            ],
           ),
+          const SizedBox(height: 12),
+          Row(
+            children: [
+              // Source language
+              Expanded(
+                child: _buildModernLanguageDropdown(
+                  value: translationProvider.sourceLanguage,
+                  onChanged: (value) {
+                    if (value != null) {
+                      translationProvider.setSourceLanguage(value);
+                    }
+                  },
+                ),
+              ),
 
           // Swap button with animation
           Padding(
@@ -367,7 +397,6 @@ class _TranslationScreenState extends State<TranslationScreen>
     final characterCount = _inputController.text.length;
 
     return Container(
-      constraints: const BoxConstraints(minHeight: 300),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
@@ -381,29 +410,28 @@ class _TranslationScreenState extends State<TranslationScreen>
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
         children: [
           // Input text area
-          Expanded(
-            child: TextField(
-              controller: _inputController,
-              maxLines: null,
-              expands: true,
-              style: const TextStyle(
-                fontSize: 16,
-                height: 1.5,
-                color: AppColors.textPrimary,
-              ),
-              decoration: InputDecoration(
-                hintText: 'Enter text to translate...',
-                hintStyle: TextStyle(color: AppColors.textHint, fontSize: 16),
-                border: InputBorder.none,
-                contentPadding: const EdgeInsets.all(20),
-              ),
-              onChanged: (text) {
-                setState(() {}); // Update character count
-                translationProvider.updateInput(text);
-              },
+          TextField(
+            controller: _inputController,
+            maxLines: null,
+            minLines: 3,
+            style: const TextStyle(
+              fontSize: 16,
+              height: 1.5,
+              color: AppColors.textPrimary,
             ),
+            decoration: InputDecoration(
+              hintText: 'Enter text to translate...',
+              hintStyle: TextStyle(color: AppColors.textHint, fontSize: 16),
+              border: InputBorder.none,
+              contentPadding: const EdgeInsets.all(20),
+            ),
+            onChanged: (text) {
+              setState(() {}); // Update character count
+              translationProvider.updateInput(text);
+            },
           ),
 
           // Bottom toolbar
@@ -491,8 +519,12 @@ class _TranslationScreenState extends State<TranslationScreen>
   Widget _buildModernOutputCard(TranslationProvider translationProvider) {
     final currentTranslation = translationProvider.currentTranslation;
 
+    if (currentTranslation != null &&
+        _outputController.text != currentTranslation.translatedText) {
+      _outputController.text = currentTranslation.translatedText;
+    }
+
     return Container(
-      constraints: const BoxConstraints(minHeight: 300),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
@@ -508,19 +540,22 @@ class _TranslationScreenState extends State<TranslationScreen>
           ? _buildEmptyState()
           : Column(
               crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
               children: [
                 // Translation text
-                Expanded(
-                  child: SingleChildScrollView(
-                    padding: const EdgeInsets.all(20),
-                    child: SelectableText(
-                      currentTranslation.translatedText,
-                      style: const TextStyle(
-                        fontSize: 16,
-                        height: 1.5,
-                        color: AppColors.textPrimary,
-                      ),
-                    ),
+                TextField(
+                  controller: _outputController,
+                  readOnly: true,
+                  maxLines: null,
+                  minLines: 3,
+                  style: const TextStyle(
+                    fontSize: 16,
+                    height: 1.5,
+                    color: AppColors.textPrimary,
+                  ),
+                  decoration: const InputDecoration(
+                    border: InputBorder.none,
+                    contentPadding: EdgeInsets.all(20),
                   ),
                 ),
 
