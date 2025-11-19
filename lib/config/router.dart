@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import '../constants/app_routes.dart';
 import '../screens/welcome_screen.dart';
 import '../screens/translation_screen.dart';
 import '../screens/settings_screen.dart';
@@ -34,58 +35,58 @@ class AppRouter {
     routes: [
       GoRoute(
         path: '/',
-        name: 'welcome',
+        name: AppRoutes.welcome,
         builder: (context, state) => const WelcomeScreen(),
       ),
       GoRoute(
-        path: '/translation',
-        name: 'translation',
+        path: '/${AppRoutes.translation}',
+        name: AppRoutes.translation,
         builder: (context, state) => const TranslationScreen(),
       ),
       GoRoute(
-        path: '/settings',
-        name: 'settings',
+        path: '/${AppRoutes.settings}',
+        name: AppRoutes.settings,
         builder: (context, state) => const SettingsScreen(),
       ),
       GoRoute(
-        path: '/profile',
-        name: 'profile',
+        path: '/${AppRoutes.profile}',
+        name: AppRoutes.profile,
         builder: (context, state) => const PatientProfileScreen(),
       ),
       GoRoute(
-        path: '/doctor-profile',
-        name: 'doctor-profile',
+        path: '/${AppRoutes.doctorProfile}',
+        name: AppRoutes.doctorProfile,
         builder: (context, state) => const DoctorProfileScreen(),
       ),
       GoRoute(
-        path: '/complete-profile',
-        name: 'complete-profile',
+        path: '/${AppRoutes.completeProfile}',
+        name: AppRoutes.completeProfile,
         builder: (context, state) => const ProfileCompletionScreen(),
       ),
       GoRoute(
-        path: '/forgot-password',
-        name: 'forgot-password',
+        path: '/${AppRoutes.forgotPassword}',
+        name: AppRoutes.forgotPassword,
         builder: (context, state) => const ForgotPasswordScreen(),
       ),
       GoRoute(
-        path: '/verify-email',
-        name: 'verify-email',
+        path: '/${AppRoutes.verifyEmail}',
+        name: AppRoutes.verifyEmail,
         builder: (context, state) {
           final email = state.uri.queryParameters['email'] ?? '';
           return EmailVerificationScreen(email: email);
         },
       ),
       GoRoute(
-        path: '/verify-password-reset',
-        name: 'verify-password-reset',
+        path: '/${AppRoutes.verifyPasswordReset}',
+        name: AppRoutes.verifyPasswordReset,
         builder: (context, state) {
           final email = state.uri.queryParameters['email'] ?? '';
           return VerifyPasswordResetScreen(email: email);
         },
       ),
       GoRoute(
-        path: '/reset-password',
-        name: 'reset-password',
+        path: '/${AppRoutes.resetPassword}',
+        name: AppRoutes.resetPassword,
         builder: (context, state) {
           final email = state.uri.queryParameters['email'] ?? '';
           final code = state.uri.queryParameters['code'] ?? '';
@@ -93,63 +94,63 @@ class AppRouter {
         },
       ),
       GoRoute(
-        path: '/appointments',
-        name: 'appointments',
+        path: '/${AppRoutes.appointments}',
+        name: AppRoutes.appointments,
         builder: (context, state) => const AppointmentsScreen(),
       ),
       GoRoute(
-        path: '/health',
-        name: 'health',
+        path: '/${AppRoutes.health}',
+        name: AppRoutes.health,
         builder: (context, state) => const HealthScreen(),
       ),
       GoRoute(
-        path: '/reminders',
-        name: 'reminders',
+        path: '/${AppRoutes.reminders}',
+        name: AppRoutes.reminders,
         builder: (context, state) => const RemindersScreen(),
       ),
       GoRoute(
-        path: '/services',
-        name: 'services',
+        path: '/${AppRoutes.services}',
+        name: AppRoutes.services,
         builder: (context, state) => const ServicesHubScreen(),
       ),
       GoRoute(
-        path: '/e-rezept',
-        name: 'e-rezept',
+        path: '/${AppRoutes.eRezept}',
+        name: AppRoutes.eRezept,
         builder: (context, state) => const ERezeptScreen(),
       ),
       GoRoute(
-        path: '/pregnancy-tracker',
-        name: 'pregnancy-tracker',
+        path: '/${AppRoutes.pregnancyTracker}',
+        name: AppRoutes.pregnancyTracker,
         builder: (context, state) => const PregnancyTrackerScreen(),
       ),
       GoRoute(
-        path: '/blood-donation',
-        name: 'blood-donation',
+        path: '/${AppRoutes.bloodDonation}',
+        name: AppRoutes.bloodDonation,
         builder: (context, state) => const BloodDonationScreen(),
       ),
       GoRoute(
-        path: '/dentist',
-        name: 'dentist',
+        path: '/${AppRoutes.dentist}',
+        name: AppRoutes.dentist,
         builder: (context, state) => const DentistScreen(),
       ),
       GoRoute(
-        path: '/dermo',
-        name: 'dermo',
+        path: '/${AppRoutes.dermo}',
+        name: AppRoutes.dermo,
         builder: (context, state) => const DermoScreen(),
       ),
       GoRoute(
-        path: '/baby-tracker',
-        name: 'baby-tracker',
+        path: '/${AppRoutes.babyTracker}',
+        name: AppRoutes.babyTracker,
         builder: (context, state) => const BabyTrackerScreen(),
       ),
       GoRoute(
-        path: '/orthopedic',
-        name: 'orthopedic',
+        path: '/${AppRoutes.orthopedic}',
+        name: AppRoutes.orthopedic,
         builder: (context, state) => const OrthopedicScreen(),
       ),
       GoRoute(
-        path: '/fitphysic',
-        name: 'fitphysic',
+        path: '/${AppRoutes.fitphysic}',
+        name: AppRoutes.fitphysic,
         builder: (context, state) => const FitPhysicScreen(),
       ),
     ],

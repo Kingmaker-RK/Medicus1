@@ -16,6 +16,7 @@ Medicus is a comprehensive medical translation application designed to break lan
 1. **Welcome Page**: Sign up, sign in, or continue as guest with language selection
 2. **Translation Page**: Main interface for real-time translation with anatomy visualization
 3. **Settings Page**: Manage permissions (microphone, camera, location, notifications)
+4. **Services Hub**: Access a variety of medical services. This screen was recently refactored to use a data-driven architecture, making it more scalable and maintainable.
 
 ## Quick Start
 
@@ -46,6 +47,7 @@ See full documentation in the README for detailed integration steps.
 lib/
 ├── config/          # App configuration
 ├── constants/       # Constants and colors
+├── data/            # Decoupled data sources
 ├── models/          # Data models
 ├── providers/       # State management
 ├── screens/         # UI screens

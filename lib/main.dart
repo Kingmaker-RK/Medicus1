@@ -5,7 +5,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'config/router.dart';
 import 'providers/user_provider.dart';
 import 'providers/translation_provider.dart';
-import 'providers/user_profile_provider.dart';
+import 'providers/patient_profile_provider.dart';
 import 'providers/doctor_profile_provider.dart';
 import 'constants/colors.dart';
 import 'constants/app_constants.dart';
@@ -34,7 +34,7 @@ class MedicusApp extends StatelessWidget {
           create: (_) => TranslationProvider()..initialize(),
         ),
         ChangeNotifierProvider(
-          create: (_) => UserProfileProvider()..initialize(),
+          create: (_) => PatientProfileProvider()..initialize(),
         ),
         ChangeNotifierProvider(
           create: (_) => DoctorProfileProvider()..initialize(),

@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucide_icons/lucide_icons.dart';
+import '../constants/app_routes.dart';
 import '../constants/colors.dart';
 
 class AppBottomNavigationBar extends StatelessWidget {
   final int currentIndex;
 
   const AppBottomNavigationBar({Key? key, required this.currentIndex})
-    : super(key: key);
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -34,7 +35,7 @@ class AppBottomNavigationBar extends StatelessWidget {
                 label: 'Home',
                 index: 0,
                 isSelected: currentIndex == 0,
-                onTap: () => context.go('/translation'),
+                onTap: () => context.goNamed(AppRoutes.translation),
               ),
               _buildNavItem(
                 context: context,
@@ -42,7 +43,7 @@ class AppBottomNavigationBar extends StatelessWidget {
                 label: 'Appointments',
                 index: 1,
                 isSelected: currentIndex == 1,
-                onTap: () => context.go('/appointments'),
+                onTap: () => context.goNamed(AppRoutes.appointments),
               ),
               _buildNavItem(
                 context: context,
@@ -50,7 +51,7 @@ class AppBottomNavigationBar extends StatelessWidget {
                 label: 'Services',
                 index: 4,
                 isSelected: currentIndex == 4,
-                onTap: () => context.push('/services'),
+                onTap: () => context.goNamed(AppRoutes.services),
               ),
               _buildNavItem(
                 context: context,
@@ -58,7 +59,7 @@ class AppBottomNavigationBar extends StatelessWidget {
                 label: 'Health',
                 index: 2,
                 isSelected: currentIndex == 2,
-                onTap: () => context.go('/health'),
+                onTap: () => context.goNamed(AppRoutes.health),
               ),
               _buildNavItem(
                 context: context,
@@ -66,7 +67,7 @@ class AppBottomNavigationBar extends StatelessWidget {
                 label: 'Reminders',
                 index: 3,
                 isSelected: currentIndex == 3,
-                onTap: () => context.go('/reminders'),
+                onTap: () => context.goNamed(AppRoutes.reminders),
               ),
             ],
           ),
