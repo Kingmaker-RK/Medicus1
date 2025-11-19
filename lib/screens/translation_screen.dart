@@ -495,8 +495,8 @@ class _TranslationScreenState extends State<TranslationScreen>
             children: [
               // Conversation Mode
               Container(
-                width: 29,
-                height: 29,
+                width: 38,
+                height: 38,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
                   color: _isConversationMode ? AppColors.accent : Colors.grey[50],
@@ -518,7 +518,7 @@ class _TranslationScreenState extends State<TranslationScreen>
                   icon: Icon(
                     Icons.record_voice_over_rounded,
                     color: _isConversationMode ? Colors.white : AppColors.accent,
-                    size: 13,
+                    size: 17,
                   ),
                   tooltip: 'Conversation Mode',
                 ),
@@ -533,8 +533,8 @@ class _TranslationScreenState extends State<TranslationScreen>
 
               // Camera
               Container(
-                width: 29,
-                height: 29,
+                width: 38,
+                height: 38,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
                   color: Colors.grey[50],
@@ -543,7 +543,7 @@ class _TranslationScreenState extends State<TranslationScreen>
                 child: IconButton(
                   onPressed: () => _pickAndExtractImage(source: ImageSource.camera),
                   icon: Icon(Icons.camera_alt_rounded, color: AppColors.accent),
-                  iconSize: 14,
+                  iconSize: 18,
                   tooltip: 'Take Photo',
                 ),
               ),
@@ -1117,8 +1117,8 @@ class _TranslationScreenState extends State<TranslationScreen>
             await translationProvider.stopListening();
           },
           child: Container(
-            width: 33,
-            height: 33,
+            width: 43,
+            height: 43,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
               color: translationProvider.isListening
@@ -1141,7 +1141,7 @@ class _TranslationScreenState extends State<TranslationScreen>
                   translationProvider.isListening
                       ? Icons.mic_rounded
                       : Icons.mic_none_rounded,
-                  size: 14,
+                  size: 18,
                   color: Colors.white,
                 ),
                 if (translationProvider.isListening)

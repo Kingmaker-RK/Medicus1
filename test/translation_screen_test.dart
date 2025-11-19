@@ -456,5 +456,38 @@ void main() {
       expect(find.byTooltip('Upload Image'), findsOneWidget);
       expect(find.byTooltip('Handwriting Input'), findsOneWidget);
     });
+
+    testWidgets('Verify icon sizes have been increased by 30%', (WidgetTester tester) async {
+      await tester.pumpWidget(createTestScreen());
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 100));
+
+      // Conversation Icon
+      final conversationIconFinder = find.byIcon(Icons.record_voice_over_rounded);
+      expect(conversationIconFinder, findsOneWidget);
+      final conversationIcon = tester.widget<Icon>(conversationIconFinder);
+      expect(conversationIcon.size, 17);
+      final conversationContainer = tester.widget<Container>(find.ancestor(of: conversationIconFinder, matching: find.byType(Container)).first);
+      expect(conversationContainer.constraints!.maxWidth, 38);
+      expect(conversationContainer.constraints!.maxHeight, 38);
+
+      // Microphone Icon
+      final micIconFinder = find.byIcon(Icons.mic_none_rounded);
+      expect(micIconFinder, findsOneWidget);
+      final micIcon = tester.widget<Icon>(micIconFinder);
+      expect(micIcon.size, 18);
+      final micContainer = tester.widget<Container>(find.ancestor(of: micIconFinder, matching: find.byType(Container)).first);
+      expect(micContainer.constraints!.maxWidth, 43);
+      expect(micContainer.constraints!.maxHeight, 43);
+
+      // Camera Icon
+      final cameraButtonFinder = find.widgetWithIcon(IconButton, Icons.camera_alt_rounded);
+      expect(cameraButtonFinder, findsOneWidget);
+      final cameraButton = tester.widget<IconButton>(cameraButtonFinder);
+      expect(cameraButton.iconSize, 18);
+      final cameraContainer = tester.widget<Container>(find.ancestor(of: cameraButtonFinder, matching: find.byType(Container)).first);
+      expect(cameraContainer.constraints!.maxWidth, 38);
+      expect(cameraContainer.constraints!.maxHeight, 38);
+    });
   });
 }
