@@ -9,7 +9,7 @@ class TranslationService {
 
   final Dio _dio = Dio();
 
-  // Translate text using advanced LLM (OpenAI GPT-4)
+  // Translate text using Google Translate API for fast, accurate real-time translation
   Future<TranslationResult> translateText({
     required String text,
     required String sourceLanguage,
@@ -17,12 +17,40 @@ class TranslationService {
     bool isMedicalContext = true,
   }) async {
     try {
-      // Use OpenAI GPT-4 for high-quality medical translation
-      // Get API key from environment or constants
+      // First, try Google Translate API for fast, real-time translation
+      final googleApiKey = AppConstants.googleTranslateApiKey;
+
+      if (googleApiKey.isNotEmpty && googleApiKey != 'YOUR_GOOGLE_TRANSLATE_API_KEY') {
+        try {
+          final googleResult = await _translateWithGoogle(
+            text,
+            sourceLanguage,
+            targetLanguage,
+          );
+
+          // Extract medical terms and get anatomy images
+          final medicalTerms = _mockMedicalTerms(text);
+          final anatomyImages = await getAnatomyImages(medicalTerms);
+
+          return TranslationResult(
+            originalText: text,
+            translatedText: googleResult,
+            sourceLanguage: sourceLanguage,
+            targetLanguage: targetLanguage,
+            medicalTerms: medicalTerms,
+            anatomyImages: anatomyImages,
+          );
+        } catch (e) {
+          print('Google Translate failed: $e');
+          // Fall through to OpenAI or mock
+        }
+      }
+
+      // Fallback to OpenAI GPT-4 for medical context enhancement
       final apiKey = AppConstants.openaiApiKey;
 
       if (apiKey.isEmpty || apiKey == 'YOUR_OPENAI_API_KEY') {
-        print('OpenAI API key not configured, using fallback translation');
+        print('Translation APIs not configured, using mock translation');
         return _mockTranslation(text, sourceLanguage, targetLanguage);
       }
 
@@ -110,6 +138,79 @@ Text to translate: "$text"''';
       // Fallback: Return a mock translation for testing
       return _mockTranslation(text, sourceLanguage, targetLanguage);
     }
+  }
+
+  // Google Translate API integration for 200+ languages
+  Future<String> _translateWithGoogle(
+    String text,
+    String sourceLanguage,
+    String targetLanguage,
+  ) async {
+    try {
+      final apiKey = AppConstants.googleTranslateApiKey;
+      final url = '${AppConstants.googleTranslateApiUrl}?key=$apiKey';
+
+      // Convert language codes to Google Translate format
+      final sourceLang = _normalizeLanguageCode(sourceLanguage);
+      final targetLang = _normalizeLanguageCode(targetLanguage);
+
+      final response = await _dio.post(
+        url,
+        data: {
+          'q': text,
+          'source': sourceLang,
+          'target': targetLang,
+          'format': 'text',
+        },
+        options: Options(
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        ),
+      );
+
+      if (response.statusCode == 200) {
+        final translations = response.data['data']['translations'] as List;
+        if (translations.isNotEmpty) {
+          return translations[0]['translatedText'] as String;
+        }
+      }
+
+      throw Exception('Translation failed: Invalid response');
+    } catch (e) {
+      print('Google Translate API error: $e');
+      rethrow;
+    }
+  }
+
+  // Normalize language codes for Google Translate API
+  String _normalizeLanguageCode(String code) {
+    // Google Translate uses simplified codes for some languages
+    final codeMap = {
+      'zh-CN': 'zh-CN',
+      'zh-TW': 'zh-TW',
+      'zh-HK': 'zh-TW',
+      'pt-BR': 'pt',
+      'pt-PT': 'pt',
+      'es-MX': 'es',
+      'es-AR': 'es',
+      'fr-CA': 'fr',
+      'en-GB': 'en',
+      'en-US': 'en',
+      'en-AU': 'en',
+      'fil': 'tl', // Filipino -> Tagalog
+      'iw': 'he', // Hebrew old code
+      'jw': 'jv', // Javanese old code
+      'pus': 'ps', // Pashto
+      'kok': 'gom', // Konkani
+      'mni': 'mni-Mtei', // Manipuri
+      'doi': 'doi', // Dogri
+      'sat': 'sat', // Santali
+      'mai': 'mai', // Maithili
+    };
+
+    // Return mapped code or original
+    return codeMap[code] ?? code;
   }
 
   // Helper to extract JSON string value
