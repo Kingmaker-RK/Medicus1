@@ -140,24 +140,22 @@ class _TranslationScreenState extends State<TranslationScreen>
       backgroundColor: AppColors.primary,
       foregroundColor: Colors.white,
       elevation: 0,
-      title: Row(
-        children: [
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-            decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.15),
-              borderRadius: BorderRadius.circular(8),
+      centerTitle: true,
+      title: const Text(
+        'Medicus',
+        style: TextStyle(
+          fontSize: 24,
+          fontWeight: FontWeight.w700,
+          letterSpacing: 1.2,
+          fontFamily: 'serif',
+          shadows: [
+            Shadow(
+              color: Color.fromRGBO(0, 0, 0, 0.15),
+              offset: Offset(0, 2),
+              blurRadius: 4,
             ),
-            child: const Text(
-              'Medicus',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-                letterSpacing: 0.5,
-              ),
-            ),
-          ),
-        ],
+          ],
+        ),
       ),
       leading: Builder(
         builder: (context) => IconButton(

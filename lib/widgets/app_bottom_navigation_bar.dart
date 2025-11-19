@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../constants/colors.dart';
-import 'benzene_icon.dart';
 
 class AppBottomNavigationBar extends StatelessWidget {
   final int currentIndex;
@@ -24,9 +23,9 @@ class AppBottomNavigationBar extends StatelessWidget {
       ),
       child: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
           child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
               _buildNavItem(
                 context: context,
@@ -44,7 +43,14 @@ class AppBottomNavigationBar extends StatelessWidget {
                 isSelected: currentIndex == 1,
                 onTap: () => context.go('/appointments'),
               ),
-              _buildCenterButton(context),
+              _buildNavItem(
+                context: context,
+                icon: Icons.medical_services_rounded,
+                label: 'Services',
+                index: 4,
+                isSelected: currentIndex == 4,
+                onTap: () => context.push('/services'),
+              ),
               _buildNavItem(
                 context: context,
                 icon: Icons.favorite_rounded,
@@ -68,47 +74,6 @@ class AppBottomNavigationBar extends StatelessWidget {
     );
   }
 
-  Widget _buildCenterButton(BuildContext context) {
-    return Expanded(
-      child: InkWell(
-        onTap: () => context.push('/services'),
-        borderRadius: BorderRadius.circular(12),
-        child: Container(
-          padding: const EdgeInsets.symmetric(vertical: 8),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Container(
-                padding: const EdgeInsets.all(8),
-                decoration: BoxDecoration(
-                  color: currentIndex == 4
-                      ? AppColors.primary.withOpacity(0.1)
-                      : Colors.transparent,
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: const BenzeneIcon(
-                  size: 24,
-                ),
-              ),
-              const SizedBox(height: 4),
-              Text(
-                'Services',
-                style: TextStyle(
-                  fontSize: 12,
-                  fontWeight:
-                      currentIndex == 4 ? FontWeight.w600 : FontWeight.normal,
-                  color: currentIndex == 4
-                      ? AppColors.primary
-                      : AppColors.textSecondary,
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
   Widget _buildNavItem({
     required BuildContext context,
     required IconData icon,
@@ -122,12 +87,14 @@ class AppBottomNavigationBar extends StatelessWidget {
         onTap: onTap,
         borderRadius: BorderRadius.circular(12),
         child: Container(
-          padding: const EdgeInsets.symmetric(vertical: 8),
+          padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 4),
           child: Column(
             mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Container(
-                padding: const EdgeInsets.all(8),
+                width: 40,
+                height: 40,
                 decoration: BoxDecoration(
                   color: isSelected
                       ? AppColors.primary.withOpacity(0.1)
@@ -145,8 +112,11 @@ class AppBottomNavigationBar extends StatelessWidget {
               const SizedBox(height: 4),
               Text(
                 label,
+                textAlign: TextAlign.center,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
                 style: TextStyle(
-                  fontSize: 12,
+                  fontSize: 11,
                   fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
                   color: isSelected
                       ? AppColors.primary
