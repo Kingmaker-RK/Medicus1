@@ -117,9 +117,6 @@ class _TranslationScreenState extends State<TranslationScreen>
       drawer: _buildNavigationDrawer(context, userProvider),
       body: Column(
         children: [
-          // Modern language selector bar
-          _buildModernLanguageBar(translationProvider, userProvider),
-
           // Main translation area
           Expanded(
             child: Container(
@@ -130,13 +127,68 @@ class _TranslationScreenState extends State<TranslationScreen>
             ),
           ),
 
+          // Modern language selector bar
+          _buildModernLanguageBar(translationProvider, userProvider),
+
           // Medical context section (if available)
           if (translationProvider.currentTranslation != null)
             _buildMedicalContextSection(translationProvider),
         ],
       ),
       // Floating microphone button
-      floatingActionButton: _buildFloatingMicButton(translationProvider),
+      floatingActionButton: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          // Conversation Mode Toggle
+          Container(
+            margin: const EdgeInsets.only(bottom: 16),
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(24),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.1),
+                  blurRadius: 8,
+                  offset: const Offset(0, 2),
+                ),
+              ],
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  'Conversation Mode',
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
+                    color: _isConversationMode
+                        ? AppColors.accent
+                        : AppColors.textSecondary,
+                  ),
+                ),
+                const SizedBox(width: 12),
+                SizedBox(
+                  height: 32,
+                  child: FittedBox(
+                    fit: BoxFit.fill,
+                    child: Switch.adaptive(
+                      value: _isConversationMode,
+                      activeColor: AppColors.accent,
+                      onChanged: (value) {
+                        setState(() {
+                          _isConversationMode = value;
+                        });
+                      },
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          _buildFloatingMicButton(translationProvider),
+        ],
+      ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       endDrawer: _buildHistoryDrawer(translationProvider),
       bottomNavigationBar: const AppBottomNavigationBar(currentIndex: 0),
@@ -213,31 +265,6 @@ class _TranslationScreenState extends State<TranslationScreen>
       ),
       child: Column(
         children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                'Conversation Mode',
-                style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w600,
-                  color: _isConversationMode
-                      ? AppColors.accent
-                      : AppColors.textSecondary,
-                ),
-              ),
-              Switch.adaptive(
-                value: _isConversationMode,
-                activeColor: AppColors.accent,
-                onChanged: (value) {
-                  setState(() {
-                    _isConversationMode = value;
-                  });
-                },
-              ),
-            ],
-          ),
-          const SizedBox(height: 12),
           Row(
             children: [
               // Source language
