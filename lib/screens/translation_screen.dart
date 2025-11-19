@@ -158,8 +158,8 @@ class _TranslationScreenState extends State<TranslationScreen>
           children: [
             // Conversation Mode (Left)
             Container(
-              width: 56,
-              height: 56,
+              width: 45,
+              height: 45,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 color: _isConversationMode ? AppColors.accent : Colors.white,
@@ -185,6 +185,7 @@ class _TranslationScreenState extends State<TranslationScreen>
                 icon: Icon(
                   Icons.record_voice_over_rounded,
                   color: _isConversationMode ? Colors.white : AppColors.accent,
+                  size: 20,
                 ),
                 tooltip: 'Conversation Mode',
               ),
@@ -199,8 +200,8 @@ class _TranslationScreenState extends State<TranslationScreen>
 
             // Camera (Right)
             Container(
-              width: 56,
-              height: 56,
+              width: 45,
+              height: 45,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 color: Colors.white,
@@ -223,7 +224,7 @@ class _TranslationScreenState extends State<TranslationScreen>
                 },
                 icon: const Icon(Icons.camera_alt_rounded),
                 color: AppColors.accent,
-                iconSize: 28,
+                iconSize: 22,
               ),
             ),
           ],
@@ -292,9 +293,11 @@ class _TranslationScreenState extends State<TranslationScreen>
     UserProvider userProvider,
   ) {
     return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 32),
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
       decoration: BoxDecoration(
         color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
             color: AppColors.shadowLight,
@@ -939,8 +942,8 @@ class _TranslationScreenState extends State<TranslationScreen>
             await translationProvider.stopListening();
           },
           child: Container(
-            width: 64,
-            height: 64,
+            width: 51,
+            height: 51,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
               color: translationProvider.isListening
@@ -963,7 +966,7 @@ class _TranslationScreenState extends State<TranslationScreen>
                   translationProvider.isListening
                       ? Icons.mic_rounded
                       : Icons.mic_none_rounded,
-                  size: 28,
+                  size: 22,
                   color: Colors.white,
                 ),
                 if (translationProvider.isListening)
