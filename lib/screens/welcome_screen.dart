@@ -280,15 +280,30 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                           ? null
                           : () async {
                               try {
-                                await userProvider.login(
-                                  email: _emailController.text,
-                                  password: _passwordController.text,
-                                  role: _selectedRole,
-                                  rememberMe: _rememberMe,
-                                );
-                                if (mounted && userProvider.isLoggedIn) {
-                                  // Redirect to profile completion screen
-                                  context.go('/complete-profile');
+                                if (_isSignIn) {
+                                  // Existing user - Sign In
+                                  await userProvider.login(
+                                    email: _emailController.text,
+                                    password: _passwordController.text,
+                                    role: _selectedRole,
+                                    rememberMe: _rememberMe,
+                                  );
+                                  if (mounted && userProvider.isLoggedIn) {
+                                    // Sign In: Skip profile completion, go directly to app
+                                    context.go('/translation');
+                                  }
+                                } else {
+                                  // New user - Sign Up
+                                  await userProvider.signUp(
+                                    email: _emailController.text,
+                                    password: _passwordController.text,
+                                    role: _selectedRole,
+                                    rememberMe: _rememberMe,
+                                  );
+                                  if (mounted && userProvider.isLoggedIn) {
+                                    // Sign Up: Request profile information
+                                    context.go('/complete-profile');
+                                  }
                                 }
                               } catch (e) {
                                 setState(() {
@@ -301,7 +316,9 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                                   ScaffoldMessenger.of(context).showSnackBar(
                                     SnackBar(
                                       content: Text(
-                                        'Login failed. Please check your credentials.',
+                                        _isSignIn
+                                            ? 'Login failed. Please check your credentials.'
+                                            : 'Sign up failed. Please try again.',
                                       ),
                                       backgroundColor: Colors.red,
                                     ),
@@ -334,8 +351,8 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                       onPressed: () async {
                         await userProvider.continueAsGuest(_selectedRole);
                         if (mounted) {
-                          // Redirect to profile completion screen
-                          context.go('/complete-profile');
+                          // Guest: Skip profile completion, go directly to app
+                          context.go('/translation');
                         }
                       },
                       style: OutlinedButton.styleFrom(

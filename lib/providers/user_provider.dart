@@ -52,7 +52,7 @@ class UserProvider with ChangeNotifier {
     }
   }
 
-  // Login user
+  // Login user (existing user)
   Future<void> login({
     required String email,
     required String password,
@@ -86,6 +86,7 @@ class UserProvider with ChangeNotifier {
       await prefs.setBool(AppConstants.keyIsLoggedIn, true);
       await prefs.setString(AppConstants.keyUserId, _currentUser!.id!);
       await prefs.setString(AppConstants.keyUserRole, role);
+      await prefs.remove(AppConstants.keyIsSignUp); // Clear sign-up flag
 
       // Save Remember Me preference
       await prefs.setBool('rememberMe', rememberMe);
@@ -96,6 +97,58 @@ class UserProvider with ChangeNotifier {
       }
     } catch (e) {
       print('Error logging in: $e');
+      rethrow;
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
+
+  // Sign up new user
+  Future<void> signUp({
+    required String email,
+    required String password,
+    required String role,
+    bool rememberMe = false,
+  }) async {
+    _isLoading = true;
+    notifyListeners();
+
+    try {
+      // Validation
+      if (email.isEmpty || !email.contains('@')) {
+        throw Exception('Invalid email');
+      }
+      if (password.isEmpty || password.length < 6) {
+        throw Exception('Password must be at least 6 characters');
+      }
+
+      // TODO: Implement actual sign-up with Firebase or your backend
+      await Future.delayed(const Duration(seconds: 1)); // Simulate API call
+
+      _currentUser = UserModel(
+        id: DateTime.now().millisecondsSinceEpoch.toString(),
+        email: email,
+        role: role,
+        languageCode: _selectedLanguage,
+      );
+
+      // Save to storage
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setBool(AppConstants.keyIsLoggedIn, true);
+      await prefs.setString(AppConstants.keyUserId, _currentUser!.id!);
+      await prefs.setString(AppConstants.keyUserRole, role);
+      await prefs.setBool(AppConstants.keyIsSignUp, true); // Mark as sign-up
+
+      // Save Remember Me preference
+      await prefs.setBool('rememberMe', rememberMe);
+      if (rememberMe) {
+        await prefs.setString('savedEmail', email);
+      } else {
+        await prefs.remove('savedEmail');
+      }
+    } catch (e) {
+      print('Error signing up: $e');
       rethrow;
     } finally {
       _isLoading = false;

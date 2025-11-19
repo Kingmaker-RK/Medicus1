@@ -48,6 +48,7 @@ class AppConstants {
   static const String keyIsLoggedIn = 'is_logged_in';
   static const String keyUserId = 'user_id';
   static const String keyProfileCompleted = 'profile_completed';
+  static const String keyIsSignUp = 'is_sign_up';
 
   // Animation Duration
   static const Duration animationDuration = Duration(milliseconds: 300);

@@ -8,6 +8,68 @@ Medicus is a medical translation application designed to facilitate communicatio
 
 ## Recent Updates
 
+### Authentication Flow Improvement (2025-11-19)
+
+#### Profile Completion Logic Enhancement
+
+**Description:** Profile information is now only requested during sign-up, not during sign-in or when continuing as a guest.
+
+**Previous Behavior:**
+- All authentication methods (sign-in, sign-up, guest) redirected to profile completion screen
+- Users had to fill profile information even when signing into an existing account
+- Guest users were forced to complete profile before accessing the app
+
+**New Behavior:**
+- **Sign In:** Existing users skip profile completion and go directly to the main app
+- **Sign Up:** New users are asked to complete their profile information
+- **Guest Mode:** Users skip profile completion and access the app immediately
+
+**User Experience:**
+- **Sign In Flow:**
+  1. User selects role (Patient/Doctor)
+  2. User toggles to "Sign In" mode
+  3. User enters email and password
+  4. Upon successful authentication → Redirected to `/translation` screen
+
+- **Sign Up Flow:**
+  1. User selects role (Patient/Doctor)
+  2. User toggles to "Sign Up" mode
+  3. User enters email and password
+  4. Upon successful registration → Redirected to `/complete-profile` screen
+  5. User fills required profile information
+  6. Profile saved → Redirected to `/translation` screen
+
+- **Guest Flow:**
+  1. User selects role (Patient/Doctor)
+  2. User clicks "Continue as Guest"
+  3. Immediately redirected to `/translation` screen
+
+**Technical Details:**
+- Added separate `signUp()` method in `UserProvider` (distinct from `login()`)
+- Sign-up sets `keyIsSignUp` flag in SharedPreferences
+- Sign-in clears `keyIsSignUp` flag
+- Router no longer forces profile completion for all protected routes
+- Welcome screen checks `_isSignIn` state to determine navigation path
+
+**Files Modified:**
+- `lib/screens/welcome_screen.dart` (lines 283-327, 339-345)
+  - Separate logic for sign-in vs sign-up button
+  - Guest button now navigates to `/translation` instead of `/complete-profile`
+- `lib/providers/user_provider.dart` (lines 55-157)
+  - Added `signUp()` method
+  - Modified `login()` to clear sign-up flag
+- `lib/config/router.dart` (lines 16-19)
+  - Removed automatic redirect to profile completion
+- `lib/constants/app_constants.dart` (line 51)
+  - Added `keyIsSignUp` constant
+
+**Security & Data Handling:**
+- Profile information is only required for new users during registration
+- Existing user data is preserved and not required on sign-in
+- Guest users can access full app features without providing personal information
+
+---
+
 ### Authentication Enhancement (2025-11-19)
 
 #### Show/Hide Password Feature
@@ -178,6 +240,17 @@ lib/
 ---
 
 ## Testing Checklist
+
+### Profile Completion Flow
+- [ ] Sign-in bypasses profile completion screen
+- [ ] Sign-in redirects to `/translation` screen
+- [ ] Sign-up shows profile completion screen
+- [ ] Sign-up collects appropriate information (Patient vs Doctor)
+- [ ] Profile completion redirects to `/translation` after saving
+- [ ] Guest mode bypasses profile completion screen
+- [ ] Guest mode redirects to `/translation` screen
+- [ ] Patient profile collects: first name, last name, insurance number, insurance provider
+- [ ] Doctor profile collects: name, specialty, qualification, experience, clinic address, etc.
 
 ### Remember Me Feature
 - [ ] Checkbox can be toggled on/off
