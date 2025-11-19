@@ -6,25 +6,25 @@ class HospitalBackground extends StatelessWidget {
   final Widget child;
   final double opacity;
 
-  const HospitalBackground({Key? key, required this.child, this.opacity = 0.15})
+  const HospitalBackground({Key? key, required this.child, this.opacity = 0.4})
     : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Stack(
       children: [
-        // Enhanced multi-color gradient background with smooth transitions
+        // BOLD, VIBRANT gradient background - dramatically visible!
         Container(
           decoration: BoxDecoration(
             gradient: LinearGradient(
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
               colors: [
-                const Color(0xFFBBDEFB), // Soft sky blue
-                const Color(0xFFE1F5DC), // Gentle mint green
-                const Color(0xFFFFF9C4), // Warm cream yellow
-                const Color(0xFFFFCCBC), // Soft peachy coral
-                Colors.white,
+                const Color(0xFF1976D2), // BOLD deep blue
+                const Color(0xFF00BCD4), // BRIGHT cyan
+                const Color(0xFF4CAF50), // VIBRANT green
+                const Color(0xFFFF9800), // BRIGHT orange
+                const Color(0xFFE91E63), // BOLD pink
               ],
               stops: const [0.0, 0.25, 0.5, 0.75, 1.0],
             ),
@@ -37,10 +37,10 @@ class HospitalBackground extends StatelessWidget {
           size: Size.infinite,
         ),
 
-        // Softer overlay for better content visibility
+        // REDUCED overlay - let the vibrant colors show through!
         Container(
           decoration: BoxDecoration(
-            color: Colors.white.withValues(alpha: 0.65),
+            color: Colors.white.withValues(alpha: 0.75),
           ),
         ),
 
@@ -59,31 +59,31 @@ class HospitalGraphicsPainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    // Enhanced vibrant medical colors
+    // SUPER BOLD, HIGH CONTRAST colors - extremely visible!
     final bluePaint = Paint()
-      ..color = const Color(0xFF42A5F5).withValues(alpha: opacity * 1.3)
+      ..color = const Color(0xFF1565C0).withValues(alpha: opacity)
       ..style = PaintingStyle.fill;
 
     final redPaint = Paint()
-      ..color = const Color(0xFFEF5350).withValues(alpha: opacity * 1.2)
+      ..color = const Color(0xFFC62828).withValues(alpha: opacity)
       ..style = PaintingStyle.fill;
 
     final greenPaint = Paint()
-      ..color = const Color(0xFF66BB6A).withValues(alpha: opacity * 1.3)
+      ..color = const Color(0xFF2E7D32).withValues(alpha: opacity)
       ..style = PaintingStyle.fill;
 
     final purplePaint = Paint()
-      ..color = const Color(0xFFAB47BC).withValues(alpha: opacity * 1.2)
+      ..color = const Color(0xFF6A1B9A).withValues(alpha: opacity)
       ..style = PaintingStyle.fill;
 
     final orangePaint = Paint()
-      ..color = const Color(0xFFFF7043).withValues(alpha: opacity * 1.2)
+      ..color = const Color(0xFFD84315).withValues(alpha: opacity)
       ..style = PaintingStyle.fill;
 
     final outlinePaint = Paint()
-      ..color = const Color(0xFF42A5F5).withValues(alpha: opacity * 0.7)
+      ..color = const Color(0xFF0D47A1).withValues(alpha: opacity * 0.9)
       ..style = PaintingStyle.stroke
-      ..strokeWidth = 2.5;
+      ..strokeWidth = 4.0;
 
     // Draw floating medical pills/capsules
     _drawMedicalPills(canvas, size, redPaint, bluePaint, greenPaint);
@@ -114,16 +114,20 @@ class HospitalGraphicsPainter extends CustomPainter {
   }
 
   void _drawMedicalCrosses(Canvas canvas, Size size, Paint paint) {
+    // MUCH LARGER crosses - 3x bigger!
     final positions = [
       Offset(size.width * 0.1, size.height * 0.15),
       Offset(size.width * 0.85, size.height * 0.25),
       Offset(size.width * 0.15, size.height * 0.7),
       Offset(size.width * 0.9, size.height * 0.8),
       Offset(size.width * 0.5, size.height * 0.1),
+      Offset(size.width * 0.3, size.height * 0.4),
+      Offset(size.width * 0.7, size.height * 0.5),
+      Offset(size.width * 0.45, size.height * 0.65),
     ];
 
     for (final pos in positions) {
-      _drawCross(canvas, pos, 25, paint);
+      _drawCross(canvas, pos, 70, paint); // 3x bigger!
     }
   }
 
@@ -191,7 +195,7 @@ class HospitalGraphicsPainter extends CustomPainter {
 
   void _drawHeartbeatLines(Canvas canvas, Size size, Paint paint) {
     paint.style = PaintingStyle.stroke;
-    paint.strokeWidth = 3;
+    paint.strokeWidth = 6; // Double thickness!
 
     final path1 = Path()
       ..moveTo(0, size.height * 0.5)
@@ -331,33 +335,18 @@ class HospitalGraphicsPainter extends CustomPainter {
     Paint paint2,
     Paint paint3,
   ) {
-    // Draw colorful medical pills/capsules scattered across the background
+    // MANY MORE colorful medical pills - double the quantity!
     final pills = [
-      {
-        'pos': Offset(size.width * 0.15, size.height * 0.2),
-        'paint': paint1,
-        'rotation': 0.3,
-      },
-      {
-        'pos': Offset(size.width * 0.75, size.height * 0.15),
-        'paint': paint2,
-        'rotation': -0.5,
-      },
-      {
-        'pos': Offset(size.width * 0.2, size.height * 0.75),
-        'paint': paint3,
-        'rotation': 0.8,
-      },
-      {
-        'pos': Offset(size.width * 0.85, size.height * 0.7),
-        'paint': paint1,
-        'rotation': -0.2,
-      },
-      {
-        'pos': Offset(size.width * 0.5, size.height * 0.2),
-        'paint': paint2,
-        'rotation': 0.6,
-      },
+      {'pos': Offset(size.width * 0.15, size.height * 0.2), 'paint': paint1, 'rotation': 0.3},
+      {'pos': Offset(size.width * 0.75, size.height * 0.15), 'paint': paint2, 'rotation': -0.5},
+      {'pos': Offset(size.width * 0.2, size.height * 0.75), 'paint': paint3, 'rotation': 0.8},
+      {'pos': Offset(size.width * 0.85, size.height * 0.7), 'paint': paint1, 'rotation': -0.2},
+      {'pos': Offset(size.width * 0.5, size.height * 0.2), 'paint': paint2, 'rotation': 0.6},
+      {'pos': Offset(size.width * 0.4, size.height * 0.45), 'paint': paint3, 'rotation': 0.1},
+      {'pos': Offset(size.width * 0.65, size.height * 0.6), 'paint': paint1, 'rotation': -0.7},
+      {'pos': Offset(size.width * 0.3, size.height * 0.35), 'paint': paint2, 'rotation': 0.4},
+      {'pos': Offset(size.width * 0.8, size.height * 0.5), 'paint': paint3, 'rotation': -0.3},
+      {'pos': Offset(size.width * 0.55, size.height * 0.85), 'paint': paint1, 'rotation': 0.9},
     ];
 
     for (final pill in pills) {
@@ -369,31 +358,33 @@ class HospitalGraphicsPainter extends CustomPainter {
       canvas.translate(pos.dx, pos.dy);
       canvas.rotate(rotation);
 
-      // Draw capsule shape
+      // Draw MUCH BIGGER capsule shape - 3x larger!
       final capsuleRect = RRect.fromRectAndRadius(
-        const Rect.fromLTWH(-15, -5, 30, 10),
-        const Radius.circular(5),
+        const Rect.fromLTWH(-45, -15, 90, 30),
+        const Radius.circular(15),
       );
       canvas.drawRRect(capsuleRect, paint);
 
-      // Draw dividing line in middle
+      // Draw dividing line in middle (thicker)
       final linePaint = Paint()
         ..color = paint.color.withValues(alpha: paint.color.a * 0.6)
         ..style = PaintingStyle.stroke
-        ..strokeWidth = 1.5;
-      canvas.drawLine(const Offset(0, -5), const Offset(0, 5), linePaint);
+        ..strokeWidth = 4.0;
+      canvas.drawLine(const Offset(0, -15), const Offset(0, 15), linePaint);
 
       canvas.restore();
     }
   }
 
   void _drawHearts(Canvas canvas, Size size, Paint paint) {
-    // Draw beautiful heart shapes
+    // MUCH BIGGER hearts - 4x larger!
     final hearts = [
-      {'pos': Offset(size.width * 0.1, size.height * 0.3), 'size': 20.0},
-      {'pos': Offset(size.width * 0.9, size.height * 0.4), 'size': 18.0},
-      {'pos': Offset(size.width * 0.25, size.height * 0.9), 'size': 16.0},
-      {'pos': Offset(size.width * 0.8, size.height * 0.85), 'size': 22.0},
+      {'pos': Offset(size.width * 0.1, size.height * 0.3), 'size': 80.0},
+      {'pos': Offset(size.width * 0.9, size.height * 0.4), 'size': 70.0},
+      {'pos': Offset(size.width * 0.25, size.height * 0.9), 'size': 65.0},
+      {'pos': Offset(size.width * 0.8, size.height * 0.85), 'size': 85.0},
+      {'pos': Offset(size.width * 0.5, size.height * 0.5), 'size': 75.0},
+      {'pos': Offset(size.width * 0.35, size.height * 0.2), 'size': 60.0},
     ];
 
     for (final heart in hearts) {
@@ -450,15 +441,17 @@ class HospitalGraphicsPainter extends CustomPainter {
   }
 
   void _drawMedicalShields(Canvas canvas, Size size, Paint paint) {
-    // Draw shield symbols representing protection and care
+    // MUCH BIGGER shields - 3x larger!
     final shields = [
       Offset(size.width * 0.05, size.height * 0.6),
       Offset(size.width * 0.95, size.height * 0.3),
       Offset(size.width * 0.4, size.height * 0.05),
+      Offset(size.width * 0.6, size.height * 0.75),
+      Offset(size.width * 0.2, size.height * 0.5),
     ];
 
     for (final pos in shields) {
-      _drawShield(canvas, pos, 25, paint);
+      _drawShield(canvas, pos, 75, paint); // 3x bigger!
     }
   }
 
