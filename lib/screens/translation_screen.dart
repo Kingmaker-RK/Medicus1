@@ -350,19 +350,6 @@ class _TranslationScreenState extends State<TranslationScreen>
                       : null,
                 ),
               ),
-              const SizedBox(width: 4),
-              CircleAvatar(
-                radius: 12,
-                backgroundColor: Colors.white,
-                child: Text(
-                  isDoctor ? 'D' : 'P',
-                  style: const TextStyle(
-                    color: AppColors.primary,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 12,
-                  ),
-                ),
-              ),
             ],
           );
         },
