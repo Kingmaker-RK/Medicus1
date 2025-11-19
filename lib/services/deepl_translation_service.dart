@@ -55,10 +55,10 @@ class DeepLTranslationService {
       final targetLang = _convertToDeepLLanguageCode(targetLanguage);
 
       // Perform translation
-      final result = await _translator!.translateText(
+      final result = await _translator!.translateTextSingular(
         text,
+        targetLang,
         sourceLang: sourceLang,
-        targetLang: targetLang,
       );
 
       // Extract medical terms if applicable
@@ -197,7 +197,7 @@ class DeepLTranslationService {
 
     try {
       final languages = await _translator!.getSourceLanguages();
-      return languages.map((lang) => lang.code).toList();
+      return languages.map((lang) => lang.languageCode).toList();
     } catch (e) {
       print('❌ Failed to get supported languages: $e');
       return [];
