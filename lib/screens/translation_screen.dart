@@ -136,6 +136,7 @@ class _TranslationScreenState extends State<TranslationScreen>
     return AppBar(
       backgroundColor: Colors.white,
       foregroundColor: AppColors.textPrimary,
+      iconTheme: const IconThemeData(color: AppColors.textPrimary),
       elevation: 0,
       leading: Builder(
         builder: (context) => IconButton(
@@ -173,7 +174,7 @@ class _TranslationScreenState extends State<TranslationScreen>
       ),
       actions: [
         IconButton(
-          icon: const Icon(Icons.history_rounded),
+          icon: const Icon(Icons.history_rounded, color: AppColors.textPrimary),
           tooltip: 'Translation History',
           onPressed: () {
             // Show history dialog
@@ -181,7 +182,7 @@ class _TranslationScreenState extends State<TranslationScreen>
           },
         ),
         IconButton(
-          icon: const Icon(Icons.settings_rounded),
+          icon: const Icon(Icons.settings_rounded, color: AppColors.textPrimary),
           onPressed: () {
             context.push('/settings');
           },
