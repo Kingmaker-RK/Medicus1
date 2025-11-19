@@ -148,6 +148,22 @@ class DoctorProfileScreen extends StatelessWidget {
                       ),
                     ),
                   ),
+                  Positioned(
+                    top: 0,
+                    right: 0,
+                    child: Container(
+                      padding: const EdgeInsets.all(8),
+                      decoration: const BoxDecoration(
+                        color: AppColors.primary,
+                        shape: BoxShape.circle,
+                      ),
+                      child: const Icon(
+                        Icons.medical_services,
+                        size: 20,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
                 ],
               ),
             ),

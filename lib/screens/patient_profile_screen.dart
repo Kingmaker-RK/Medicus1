@@ -110,6 +110,22 @@ class _PatientProfileScreenState extends State<PatientProfileScreen>
                     ),
                   ),
                 ),
+                Positioned(
+                  top: 0,
+                  right: 0,
+                  child: Container(
+                    padding: const EdgeInsets.all(8),
+                    decoration: const BoxDecoration(
+                      color: AppColors.primary,
+                      shape: BoxShape.circle,
+                    ),
+                    child: const Icon(
+                      LucideIcons.user,
+                      size: 16,
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
               ],
             ),
           ),
