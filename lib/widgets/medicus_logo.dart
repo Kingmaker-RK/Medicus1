@@ -47,115 +47,208 @@ class MedicusLogo extends StatelessWidget {
 class CaduceusPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
-    final paint = Paint()
-      ..color = AppColors.logoWhite
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = size.width * 0.08
-      ..strokeCap = StrokeCap.round;
-
     final center = Offset(size.width / 2, size.height / 2);
 
-    // Draw staff (vertical line)
+    // Staff paint
+    final staffPaint = Paint()
+      ..color = AppColors.logoWhite
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = size.width * 0.07
+      ..strokeCap = StrokeCap.round;
+
+    // Draw main staff (vertical line)
     canvas.drawLine(
-      Offset(center.dx, size.height * 0.1),
-      Offset(center.dx, size.height * 0.9),
-      paint,
+      Offset(center.dx, size.height * 0.18),
+      Offset(center.dx, size.height * 0.92),
+      staffPaint,
     );
 
-    // Draw wings at top
+    // Draw orb at top of staff
+    final orbPaint = Paint()
+      ..color = AppColors.logoWhite
+      ..style = PaintingStyle.fill;
+
+    canvas.drawCircle(
+      Offset(center.dx, size.height * 0.15),
+      size.width * 0.065,
+      orbPaint,
+    );
+
+    // Enhanced wings with more detail
     final wingPaint = Paint()
       ..color = AppColors.logoWhite
       ..style = PaintingStyle.fill;
 
-    // Left wing
+    // Left wing with feather detail
     final leftWingPath = Path()
-      ..moveTo(center.dx, size.height * 0.15)
-      ..quadraticBezierTo(
-        size.width * 0.2,
-        size.height * 0.1,
-        size.width * 0.1,
-        size.height * 0.2,
+      ..moveTo(center.dx, size.height * 0.18)
+      ..cubicTo(
+        size.width * 0.25, size.height * 0.12,
+        size.width * 0.15, size.height * 0.15,
+        size.width * 0.08, size.height * 0.24,
       )
-      ..quadraticBezierTo(
-        size.width * 0.15,
-        size.height * 0.25,
-        center.dx,
-        size.height * 0.25,
+      ..cubicTo(
+        size.width * 0.12, size.height * 0.28,
+        size.width * 0.20, size.height * 0.28,
+        center.dx, size.height * 0.26,
       )
       ..close();
     canvas.drawPath(leftWingPath, wingPaint);
 
-    // Right wing
-    final rightWingPath = Path()
-      ..moveTo(center.dx, size.height * 0.15)
-      ..quadraticBezierTo(
-        size.width * 0.8,
-        size.height * 0.1,
-        size.width * 0.9,
-        size.height * 0.2,
+    // Inner left wing feather
+    final leftWingInnerPath = Path()
+      ..moveTo(center.dx, size.height * 0.20)
+      ..cubicTo(
+        size.width * 0.35, size.height * 0.16,
+        size.width * 0.28, size.height * 0.19,
+        size.width * 0.22, size.height * 0.26,
       )
-      ..quadraticBezierTo(
-        size.width * 0.85,
-        size.height * 0.25,
-        center.dx,
-        size.height * 0.25,
+      ..cubicTo(
+        size.width * 0.26, size.height * 0.27,
+        size.width * 0.32, size.height * 0.26,
+        center.dx, size.height * 0.24,
+      )
+      ..close();
+    canvas.drawPath(leftWingInnerPath, wingPaint);
+
+    // Right wing with feather detail
+    final rightWingPath = Path()
+      ..moveTo(center.dx, size.height * 0.18)
+      ..cubicTo(
+        size.width * 0.75, size.height * 0.12,
+        size.width * 0.85, size.height * 0.15,
+        size.width * 0.92, size.height * 0.24,
+      )
+      ..cubicTo(
+        size.width * 0.88, size.height * 0.28,
+        size.width * 0.80, size.height * 0.28,
+        center.dx, size.height * 0.26,
       )
       ..close();
     canvas.drawPath(rightWingPath, wingPaint);
 
-    // Draw intertwined serpents
-    paint.style = PaintingStyle.stroke;
-    paint.strokeWidth = size.width * 0.06;
+    // Inner right wing feather
+    final rightWingInnerPath = Path()
+      ..moveTo(center.dx, size.height * 0.20)
+      ..cubicTo(
+        size.width * 0.65, size.height * 0.16,
+        size.width * 0.72, size.height * 0.19,
+        size.width * 0.78, size.height * 0.26,
+      )
+      ..cubicTo(
+        size.width * 0.74, size.height * 0.27,
+        size.width * 0.68, size.height * 0.26,
+        center.dx, size.height * 0.24,
+      )
+      ..close();
+    canvas.drawPath(rightWingInnerPath, wingPaint);
 
-    // Left serpent
+    // Serpent paint with gradient effect
+    final serpentPaint = Paint()
+      ..color = AppColors.logoWhite
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = size.width * 0.055
+      ..strokeCap = StrokeCap.round;
+
+    // Left serpent with improved curves
     final leftSerpentPath = Path()
-      ..moveTo(center.dx - size.width * 0.15, size.height * 0.3)
-      ..quadraticBezierTo(
-        center.dx + size.width * 0.15,
-        size.height * 0.4,
-        center.dx - size.width * 0.15,
-        size.height * 0.5,
+      ..moveTo(center.dx - size.width * 0.18, size.height * 0.32)
+      ..cubicTo(
+        center.dx - size.width * 0.05, size.height * 0.38,
+        center.dx + size.width * 0.10, size.height * 0.42,
+        center.dx - size.width * 0.18, size.height * 0.50,
       )
-      ..quadraticBezierTo(
-        center.dx + size.width * 0.15,
-        size.height * 0.6,
-        center.dx - size.width * 0.15,
-        size.height * 0.7,
+      ..cubicTo(
+        center.dx - size.width * 0.05, size.height * 0.58,
+        center.dx + size.width * 0.10, size.height * 0.62,
+        center.dx - size.width * 0.18, size.height * 0.70,
+      )
+      ..cubicTo(
+        center.dx - size.width * 0.10, size.height * 0.75,
+        center.dx - size.width * 0.05, size.height * 0.82,
+        center.dx - size.width * 0.12, size.height * 0.88,
       );
-    canvas.drawPath(leftSerpentPath, paint);
+    canvas.drawPath(leftSerpentPath, serpentPaint);
 
-    // Right serpent
+    // Right serpent with improved curves (mirror of left)
     final rightSerpentPath = Path()
-      ..moveTo(center.dx + size.width * 0.15, size.height * 0.3)
-      ..quadraticBezierTo(
-        center.dx - size.width * 0.15,
-        size.height * 0.4,
-        center.dx + size.width * 0.15,
-        size.height * 0.5,
+      ..moveTo(center.dx + size.width * 0.18, size.height * 0.32)
+      ..cubicTo(
+        center.dx + size.width * 0.05, size.height * 0.38,
+        center.dx - size.width * 0.10, size.height * 0.42,
+        center.dx + size.width * 0.18, size.height * 0.50,
       )
-      ..quadraticBezierTo(
-        center.dx - size.width * 0.15,
-        size.height * 0.6,
-        center.dx + size.width * 0.15,
-        size.height * 0.7,
+      ..cubicTo(
+        center.dx + size.width * 0.05, size.height * 0.58,
+        center.dx - size.width * 0.10, size.height * 0.62,
+        center.dx + size.width * 0.18, size.height * 0.70,
+      )
+      ..cubicTo(
+        center.dx + size.width * 0.10, size.height * 0.75,
+        center.dx + size.width * 0.05, size.height * 0.82,
+        center.dx + size.width * 0.12, size.height * 0.88,
       );
-    canvas.drawPath(rightSerpentPath, paint);
+    canvas.drawPath(rightSerpentPath, serpentPaint);
 
-    // Draw serpent heads (small circles)
+    // Draw serpent heads with more detail
     final headPaint = Paint()
       ..color = AppColors.logoWhite
       ..style = PaintingStyle.fill;
 
+    // Left serpent head
+    final leftHeadCenter = Offset(center.dx - size.width * 0.18, size.height * 0.32);
+    canvas.drawCircle(leftHeadCenter, size.width * 0.055, headPaint);
+
+    // Left serpent eye
+    final eyePaint = Paint()
+      ..color = AppColors.logoBlue
+      ..style = PaintingStyle.fill;
     canvas.drawCircle(
-      Offset(center.dx - size.width * 0.15, size.height * 0.3),
-      size.width * 0.05,
-      headPaint,
+      Offset(leftHeadCenter.dx + size.width * 0.02, leftHeadCenter.dy),
+      size.width * 0.015,
+      eyePaint,
     );
 
+    // Right serpent head
+    final rightHeadCenter = Offset(center.dx + size.width * 0.18, size.height * 0.32);
+    canvas.drawCircle(rightHeadCenter, size.width * 0.055, headPaint);
+
+    // Right serpent eye
     canvas.drawCircle(
-      Offset(center.dx + size.width * 0.15, size.height * 0.3),
-      size.width * 0.05,
-      headPaint,
+      Offset(rightHeadCenter.dx - size.width * 0.02, rightHeadCenter.dy),
+      size.width * 0.015,
+      eyePaint,
+    );
+
+    // Draw serpent tongues (small forked lines)
+    final tonguePaint = Paint()
+      ..color = AppColors.logoWhite
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = size.width * 0.012
+      ..strokeCap = StrokeCap.round;
+
+    // Left tongue
+    canvas.drawLine(
+      Offset(leftHeadCenter.dx - size.width * 0.06, leftHeadCenter.dy + size.width * 0.03),
+      Offset(leftHeadCenter.dx - size.width * 0.09, leftHeadCenter.dy + size.width * 0.05),
+      tonguePaint,
+    );
+    canvas.drawLine(
+      Offset(leftHeadCenter.dx - size.width * 0.06, leftHeadCenter.dy + size.width * 0.03),
+      Offset(leftHeadCenter.dx - size.width * 0.09, leftHeadCenter.dy + size.width * 0.01),
+      tonguePaint,
+    );
+
+    // Right tongue
+    canvas.drawLine(
+      Offset(rightHeadCenter.dx + size.width * 0.06, rightHeadCenter.dy + size.width * 0.03),
+      Offset(rightHeadCenter.dx + size.width * 0.09, rightHeadCenter.dy + size.width * 0.05),
+      tonguePaint,
+    );
+    canvas.drawLine(
+      Offset(rightHeadCenter.dx + size.width * 0.06, rightHeadCenter.dy + size.width * 0.03),
+      Offset(rightHeadCenter.dx + size.width * 0.09, rightHeadCenter.dy + size.width * 0.01),
+      tonguePaint,
     );
   }
 
