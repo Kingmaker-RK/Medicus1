@@ -7,6 +7,7 @@ import 'package:medicus/providers/user_provider.dart';
 import 'package:medicus/models/user_model.dart';
 import 'package:medicus/models/translation_result.dart';
 import 'package:medicus/constants/app_constants.dart';
+import 'package:medicus/constants/colors.dart';
 
 // Fake UserProvider
 class FakeUserProvider extends ChangeNotifier implements UserProvider {
@@ -217,30 +218,41 @@ void main() {
       );
     }
 
-    testWidgets('Verify Conversation Mode switch exists and toggles', (WidgetTester tester) async {
+    testWidgets('Verify Conversation Mode button exists and toggles', (WidgetTester tester) async {
       await tester.pumpWidget(createTestScreen());
       // Avoid pumpAndSettle due to infinite animation
       await tester.pump(); 
       await tester.pump(const Duration(milliseconds: 100));
 
-      // Find "Mode" text (was "Conversation Mode")
-      expect(find.text('Mode'), findsOneWidget);
+      // Find the Conversation Mode Icon Button (Icons.record_voice_over_rounded)
+      final iconFinder = find.byIcon(Icons.record_voice_over_rounded);
+      expect(iconFinder, findsOneWidget);
 
-      // Find the Switch
-      final switchFinder = find.byType(Switch);
-      expect(switchFinder, findsOneWidget);
-
-      // Initially false
-      Switch switchWidget = tester.widget(switchFinder);
-      expect(switchWidget.value, isFalse);
-
-      // Toggle it
-      await tester.tap(switchFinder);
+      // Get the parent Container/Material of the icon to check color (optional, but good)
+      // Note: We can just check if tapping it triggers the expected behavior.
+      // But we can't easily check the internal state _isConversationMode of the private class.
+      
+      // However, we can check if the Provider's startListening was called if we add a spy.
+      // For now, just verify interaction works without crashing.
+      
+      await tester.tap(iconFinder);
       await tester.pump();
 
-      // Verify it is true
-      switchWidget = tester.widget(switchFinder);
-      expect(switchWidget.value, isTrue);
+      // After tapping, the icon color should change (it uses _isConversationMode).
+      // In the code: color: _isConversationMode ? Colors.white : AppColors.accent
+      // We can verify the icon color.
+      Icon iconWidget = tester.widget(iconFinder);
+      // Since we tapped it, _isConversationMode should be true.
+      // So color should be Colors.white.
+      expect(iconWidget.color, equals(Colors.white));
+
+      // Tap again to toggle off
+      await tester.tap(iconFinder);
+      await tester.pump();
+
+      iconWidget = tester.widget(iconFinder);
+      // Should be AppColors.accent (default)
+      expect(iconWidget.color, equals(AppColors.accent));
     });
 
     testWidgets('Verify Input Text Field properties (reduced size)', (WidgetTester tester) async {

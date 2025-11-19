@@ -83,6 +83,15 @@ class _TranslationScreenState extends State<TranslationScreen>
     final screenWidth = MediaQuery.of(context).size.width;
     final isDesktop = screenWidth > 900;
 
+    // Sync input controller with provider during listening
+    if (translationProvider.isListening &&
+        translationProvider.currentInput != _inputController.text) {
+      _inputController.text = translationProvider.currentInput;
+      _inputController.selection = TextSelection.fromPosition(
+        TextPosition(offset: _inputController.text.length),
+      );
+    }
+
     // Show error snackbar if there's an error
     if (translationProvider.lastError != null) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -147,12 +156,13 @@ class _TranslationScreenState extends State<TranslationScreen>
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            // Conversation Mode Toggle (Left)
+            // Conversation Mode (Left)
             Container(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+              width: 56,
+              height: 56,
               decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(24),
+                shape: BoxShape.circle,
+                color: _isConversationMode ? AppColors.accent : Colors.white,
                 boxShadow: [
                   BoxShadow(
                     color: Colors.black.withOpacity(0.1),
@@ -161,37 +171,22 @@ class _TranslationScreenState extends State<TranslationScreen>
                   ),
                 ],
               ),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(
-                    'Mode',
-                    style: TextStyle(
-                      fontSize: 13,
-                      fontWeight: FontWeight.w600,
-                      color: _isConversationMode
-                          ? AppColors.accent
-                          : AppColors.textSecondary,
-                    ),
-                  ),
-                  const SizedBox(width: 8),
-                  SizedBox(
-                    height: 24,
-                    width: 36,
-                    child: FittedBox(
-                      fit: BoxFit.fill,
-                      child: Switch.adaptive(
-                        value: _isConversationMode,
-                        activeColor: AppColors.accent,
-                        onChanged: (value) {
-                          setState(() {
-                            _isConversationMode = value;
-                          });
-                        },
-                      ),
-                    ),
-                  ),
-                ],
+              child: IconButton(
+                onPressed: () async {
+                  setState(() {
+                    _isConversationMode = !_isConversationMode;
+                  });
+                  if (_isConversationMode) {
+                    await translationProvider.startListening();
+                  } else {
+                    await translationProvider.stopListening();
+                  }
+                },
+                icon: Icon(
+                  Icons.record_voice_over_rounded,
+                  color: _isConversationMode ? Colors.white : AppColors.accent,
+                ),
+                tooltip: 'Conversation Mode',
               ),
             ),
 
