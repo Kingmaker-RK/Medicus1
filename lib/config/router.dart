@@ -3,7 +3,7 @@ import 'package:go_router/go_router.dart';
 import '../screens/welcome_screen.dart';
 import '../screens/translation_screen.dart';
 import '../screens/settings_screen.dart';
-import '../screens/user_profile_screen.dart';
+import '../screens/patient_profile_screen.dart';
 import '../screens/doctor_profile_screen.dart';
 import '../screens/profile_completion_screen.dart';
 import '../screens/forgot_password_screen.dart';
@@ -50,7 +50,7 @@ class AppRouter {
       GoRoute(
         path: '/profile',
         name: 'profile',
-        builder: (context, state) => const UserProfileScreen(),
+        builder: (context, state) => const PatientProfileScreen(),
       ),
       GoRoute(
         path: '/doctor-profile',

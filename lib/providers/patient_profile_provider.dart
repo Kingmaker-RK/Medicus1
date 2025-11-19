@@ -1,13 +1,13 @@
 import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
-import '../models/user_profile_model.dart';
+import '../models/patient_profile_model.dart';
 
-class UserProfileProvider with ChangeNotifier {
-  UserProfileModel _profile = UserProfileModel();
+class PatientProfileProvider with ChangeNotifier {
+  PatientProfileModel _profile = PatientProfileModel();
   bool _isLoading = false;
 
-  UserProfileModel get profile => _profile;
+  PatientProfileModel get profile => _profile;
   bool get isLoading => _isLoading;
 
   // Initialize profile from storage
@@ -20,16 +20,16 @@ class UserProfileProvider with ChangeNotifier {
       final profileJson = prefs.getString('user_profile');
 
       if (profileJson != null) {
-        _profile = UserProfileModel.fromJson(
+        _profile = PatientProfileModel.fromJson(
           json.decode(profileJson) as Map<String, dynamic>,
         );
       } else {
         // Initialize with empty profile (no demo data)
-        _profile = UserProfileModel();
+        _profile = PatientProfileModel();
       }
     } catch (e) {
       print('Error initializing profile: $e');
-      _profile = UserProfileModel();
+      _profile = PatientProfileModel();
     } finally {
       _isLoading = false;
       notifyListeners();

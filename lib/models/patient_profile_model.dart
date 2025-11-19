@@ -1,4 +1,4 @@
-class UserProfileModel {
+class PatientProfileModel {
   final String firstName;
   final String secondName;
   final String insuranceNumber;
@@ -9,7 +9,7 @@ class UserProfileModel {
   final List<Reimbursement> reimbursements;
   final List<MailboxMessage> mailbox;
 
-  UserProfileModel({
+  PatientProfileModel({
     this.firstName = '',
     this.secondName = '',
     this.insuranceNumber = '',
@@ -21,8 +21,8 @@ class UserProfileModel {
     this.mailbox = const [],
   });
 
-  factory UserProfileModel.fromJson(Map<String, dynamic> json) {
-    return UserProfileModel(
+  factory PatientProfileModel.fromJson(Map<String, dynamic> json) {
+    return PatientProfileModel(
       firstName: json['firstName'] as String? ?? '',
       secondName: json['secondName'] as String? ?? '',
       insuranceNumber: json['insuranceNumber'] as String? ?? '',
@@ -65,7 +65,7 @@ class UserProfileModel {
     };
   }
 
-  UserProfileModel copyWith({
+  PatientProfileModel copyWith({
     String? firstName,
     String? secondName,
     String? insuranceNumber,
@@ -76,7 +76,7 @@ class UserProfileModel {
     List<Reimbursement>? reimbursements,
     List<MailboxMessage>? mailbox,
   }) {
-    return UserProfileModel(
+    return PatientProfileModel(
       firstName: firstName ?? this.firstName,
       secondName: secondName ?? this.secondName,
       insuranceNumber: insuranceNumber ?? this.insuranceNumber,

@@ -3,18 +3,18 @@ import 'package:provider/provider.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
-import '../providers/user_profile_provider.dart';
+import '../providers/patient_profile_provider.dart';
 import '../models/user_profile_model.dart';
 import '../constants/colors.dart';
 
-class UserProfileScreen extends StatefulWidget {
-  const UserProfileScreen({Key? key}) : super(key: key);
+class PatientProfileScreen extends StatefulWidget {
+  const PatientProfileScreen({Key? key}) : super(key: key);
 
   @override
-  State<UserProfileScreen> createState() => _UserProfileScreenState();
+  State<PatientProfileScreen> createState() => _PatientProfileScreenState();
 }
 
-class _UserProfileScreenState extends State<UserProfileScreen>
+class _PatientProfileScreenState extends State<PatientProfileScreen>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
 
@@ -32,7 +32,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
 
   @override
   Widget build(BuildContext context) {
-    final profileProvider = Provider.of<UserProfileProvider>(context);
+    final profileProvider = Provider.of<PatientProfileProvider>(context);
     final profile = profileProvider.profile;
 
     return Scaffold(
@@ -40,7 +40,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
       appBar: AppBar(
         backgroundColor: AppColors.primary,
         foregroundColor: Colors.white,
-        title: const Text('User Profile'),
+        title: const Text('Patient Profile'),
         bottom: TabBar(
           controller: _tabController,
           isScrollable: true,
@@ -71,7 +71,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
     );
   }
 
-  Widget _buildPersonalInfoTab(profile, UserProfileProvider provider) {
+  Widget _buildPersonalInfoTab(profile, PatientProfileProvider provider) {
     return SingleChildScrollView(
       padding: const EdgeInsets.all(16),
       child: Column(
@@ -180,7 +180,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
     );
   }
 
-  Widget _buildSickNotesTab(profile, UserProfileProvider provider) {
+  Widget _buildSickNotesTab(profile, PatientProfileProvider provider) {
     return ListView.builder(
       padding: const EdgeInsets.all(16),
       itemCount: profile.sickNotes.length,
@@ -253,7 +253,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
     );
   }
 
-  Widget _buildReimbursementsTab(profile, UserProfileProvider provider) {
+  Widget _buildReimbursementsTab(profile, PatientProfileProvider provider) {
     return ListView.builder(
       padding: const EdgeInsets.all(16),
       itemCount: profile.reimbursements.length,
@@ -322,7 +322,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
     );
   }
 
-  Widget _buildMailboxTab(profile, UserProfileProvider provider) {
+  Widget _buildMailboxTab(profile, PatientProfileProvider provider) {
     return ListView.builder(
       padding: const EdgeInsets.all(16),
       itemCount: profile.mailbox.length,
@@ -333,7 +333,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
     );
   }
 
-  Widget _buildMailboxCard(message, UserProfileProvider provider) {
+  Widget _buildMailboxCard(message, PatientProfileProvider provider) {
     return Card(
       margin: const EdgeInsets.only(bottom: 12),
       color: message.isRead
@@ -376,7 +376,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
     );
   }
 
-  Widget _buildSubmitDocumentsTab(UserProfileProvider provider) {
+  Widget _buildSubmitDocumentsTab(PatientProfileProvider provider) {
     return SingleChildScrollView(
       padding: const EdgeInsets.all(16),
       child: Column(
@@ -548,7 +548,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
     );
   }
 
-  void _showSubmitSickNoteDialog(UserProfileProvider provider) {
+  void _showSubmitSickNoteDialog(PatientProfileProvider provider) {
     final startDateController = TextEditingController();
     final endDateController = TextEditingController();
     final diagnosisController = TextEditingController();
@@ -623,7 +623,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
     );
   }
 
-  void _showSubmitReimbursementDialog(UserProfileProvider provider) {
+  void _showSubmitReimbursementDialog(PatientProfileProvider provider) {
     final amountController = TextEditingController();
     final descriptionController = TextEditingController();
 
@@ -687,7 +687,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
     );
   }
 
-  void _showUploadCertificateDialog(UserProfileProvider provider) {
+  void _showUploadCertificateDialog(PatientProfileProvider provider) {
     final nameController = TextEditingController();
     final issueDateController = TextEditingController();
 
@@ -752,7 +752,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
   }
 
   Future<void> _pickImage(
-    UserProfileProvider provider,
+    PatientProfileProvider provider,
     ImageSource source,
   ) async {
     final picker = ImagePicker();
@@ -770,7 +770,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
     }
   }
 
-  void _showImagePickerOptions(UserProfileProvider provider) {
+  void _showImagePickerOptions(PatientProfileProvider provider) {
     showModalBottomSheet(
       context: context,
       builder:
