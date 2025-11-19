@@ -1,3 +1,4 @@
+import 'dart:typed_data';
 import 'package:google_generative_ai/google_generative_ai.dart';
 import '../constants/app_constants.dart';
 
@@ -29,6 +30,64 @@ class LLMTranslationService {
       print('✅ LLM Translation Service initialized with Gemini Flash 2.0');
     } else {
       print('⚠️ Gemini API key not configured. Using fallback translations.');
+    }
+  }
+
+  /// Recognize handwriting from image bytes
+  Future<String> recognizeHandwriting(Uint8List imageBytes) async {
+    if (_model == null) {
+      print('⚠️ Model not initialized for handwriting recognition');
+      return '';
+    }
+
+    try {
+      final prompt =
+          'Transcribe the handwriting in this image. '
+          'Detect the language automatically. '
+          'Return ONLY the transcribed text, no explanations. '
+          'If the image is unclear, return "Unable to recognize text".';
+
+      final content = [
+        Content.multi([
+          TextPart(prompt),
+          DataPart('image/png', imageBytes),
+        ])
+      ];
+
+      final response = await _model!.generateContent(content);
+      return response.text?.trim() ?? '';
+    } catch (e) {
+      print('❌ Handwriting recognition error: $e');
+      return '';
+    }
+  }
+
+  /// Extract text from any image (handwriting or printed)
+  Future<String> extractTextFromImage(Uint8List imageBytes) async {
+    if (_model == null) {
+      print('⚠️ Model not initialized for image text extraction');
+      return '';
+    }
+
+    try {
+      final prompt =
+          'Analyze this image and extract all visible text. '
+          'Detect the language automatically. '
+          'Return ONLY the extracted text, no explanations. '
+          'If the image contains no text, return "Unable to extract text".';
+
+      final content = [
+        Content.multi([
+          TextPart(prompt),
+          DataPart('image/png', imageBytes),
+        ])
+      ];
+
+      final response = await _model!.generateContent(content);
+      return response.text?.trim() ?? '';
+    } catch (e) {
+      print('❌ Image text extraction error: $e');
+      return '';
     }
   }
 

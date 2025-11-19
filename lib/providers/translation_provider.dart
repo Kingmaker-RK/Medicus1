@@ -1,3 +1,4 @@
+import 'dart:typed_data';
 import 'package:flutter/foundation.dart';
 import '../models/translation_result.dart';
 import '../services/translation_service.dart';
@@ -12,6 +13,7 @@ class TranslationProvider with ChangeNotifier {
   bool _isTranslating = false;
   bool _isListening = false;
   bool _isSpeaking = false;
+  bool _isRecognizingHandwriting = false;
   String _currentInput = '';
   String _sourceLanguage = 'en';
   String _targetLanguage = 'es';
@@ -22,10 +24,59 @@ class TranslationProvider with ChangeNotifier {
   bool get isTranslating => _isTranslating;
   bool get isListening => _isListening;
   bool get isSpeaking => _isSpeaking;
+  bool get isRecognizingHandwriting => _isRecognizingHandwriting;
   String get currentInput => _currentInput;
   String get sourceLanguage => _sourceLanguage;
   String get targetLanguage => _targetLanguage;
   String? get lastError => _lastError;
+
+  // Extract text from image
+  Future<String> extractTextFromImage(Uint8List imageBytes) async {
+    _isRecognizingHandwriting = true; // Reusing state for UI loading indicators
+    _lastError = null;
+    notifyListeners();
+
+    try {
+      final text = await _translationService.extractTextFromImage(imageBytes);
+      
+      if (text.isNotEmpty) {
+        _currentInput = text;
+      }
+      
+      return text;
+    } catch (e) {
+      print('Error extracting text from image: $e');
+      _lastError = 'Image text extraction failed: ${e.toString()}';
+      return '';
+    } finally {
+      _isRecognizingHandwriting = false;
+      notifyListeners();
+    }
+  }
+
+  // Recognize handwriting
+  Future<String> recognizeHandwriting(Uint8List imageBytes) async {
+    _isRecognizingHandwriting = true;
+    _lastError = null;
+    notifyListeners();
+
+    try {
+      final text = await _translationService.recognizeHandwriting(imageBytes);
+      
+      if (text.isNotEmpty) {
+        _currentInput = text;
+      }
+      
+      return text;
+    } catch (e) {
+      print('Error recognizing handwriting: $e');
+      _lastError = 'Handwriting recognition failed: ${e.toString()}';
+      return '';
+    } finally {
+      _isRecognizingHandwriting = false;
+      notifyListeners();
+    }
+  }
 
   // Initialize speech service with user's selected language
   Future<void> initialize({String? userLanguage}) async {

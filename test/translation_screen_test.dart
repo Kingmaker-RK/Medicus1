@@ -1,3 +1,4 @@
+import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:provider/provider.dart';
@@ -83,6 +84,7 @@ class FakeTranslationProvider extends ChangeNotifier implements TranslationProvi
   bool _isTranslating = false;
   bool _isListening = false;
   bool _isSpeaking = false;
+  bool _isRecognizingHandwriting = false;
   String? _lastError;
 
   @override
@@ -101,6 +103,8 @@ class FakeTranslationProvider extends ChangeNotifier implements TranslationProvi
   bool get isListening => _isListening;
   @override
   bool get isSpeaking => _isSpeaking;
+  @override
+  bool get isRecognizingHandwriting => _isRecognizingHandwriting;
   @override
   String? get lastError => _lastError;
 
@@ -178,6 +182,16 @@ class FakeTranslationProvider extends ChangeNotifier implements TranslationProvi
   void clearHistory() {
     _translationHistory.clear();
     notifyListeners();
+  }
+
+  @override
+  Future<String> recognizeHandwriting(Uint8List imageBytes) async {
+    return 'Recognized Text';
+  }
+
+  @override
+  Future<String> extractTextFromImage(Uint8List imageBytes) async {
+    return 'Extracted Text';
   }
 
   // Stubs
@@ -307,6 +321,17 @@ void main() {
       TextField outputTextField = tester.widget(outputFieldFinder);
       expect(outputTextField.readOnly, isTrue);
       expect(outputTextField.minLines, equals(2));
+    });
+
+    testWidgets('Verify Image Upload and Handwriting icons exist', (WidgetTester tester) async {
+      await tester.pumpWidget(createTestScreen());
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 100));
+
+      expect(find.byIcon(Icons.image_rounded), findsOneWidget);
+      expect(find.byIcon(Icons.draw_rounded), findsOneWidget);
+      expect(find.byTooltip('Upload Image'), findsOneWidget);
+      expect(find.byTooltip('Handwriting Input'), findsOneWidget);
     });
   });
 }

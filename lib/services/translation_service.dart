@@ -1,3 +1,4 @@
+import 'dart:typed_data';
 import 'package:dio/dio.dart';
 import '../models/translation_result.dart';
 import '../constants/app_constants.dart';
@@ -12,6 +13,28 @@ class TranslationService {
   final Dio _dio = Dio();
   final DeepLTranslationService _deeplService = DeepLTranslationService();
   final LLMTranslationService _llmService = LLMTranslationService();
+
+  /// Recognize handwriting from image bytes using LLM
+  Future<String> recognizeHandwriting(Uint8List imageBytes) async {
+    try {
+      _llmService.initialize();
+      return await _llmService.recognizeHandwriting(imageBytes);
+    } catch (e) {
+      print('Error recognizing handwriting: $e');
+      return '';
+    }
+  }
+
+  /// Extract text from image bytes using LLM
+  Future<String> extractTextFromImage(Uint8List imageBytes) async {
+    try {
+      _llmService.initialize();
+      return await _llmService.extractTextFromImage(imageBytes);
+    } catch (e) {
+      print('Error extracting text from image: $e');
+      return '';
+    }
+  }
 
   // Translate text using multiple translation services with fallback chain
   Future<TranslationResult> translateText({

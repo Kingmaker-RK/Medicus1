@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
 import '../providers/translation_provider.dart';
@@ -8,6 +9,7 @@ import '../constants/colors.dart';
 import '../constants/app_constants.dart';
 import '../widgets/anatomy_viewer.dart';
 import '../widgets/app_bottom_navigation_bar.dart';
+import '../widgets/handwriting_input_widget.dart';
 
 class TranslationScreen extends StatefulWidget {
   const TranslationScreen({Key? key}) : super(key: key);
@@ -74,6 +76,72 @@ class _TranslationScreenState extends State<TranslationScreen>
     _outputController.dispose();
     _micAnimationController.dispose();
     super.dispose();
+  }
+
+  void _showHandwritingInput() {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => HandwritingInputWidget(
+        onHandwritingCaptured: (imageBytes) async {
+          Navigator.pop(context);
+          final provider = Provider.of<TranslationProvider>(context, listen: false);
+
+          // Show simple loading dialog
+          showDialog(
+            context: context,
+            barrierDismissible: false,
+            builder: (context) => const Center(child: CircularProgressIndicator()),
+          );
+
+          final text = await provider.recognizeHandwriting(imageBytes);
+
+          // Pop loading
+          if (mounted) Navigator.pop(context);
+
+          if (text.isNotEmpty && mounted) {
+            _inputController.text = text;
+          } else if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('Could not recognize handwriting')),
+            );
+          }
+        },
+      ),
+    );
+  }
+
+  Future<void> _pickAndExtractImage({ImageSource source = ImageSource.gallery}) async {
+    final ImagePicker picker = ImagePicker();
+    final XFile? image = await picker.pickImage(source: source);
+
+    if (image != null) {
+      final bytes = await image.readAsBytes();
+      if (!mounted) return;
+
+      final provider = Provider.of<TranslationProvider>(context, listen: false);
+
+      // Show simple loading dialog
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (context) => const Center(child: CircularProgressIndicator()),
+      );
+
+      final text = await provider.extractTextFromImage(bytes);
+
+      // Pop loading
+      if (mounted) Navigator.pop(context);
+
+      if (text.isNotEmpty && mounted) {
+        _inputController.text = text;
+      } else if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Could not extract text from image')),
+        );
+      }
+    }
   }
 
   @override
@@ -369,16 +437,10 @@ class _TranslationScreenState extends State<TranslationScreen>
                   border: Border.all(color: AppColors.borderLight),
                 ),
                 child: IconButton(
-                  onPressed: () {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text('Camera feature coming soon'),
-                        duration: Duration(seconds: 1),
-                      ),
-                    );
-                  },
+                  onPressed: () => _pickAndExtractImage(source: ImageSource.camera),
                   icon: Icon(Icons.camera_alt_rounded, color: AppColors.accent),
                   iconSize: 22,
+                  tooltip: 'Take Photo',
                 ),
               ),
             ],
@@ -466,26 +528,51 @@ class _TranslationScreenState extends State<TranslationScreen>
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisSize: MainAxisSize.min,
         children: [
-          // Input text area
-          TextField(
-            controller: _inputController,
-            maxLines: null,
-            minLines: 3,
-            style: const TextStyle(
-              fontSize: 16,
-              height: 1.5,
-              color: AppColors.textPrimary,
-            ),
-            decoration: InputDecoration(
-              hintText: 'Enter text to translate...',
-              hintStyle: TextStyle(color: AppColors.textHint, fontSize: 16),
-              border: InputBorder.none,
-              contentPadding: const EdgeInsets.all(20),
-            ),
-            onChanged: (text) {
-              setState(() {}); // Update character count
-              translationProvider.updateInput(text);
-            },
+          // Input text area with floating icons
+          Stack(
+            children: [
+              TextField(
+                controller: _inputController,
+                maxLines: null,
+                minLines: 3,
+                style: const TextStyle(
+                  fontSize: 16,
+                  height: 1.5,
+                  color: AppColors.textPrimary,
+                ),
+                decoration: InputDecoration(
+                  hintText: 'Enter text to translate...',
+                  hintStyle: TextStyle(color: AppColors.textHint, fontSize: 16),
+                  border: InputBorder.none,
+                  contentPadding: const EdgeInsets.fromLTRB(20, 48, 20, 20),
+                ),
+                onChanged: (text) {
+                  setState(() {}); // Update character count
+                  translationProvider.updateInput(text);
+                },
+              ),
+              Positioned(
+                top: 8,
+                right: 8,
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    IconButton(
+                      icon: const Icon(Icons.image_rounded),
+                      color: AppColors.textSecondary,
+                      tooltip: 'Upload Image',
+                      onPressed: _pickAndExtractImage,
+                    ),
+                    IconButton(
+                      icon: const Icon(Icons.draw_rounded),
+                      color: AppColors.textSecondary,
+                      tooltip: 'Handwriting Input',
+                      onPressed: _showHandwritingInput,
+                    ),
+                  ],
+                ),
+              ),
+            ],
           ),
 
           // Bottom toolbar
