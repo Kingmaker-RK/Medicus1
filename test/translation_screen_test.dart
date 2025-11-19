@@ -223,8 +223,8 @@ void main() {
       await tester.pump(); 
       await tester.pump(const Duration(milliseconds: 100));
 
-      // Find "Conversation Mode" text
-      expect(find.text('Conversation Mode'), findsOneWidget);
+      // Find "Mode" text (was "Conversation Mode")
+      expect(find.text('Mode'), findsOneWidget);
 
       // Find the Switch
       final switchFinder = find.byType(Switch);
@@ -255,7 +255,7 @@ void main() {
       // Get the TextField widget
       TextField inputTextField = tester.widget(inputFieldFinder);
 
-      // Verify minLines is 3 (as per "Reduce the size" requirement implementation)
+      // Verify minLines is 3 (Input field size wasn't reduced, only output)
       expect(inputTextField.minLines, equals(3));
       expect(inputTextField.maxLines, isNull);
     });
@@ -294,7 +294,7 @@ void main() {
       // Verify it is read-only
       TextField outputTextField = tester.widget(outputFieldFinder);
       expect(outputTextField.readOnly, isTrue);
-      expect(outputTextField.minLines, equals(3));
+      expect(outputTextField.minLines, equals(2));
     });
   });
 }

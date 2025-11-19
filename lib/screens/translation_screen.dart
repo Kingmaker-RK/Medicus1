@@ -133,6 +133,9 @@ class _TranslationScreenState extends State<TranslationScreen>
           // Medical context section (if available)
           if (translationProvider.currentTranslation != null)
             _buildMedicalContextSection(translationProvider),
+            
+          // Add spacing for FAB to prevent collision with language bar
+          const SizedBox(height: 100),
         ],
       ),
       // Floating microphone button
@@ -290,7 +293,7 @@ class _TranslationScreenState extends State<TranslationScreen>
     UserProvider userProvider,
   ) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
       decoration: BoxDecoration(
         color: Colors.white,
         boxShadow: [
@@ -406,7 +409,7 @@ class _TranslationScreenState extends State<TranslationScreen>
     required ValueChanged<String?> onChanged,
   }) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
       decoration: BoxDecoration(
         color: AppColors.inputBackground,
         borderRadius: BorderRadius.circular(12),
@@ -421,7 +424,7 @@ class _TranslationScreenState extends State<TranslationScreen>
           color: AppColors.textSecondary,
         ),
         style: TextStyle(
-          fontSize: 15,
+          fontSize: 14,
           fontWeight: FontWeight.w600,
           color: AppColors.textPrimary,
         ),
@@ -614,7 +617,7 @@ class _TranslationScreenState extends State<TranslationScreen>
                   controller: _outputController,
                   readOnly: true,
                   maxLines: null,
-                  minLines: 3,
+                  minLines: 2,
                   style: const TextStyle(
                     fontSize: 16,
                     height: 1.5,
@@ -622,7 +625,7 @@ class _TranslationScreenState extends State<TranslationScreen>
                   ),
                   decoration: const InputDecoration(
                     border: InputBorder.none,
-                    contentPadding: EdgeInsets.all(20),
+                    contentPadding: EdgeInsets.all(16),
                   ),
                 ),
 
