@@ -352,12 +352,12 @@ class _TranslationScreenState extends State<TranslationScreen>
                 ),
               ),
 
-              const SizedBox(width: 36),
+              const SizedBox(width: 72),
 
               // Microphone (Middle)
               _buildFloatingMicButton(translationProvider),
 
-              const SizedBox(width: 36),
+              const SizedBox(width: 72),
 
               // Camera
               Container(
