@@ -22,6 +22,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
   bool _rememberMe = false;
   int _loginAttempts = 0;
   bool _showForgotPassword = false;
+  bool _obscurePassword = true;
 
   @override
   void initState() {
@@ -182,10 +183,23 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                     // Password field
                     TextField(
                       controller: _passwordController,
-                      obscureText: true,
+                      obscureText: _obscurePassword,
                       decoration: InputDecoration(
                         labelText: 'Password',
                         prefixIcon: const Icon(Icons.lock),
+                        suffixIcon: IconButton(
+                          icon: Icon(
+                            _obscurePassword
+                                ? Icons.visibility_off
+                                : Icons.visibility,
+                            color: AppColors.textSecondary,
+                          ),
+                          onPressed: () {
+                            setState(() {
+                              _obscurePassword = !_obscurePassword;
+                            });
+                          },
+                        ),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
                         ),
