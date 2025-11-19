@@ -6,41 +6,41 @@ class HospitalBackground extends StatelessWidget {
   final Widget child;
   final double opacity;
 
-  const HospitalBackground({
-    Key? key,
-    required this.child,
-    this.opacity = 0.15,
-  }) : super(key: key);
+  const HospitalBackground({Key? key, required this.child, this.opacity = 0.15})
+    : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Stack(
       children: [
-        // Gradient background
+        // Enhanced multi-color gradient background with smooth transitions
         Container(
           decoration: BoxDecoration(
             gradient: LinearGradient(
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
               colors: [
-                const Color(0xFFE3F2FD), // Light blue
-                const Color(0xFFF1F8E9), // Light green
+                const Color(0xFFBBDEFB), // Soft sky blue
+                const Color(0xFFE1F5DC), // Gentle mint green
+                const Color(0xFFFFF9C4), // Warm cream yellow
+                const Color(0xFFFFCCBC), // Soft peachy coral
                 Colors.white,
               ],
+              stops: const [0.0, 0.25, 0.5, 0.75, 1.0],
             ),
           ),
         ),
 
-        // Medical graphics pattern
+        // Medical graphics pattern with enhanced visuals
         CustomPaint(
           painter: HospitalGraphicsPainter(opacity: opacity),
           size: Size.infinite,
         ),
 
-        // Semi-transparent overlay
+        // Softer overlay for better content visibility
         Container(
           decoration: BoxDecoration(
-            color: Colors.white.withValues(alpha: 0.7),
+            color: Colors.white.withValues(alpha: 0.65),
           ),
         ),
 
@@ -59,38 +59,58 @@ class HospitalGraphicsPainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    // Medical blue and red colors
+    // Enhanced vibrant medical colors
     final bluePaint = Paint()
-      ..color = const Color(0xFF1976D2).withValues(alpha: opacity)
+      ..color = const Color(0xFF42A5F5).withValues(alpha: opacity * 1.3)
       ..style = PaintingStyle.fill;
 
     final redPaint = Paint()
-      ..color = const Color(0xFFE53935).withValues(alpha: opacity)
+      ..color = const Color(0xFFEF5350).withValues(alpha: opacity * 1.2)
       ..style = PaintingStyle.fill;
 
     final greenPaint = Paint()
-      ..color = const Color(0xFF43A047).withValues(alpha: opacity)
+      ..color = const Color(0xFF66BB6A).withValues(alpha: opacity * 1.3)
+      ..style = PaintingStyle.fill;
+
+    final purplePaint = Paint()
+      ..color = const Color(0xFFAB47BC).withValues(alpha: opacity * 1.2)
+      ..style = PaintingStyle.fill;
+
+    final orangePaint = Paint()
+      ..color = const Color(0xFFFF7043).withValues(alpha: opacity * 1.2)
       ..style = PaintingStyle.fill;
 
     final outlinePaint = Paint()
-      ..color = const Color(0xFF1976D2).withValues(alpha: opacity * 0.5)
+      ..color = const Color(0xFF42A5F5).withValues(alpha: opacity * 0.7)
       ..style = PaintingStyle.stroke
-      ..strokeWidth = 2;
+      ..strokeWidth = 2.5;
 
-    // Draw medical crosses scattered across the background
+    // Draw floating medical pills/capsules
+    _drawMedicalPills(canvas, size, redPaint, bluePaint, greenPaint);
+
+    // Draw beautiful hearts
+    _drawHearts(canvas, size, redPaint);
+
+    // Draw modern medical crosses
     _drawMedicalCrosses(canvas, size, redPaint);
 
-    // Draw hospital building silhouettes
+    // Draw hospital building silhouettes (more modern)
     _drawHospitalBuildings(canvas, size, bluePaint, outlinePaint);
 
-    // Draw heartbeat lines
+    // Draw smooth heartbeat lines
     _drawHeartbeatLines(canvas, size, greenPaint);
 
-    // Draw stethoscope graphics
-    _drawStethoscopes(canvas, size, bluePaint);
+    // Draw stethoscopes
+    _drawStethoscopes(canvas, size, purplePaint);
 
     // Draw DNA helix pattern
     _drawDNAHelix(canvas, size, bluePaint, greenPaint);
+
+    // Draw medical shields (protection/care symbol)
+    _drawMedicalShields(canvas, size, orangePaint);
+
+    // Draw decorative circles/dots
+    _drawDecorativeCircles(canvas, size, bluePaint, greenPaint, purplePaint);
   }
 
   void _drawMedicalCrosses(Canvas canvas, Size size, Paint paint) {
@@ -121,7 +141,12 @@ class HospitalGraphicsPainter extends CustomPainter {
     canvas.drawRRect(verticalRect, paint);
   }
 
-  void _drawHospitalBuildings(Canvas canvas, Size size, Paint fillPaint, Paint outlinePaint) {
+  void _drawHospitalBuildings(
+    Canvas canvas,
+    Size size,
+    Paint fillPaint,
+    Paint outlinePaint,
+  ) {
     // Left building
     final building1 = Path()
       ..moveTo(size.width * 0.05, size.height * 0.4)
@@ -229,16 +254,8 @@ class HospitalGraphicsPainter extends CustomPainter {
     canvas.drawPath(path, strokePaint);
 
     // Earpieces
-    canvas.drawCircle(
-      Offset(position.dx - 15, position.dy - 55),
-      4,
-      paint,
-    );
-    canvas.drawCircle(
-      Offset(position.dx - 5, position.dy - 55),
-      4,
-      paint,
-    );
+    canvas.drawCircle(Offset(position.dx - 15, position.dy - 55), 4, paint);
+    canvas.drawCircle(Offset(position.dx - 5, position.dy - 55), 4, paint);
   }
 
   void _drawDNAHelix(Canvas canvas, Size size, Paint paint1, Paint paint2) {
@@ -305,6 +322,247 @@ class HospitalGraphicsPainter extends CustomPainter {
 
     canvas.drawPath(path1, paint1);
     canvas.drawPath(path2, paint2);
+  }
+
+  void _drawMedicalPills(
+    Canvas canvas,
+    Size size,
+    Paint paint1,
+    Paint paint2,
+    Paint paint3,
+  ) {
+    // Draw colorful medical pills/capsules scattered across the background
+    final pills = [
+      {
+        'pos': Offset(size.width * 0.15, size.height * 0.2),
+        'paint': paint1,
+        'rotation': 0.3,
+      },
+      {
+        'pos': Offset(size.width * 0.75, size.height * 0.15),
+        'paint': paint2,
+        'rotation': -0.5,
+      },
+      {
+        'pos': Offset(size.width * 0.2, size.height * 0.75),
+        'paint': paint3,
+        'rotation': 0.8,
+      },
+      {
+        'pos': Offset(size.width * 0.85, size.height * 0.7),
+        'paint': paint1,
+        'rotation': -0.2,
+      },
+      {
+        'pos': Offset(size.width * 0.5, size.height * 0.2),
+        'paint': paint2,
+        'rotation': 0.6,
+      },
+    ];
+
+    for (final pill in pills) {
+      final pos = pill['pos'] as Offset;
+      final paint = pill['paint'] as Paint;
+      final rotation = pill['rotation'] as double;
+
+      canvas.save();
+      canvas.translate(pos.dx, pos.dy);
+      canvas.rotate(rotation);
+
+      // Draw capsule shape
+      final capsuleRect = RRect.fromRectAndRadius(
+        const Rect.fromLTWH(-15, -5, 30, 10),
+        const Radius.circular(5),
+      );
+      canvas.drawRRect(capsuleRect, paint);
+
+      // Draw dividing line in middle
+      final linePaint = Paint()
+        ..color = paint.color.withValues(alpha: paint.color.a * 0.6)
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = 1.5;
+      canvas.drawLine(const Offset(0, -5), const Offset(0, 5), linePaint);
+
+      canvas.restore();
+    }
+  }
+
+  void _drawHearts(Canvas canvas, Size size, Paint paint) {
+    // Draw beautiful heart shapes
+    final hearts = [
+      {'pos': Offset(size.width * 0.1, size.height * 0.3), 'size': 20.0},
+      {'pos': Offset(size.width * 0.9, size.height * 0.4), 'size': 18.0},
+      {'pos': Offset(size.width * 0.25, size.height * 0.9), 'size': 16.0},
+      {'pos': Offset(size.width * 0.8, size.height * 0.85), 'size': 22.0},
+    ];
+
+    for (final heart in hearts) {
+      final pos = heart['pos'] as Offset;
+      final heartSize = heart['size'] as double;
+      _drawHeart(canvas, pos, heartSize, paint);
+    }
+  }
+
+  void _drawHeart(Canvas canvas, Offset center, double size, Paint paint) {
+    final path = Path();
+
+    // Draw heart shape using bezier curves
+    path.moveTo(center.dx, center.dy + size * 0.3);
+
+    // Left half of heart
+    path.cubicTo(
+      center.dx - size * 0.5,
+      center.dy + size * 0.3,
+      center.dx - size * 0.5,
+      center.dy - size * 0.1,
+      center.dx - size * 0.25,
+      center.dy - size * 0.3,
+    );
+    path.cubicTo(
+      center.dx - size * 0.1,
+      center.dy - size * 0.5,
+      center.dx,
+      center.dy - size * 0.4,
+      center.dx,
+      center.dy - size * 0.2,
+    );
+
+    // Right half of heart
+    path.cubicTo(
+      center.dx,
+      center.dy - size * 0.4,
+      center.dx + size * 0.1,
+      center.dy - size * 0.5,
+      center.dx + size * 0.25,
+      center.dy - size * 0.3,
+    );
+    path.cubicTo(
+      center.dx + size * 0.5,
+      center.dy - size * 0.1,
+      center.dx + size * 0.5,
+      center.dy + size * 0.3,
+      center.dx,
+      center.dy + size * 0.3,
+    );
+
+    path.close();
+    canvas.drawPath(path, paint);
+  }
+
+  void _drawMedicalShields(Canvas canvas, Size size, Paint paint) {
+    // Draw shield symbols representing protection and care
+    final shields = [
+      Offset(size.width * 0.05, size.height * 0.6),
+      Offset(size.width * 0.95, size.height * 0.3),
+      Offset(size.width * 0.4, size.height * 0.05),
+    ];
+
+    for (final pos in shields) {
+      _drawShield(canvas, pos, 25, paint);
+    }
+  }
+
+  void _drawShield(Canvas canvas, Offset center, double size, Paint paint) {
+    final path = Path();
+
+    // Shield shape
+    path.moveTo(center.dx, center.dy - size * 0.4);
+    path.lineTo(center.dx + size * 0.35, center.dy - size * 0.2);
+    path.lineTo(center.dx + size * 0.35, center.dy + size * 0.2);
+    path.quadraticBezierTo(
+      center.dx + size * 0.35,
+      center.dy + size * 0.5,
+      center.dx,
+      center.dy + size * 0.6,
+    );
+    path.quadraticBezierTo(
+      center.dx - size * 0.35,
+      center.dy + size * 0.5,
+      center.dx - size * 0.35,
+      center.dy + size * 0.2,
+    );
+    path.lineTo(center.dx - size * 0.35, center.dy - size * 0.2);
+    path.close();
+
+    canvas.drawPath(path, paint);
+
+    // Draw cross on shield
+    final crossPaint = Paint()
+      ..color = Colors.white.withValues(alpha: paint.color.a * 1.5)
+      ..style = PaintingStyle.fill;
+
+    _drawCross(
+      canvas,
+      Offset(center.dx, center.dy + size * 0.05),
+      size * 0.3,
+      crossPaint,
+    );
+  }
+
+  void _drawDecorativeCircles(
+    Canvas canvas,
+    Size size,
+    Paint paint1,
+    Paint paint2,
+    Paint paint3,
+  ) {
+    // Draw small decorative circles/dots scattered throughout
+    final circles = [
+      {
+        'pos': Offset(size.width * 0.12, size.height * 0.45),
+        'radius': 4.0,
+        'paint': paint1,
+      },
+      {
+        'pos': Offset(size.width * 0.88, size.height * 0.55),
+        'radius': 5.0,
+        'paint': paint2,
+      },
+      {
+        'pos': Offset(size.width * 0.3, size.height * 0.15),
+        'radius': 3.5,
+        'paint': paint3,
+      },
+      {
+        'pos': Offset(size.width * 0.65, size.height * 0.25),
+        'radius': 4.5,
+        'paint': paint1,
+      },
+      {
+        'pos': Offset(size.width * 0.18, size.height * 0.82),
+        'radius': 3.0,
+        'paint': paint2,
+      },
+      {
+        'pos': Offset(size.width * 0.92, size.height * 0.65),
+        'radius': 4.0,
+        'paint': paint3,
+      },
+      {
+        'pos': Offset(size.width * 0.45, size.height * 0.85),
+        'radius': 3.5,
+        'paint': paint1,
+      },
+      {
+        'pos': Offset(size.width * 0.7, size.height * 0.08),
+        'radius': 5.0,
+        'paint': paint2,
+      },
+    ];
+
+    for (final circle in circles) {
+      final pos = circle['pos'] as Offset;
+      final radius = circle['radius'] as double;
+      final paint = circle['paint'] as Paint;
+
+      canvas.drawCircle(pos, radius, paint);
+
+      // Add a subtle white glow effect
+      final glowPaint = Paint()
+        ..color = Colors.white.withValues(alpha: paint.color.a * 0.5)
+        ..style = PaintingStyle.fill;
+      canvas.drawCircle(pos, radius * 0.5, glowPaint);
+    }
   }
 
   @override
