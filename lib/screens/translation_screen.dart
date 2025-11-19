@@ -7,6 +7,7 @@ import '../providers/user_provider.dart';
 import '../constants/colors.dart';
 import '../constants/app_constants.dart';
 import '../widgets/anatomy_viewer.dart';
+import '../widgets/app_bottom_navigation_bar.dart';
 
 class TranslationScreen extends StatefulWidget {
   const TranslationScreen({Key? key}) : super(key: key);
@@ -130,6 +131,7 @@ class _TranslationScreenState extends State<TranslationScreen>
       floatingActionButton: _buildFloatingMicButton(translationProvider),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       endDrawer: _buildHistoryDrawer(translationProvider),
+      bottomNavigationBar: const AppBottomNavigationBar(currentIndex: 0),
     );
   }
 

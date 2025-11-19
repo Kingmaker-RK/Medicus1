@@ -59,6 +59,24 @@
       "name": "reset-password",
       "screen": "ResetPasswordScreen",
       "description": "New password creation screen with password strength validation and confirmation"
+    },
+    {
+      "path": "/appointments",
+      "name": "appointments",
+      "screen": "AppointmentsScreen",
+      "description": "Appointment booking screen with Video and In-Person consultation options"
+    },
+    {
+      "path": "/health",
+      "name": "health",
+      "screen": "HealthScreen",
+      "description": "Health data dashboard displaying smartwatch and phone health metrics"
+    },
+    {
+      "path": "/reminders",
+      "name": "reminders",
+      "screen": "RemindersScreen",
+      "description": "Medication reminder management screen with notifications and alarms"
     }
   ]
 }

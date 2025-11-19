@@ -10,6 +10,9 @@ import '../screens/forgot_password_screen.dart';
 import '../screens/email_verification_screen.dart';
 import '../screens/verify_password_reset_screen.dart';
 import '../screens/reset_password_screen.dart';
+import '../screens/appointments_screen.dart';
+import '../screens/health_screen.dart';
+import '../screens/reminders_screen.dart';
 
 class AppRouter {
   static final GoRouter router = GoRouter(
@@ -79,6 +82,21 @@ class AppRouter {
           final code = state.uri.queryParameters['code'] ?? '';
           return ResetPasswordScreen(email: email, code: code);
         },
+      ),
+      GoRoute(
+        path: '/appointments',
+        name: 'appointments',
+        builder: (context, state) => const AppointmentsScreen(),
+      ),
+      GoRoute(
+        path: '/health',
+        name: 'health',
+        builder: (context, state) => const HealthScreen(),
+      ),
+      GoRoute(
+        path: '/reminders',
+        name: 'reminders',
+        builder: (context, state) => const RemindersScreen(),
       ),
     ],
     errorBuilder: (context, state) =>
