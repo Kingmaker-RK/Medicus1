@@ -7,6 +7,7 @@ import '../screens/settings_screen.dart';
 import '../screens/user_profile_screen.dart';
 import '../screens/doctor_profile_screen.dart';
 import '../screens/profile_completion_screen.dart';
+import '../screens/forgot_password_screen.dart';
 import '../constants/app_constants.dart';
 
 class AppRouter {
@@ -68,6 +69,11 @@ class AppRouter {
         path: '/complete-profile',
         name: 'complete-profile',
         builder: (context, state) => const ProfileCompletionScreen(),
+      ),
+      GoRoute(
+        path: '/forgot-password',
+        name: 'forgot-password',
+        builder: (context, state) => const ForgotPasswordScreen(),
       ),
     ],
     errorBuilder: (context, state) =>

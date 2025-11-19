@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../providers/user_provider.dart';
 import '../widgets/medicus_logo.dart';
 import '../constants/colors.dart';
@@ -18,6 +19,29 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   bool _isSignIn = true;
+  bool _rememberMe = false;
+  int _loginAttempts = 0;
+  bool _showForgotPassword = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadSavedEmail();
+  }
+
+  Future<void> _loadSavedEmail() async {
+    final prefs = await SharedPreferences.getInstance();
+    final rememberMe = prefs.getBool('rememberMe') ?? false;
+    if (rememberMe) {
+      final savedEmail = prefs.getString('savedEmail');
+      if (savedEmail != null && mounted) {
+        setState(() {
+          _emailController.text = savedEmail;
+          _rememberMe = true;
+        });
+      }
+    }
+  }
 
   @override
   void dispose() {
@@ -169,6 +193,71 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                         fillColor: Colors.white,
                       ),
                     ),
+                    const SizedBox(height: 16),
+
+                    // Remember Me + Forgot Password Row
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 4),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          // Remember Me Checkbox
+                          Row(
+                            children: [
+                              SizedBox(
+                                height: 20,
+                                width: 20,
+                                child: Checkbox(
+                                  value: _rememberMe,
+                                  onChanged: (value) {
+                                    setState(() {
+                                      _rememberMe = value ?? false;
+                                    });
+                                  },
+                                  activeColor: AppColors.primary,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(4),
+                                  ),
+                                  materialTapTargetSize:
+                                      MaterialTapTargetSize.shrinkWrap,
+                                ),
+                              ),
+                              const SizedBox(width: 8),
+                              Text(
+                                'Remember me',
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  color: AppColors.textSecondary,
+                                  fontWeight: FontWeight.normal,
+                                ),
+                              ),
+                            ],
+                          ),
+
+                          // Forgot Password Link (conditionally shown)
+                          if (_showForgotPassword)
+                            TextButton(
+                              onPressed: () {
+                                context.go('/forgot-password');
+                              },
+                              style: TextButton.styleFrom(
+                                padding: EdgeInsets.zero,
+                                minimumSize: const Size(0, 0),
+                                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                              ),
+                              child: Text(
+                                'Forgot Password?',
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w500,
+                                  color: AppColors.primary,
+                                ),
+                              ),
+                            ),
+                        ],
+                      ),
+                    ),
+
                     const SizedBox(height: 24),
 
                     // Sign in / Sign up button
@@ -176,14 +265,34 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                       onPressed: userProvider.isLoading
                           ? null
                           : () async {
-                              await userProvider.login(
-                                email: _emailController.text,
-                                password: _passwordController.text,
-                                role: _selectedRole,
-                              );
-                              if (mounted && userProvider.isLoggedIn) {
-                                // Redirect to profile completion screen
-                                context.go('/complete-profile');
+                              try {
+                                await userProvider.login(
+                                  email: _emailController.text,
+                                  password: _passwordController.text,
+                                  role: _selectedRole,
+                                  rememberMe: _rememberMe,
+                                );
+                                if (mounted && userProvider.isLoggedIn) {
+                                  // Redirect to profile completion screen
+                                  context.go('/complete-profile');
+                                }
+                              } catch (e) {
+                                setState(() {
+                                  _loginAttempts++;
+                                  if (_loginAttempts >= 1) {
+                                    _showForgotPassword = true;
+                                  }
+                                });
+                                if (mounted) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                      content: Text(
+                                        'Login failed. Please check your credentials.',
+                                      ),
+                                      backgroundColor: Colors.red,
+                                    ),
+                                  );
+                                }
                               }
                             },
                       style: ElevatedButton.styleFrom(

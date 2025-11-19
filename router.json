@@ -35,6 +35,12 @@
       "name": "complete-profile",
       "screen": "ProfileCompletionScreen",
       "description": "Mandatory profile completion screen for new users to fill all required information"
+    },
+    {
+      "path": "/forgot-password",
+      "name": "forgot-password",
+      "screen": "ForgotPasswordScreen",
+      "description": "Password reset screen where users can request a password reset link"
     }
   ]
 }

@@ -28,11 +28,14 @@ class UserProvider with ChangeNotifier {
             prefs.getString(AppConstants.keyUserRole) ??
             AppConstants.rolePatient;
         final languageCode = prefs.getString(AppConstants.keyLanguage) ?? 'en';
+        final savedEmail = prefs.getString('savedEmail');
+        final rememberMe = prefs.getBool('rememberMe') ?? false;
 
         _currentUser = UserModel(
           id: userId,
           role: role,
           languageCode: languageCode,
+          email: rememberMe && savedEmail != null ? savedEmail : null,
         );
         _selectedLanguage = languageCode;
       }
@@ -54,11 +57,20 @@ class UserProvider with ChangeNotifier {
     required String email,
     required String password,
     required String role,
+    bool rememberMe = false,
   }) async {
     _isLoading = true;
     notifyListeners();
 
     try {
+      // Validation for testing forgot password flow
+      if (email.isEmpty || !email.contains('@')) {
+        throw Exception('Invalid email');
+      }
+      if (password.isEmpty || password.length < 6) {
+        throw Exception('Invalid password');
+      }
+
       // TODO: Implement actual authentication with Firebase or your backend
       await Future.delayed(const Duration(seconds: 1)); // Simulate API call
 
@@ -74,6 +86,14 @@ class UserProvider with ChangeNotifier {
       await prefs.setBool(AppConstants.keyIsLoggedIn, true);
       await prefs.setString(AppConstants.keyUserId, _currentUser!.id!);
       await prefs.setString(AppConstants.keyUserRole, role);
+
+      // Save Remember Me preference
+      await prefs.setBool('rememberMe', rememberMe);
+      if (rememberMe) {
+        await prefs.setString('savedEmail', email);
+      } else {
+        await prefs.remove('savedEmail');
+      }
     } catch (e) {
       print('Error logging in: $e');
       rethrow;
@@ -102,6 +122,12 @@ class UserProvider with ChangeNotifier {
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove(AppConstants.keyIsLoggedIn);
     await prefs.remove(AppConstants.keyUserId);
+
+    // Clear remember me data
+    final shouldKeepEmail = prefs.getBool('rememberMe') ?? false;
+    if (!shouldKeepEmail) {
+      await prefs.remove('savedEmail');
+    }
 
     _currentUser = null;
     notifyListeners();
