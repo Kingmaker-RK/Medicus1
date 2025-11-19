@@ -78,6 +78,9 @@ dependencies:
   # Icons
   font_awesome_flutter: ^10.8.0
 
+  # Image Picker
+  image_picker: ^1.1.2
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

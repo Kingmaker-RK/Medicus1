@@ -13,6 +13,15 @@ import '../screens/reset_password_screen.dart';
 import '../screens/appointments_screen.dart';
 import '../screens/health_screen.dart';
 import '../screens/reminders_screen.dart';
+import '../screens/services_hub_screen.dart';
+import '../screens/e_rezept_screen.dart';
+import '../screens/pregnancy_tracker_screen.dart';
+import '../screens/blood_donation_screen.dart';
+import '../screens/dentist_screen.dart';
+import '../screens/dermo_screen.dart';
+import '../screens/baby_tracker_screen.dart';
+import '../screens/orthopedic_screen.dart';
+import '../screens/fitphysic_screen.dart';
 
 class AppRouter {
   static final GoRouter router = GoRouter(
@@ -97,6 +106,51 @@ class AppRouter {
         path: '/reminders',
         name: 'reminders',
         builder: (context, state) => const RemindersScreen(),
+      ),
+      GoRoute(
+        path: '/services',
+        name: 'services',
+        builder: (context, state) => const ServicesHubScreen(),
+      ),
+      GoRoute(
+        path: '/e-rezept',
+        name: 'e-rezept',
+        builder: (context, state) => const ERezeptScreen(),
+      ),
+      GoRoute(
+        path: '/pregnancy-tracker',
+        name: 'pregnancy-tracker',
+        builder: (context, state) => const PregnancyTrackerScreen(),
+      ),
+      GoRoute(
+        path: '/blood-donation',
+        name: 'blood-donation',
+        builder: (context, state) => const BloodDonationScreen(),
+      ),
+      GoRoute(
+        path: '/dentist',
+        name: 'dentist',
+        builder: (context, state) => const DentistScreen(),
+      ),
+      GoRoute(
+        path: '/dermo',
+        name: 'dermo',
+        builder: (context, state) => const DermoScreen(),
+      ),
+      GoRoute(
+        path: '/baby-tracker',
+        name: 'baby-tracker',
+        builder: (context, state) => const BabyTrackerScreen(),
+      ),
+      GoRoute(
+        path: '/orthopedic',
+        name: 'orthopedic',
+        builder: (context, state) => const OrthopedicScreen(),
+      ),
+      GoRoute(
+        path: '/fitphysic',
+        name: 'fitphysic',
+        builder: (context, state) => const FitPhysicScreen(),
       ),
     ],
     errorBuilder: (context, state) =>

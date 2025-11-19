@@ -77,6 +77,60 @@
       "name": "reminders",
       "screen": "RemindersScreen",
       "description": "Medication reminder management screen with notifications and alarms"
+    },
+    {
+      "path": "/services",
+      "name": "services",
+      "screen": "ServicesHubScreen",
+      "description": "Medical services hub with access to all healthcare services"
+    },
+    {
+      "path": "/e-rezept",
+      "name": "e-rezept",
+      "screen": "ERezeptScreen",
+      "description": "E-prescription service to order medication by uploading prescription and insurance card photos"
+    },
+    {
+      "path": "/pregnancy-tracker",
+      "name": "pregnancy-tracker",
+      "screen": "PregnancyTrackerScreen",
+      "description": "Pregnancy tracking with weekly updates, baby development info, and health tips"
+    },
+    {
+      "path": "/blood-donation",
+      "name": "blood-donation",
+      "screen": "BloodDonationScreen",
+      "description": "Blood donation service to find centers, check eligibility, and schedule appointments"
+    },
+    {
+      "path": "/dentist",
+      "name": "dentist",
+      "screen": "DentistScreen",
+      "description": "Dentist finder with search by name, location, and pincode"
+    },
+    {
+      "path": "/dermo",
+      "name": "dermo",
+      "screen": "DermoScreen",
+      "description": "Dermatology service with image upload, questions, diagnosis, therapy, and aftercare"
+    },
+    {
+      "path": "/baby-tracker",
+      "name": "baby-tracker",
+      "screen": "BabyTrackerScreen",
+      "description": "Newborn tracker for feeding, sleep, diapers, and growth milestones"
+    },
+    {
+      "path": "/orthopedic",
+      "name": "orthopedic",
+      "screen": "OrthopedicScreen",
+      "description": "Orthopedic examination tools for doctors with spine, upper limb, and lower limb assessments"
+    },
+    {
+      "path": "/fitphysic",
+      "name": "fitphysic",
+      "screen": "FitPhysicScreen",
+      "description": "Rehabilitation guide with training videos for knee, shoulder, back, hip, and ankle recovery"
     }
   ]
 }
