@@ -108,6 +108,7 @@ class _TranslationScreenState extends State<TranslationScreen>
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: _buildAppBar(context, userProvider),
+      drawer: _buildNavigationDrawer(context, userProvider),
       body: Column(
         children: [
           // Language selector bar
@@ -136,6 +137,14 @@ class _TranslationScreenState extends State<TranslationScreen>
       backgroundColor: Colors.white,
       foregroundColor: AppColors.textPrimary,
       elevation: 0,
+      leading: Builder(
+        builder: (context) => IconButton(
+          icon: const Icon(Icons.menu_rounded),
+          onPressed: () {
+            Scaffold.of(context).openDrawer();
+          },
+        ),
+      ),
       title: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
@@ -779,6 +788,202 @@ class _TranslationScreenState extends State<TranslationScreen>
           ),
         ),
       ),
+    );
+  }
+
+  Widget _buildNavigationDrawer(
+    BuildContext context,
+    UserProvider userProvider,
+  ) {
+    return Drawer(
+      child: Column(
+        children: [
+          // Modern drawer header
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.fromLTRB(24, 48, 24, 24),
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [AppColors.primary, AppColors.primaryLight],
+              ),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withOpacity(0.2),
+                    shape: BoxShape.circle,
+                  ),
+                  child: Icon(
+                    userProvider.currentUser?.role == AppConstants.roleDoctor
+                        ? Icons.local_hospital_rounded
+                        : Icons.person_rounded,
+                    size: 32,
+                    color: Colors.white,
+                  ),
+                ),
+                const SizedBox(height: 16),
+                Text(
+                  userProvider.currentUser?.name ?? 'Guest User',
+                  style: const TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  userProvider.currentUser?.email ??
+                      (userProvider.currentUser?.isGuest == true
+                          ? 'Guest Mode'
+                          : 'No email'),
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: Colors.white.withOpacity(0.9),
+                  ),
+                ),
+              ],
+            ),
+          ),
+
+          // Navigation Items
+          Expanded(
+            child: ListView(
+              padding: const EdgeInsets.symmetric(vertical: 8),
+              children: [
+                _buildDrawerItem(
+                  context: context,
+                  icon: Icons.translate_rounded,
+                  title: 'Translation',
+                  isSelected: true,
+                  onTap: () {
+                    Navigator.pop(context);
+                  },
+                ),
+                _buildDrawerItem(
+                  context: context,
+                  icon:
+                      userProvider.currentUser?.role == AppConstants.roleDoctor
+                      ? Icons.badge_rounded
+                      : Icons.person_outline_rounded,
+                  title:
+                      userProvider.currentUser?.role == AppConstants.roleDoctor
+                      ? 'Doctor Profile'
+                      : 'User Profile',
+                  onTap: () {
+                    Navigator.pop(context);
+                    if (userProvider.currentUser?.role ==
+                        AppConstants.roleDoctor) {
+                      context.push('/doctor-profile');
+                    } else {
+                      context.push('/profile');
+                    }
+                  },
+                ),
+                _buildDrawerItem(
+                  context: context,
+                  icon: Icons.settings_rounded,
+                  title: 'Settings',
+                  onTap: () {
+                    Navigator.pop(context);
+                    context.push('/settings');
+                  },
+                ),
+                const Divider(height: 32),
+                _buildDrawerItem(
+                  context: context,
+                  icon: Icons.swap_horiz_rounded,
+                  title: 'Switch Role',
+                  subtitle:
+                      'Current: ${userProvider.currentUser?.role == AppConstants.roleDoctor ? "Doctor" : "Patient"}',
+                  onTap: () {
+                    final newRole =
+                        userProvider.currentUser?.role ==
+                            AppConstants.roleDoctor
+                        ? AppConstants.rolePatient
+                        : AppConstants.roleDoctor;
+                    userProvider.changeRole(newRole);
+                    Navigator.pop(context);
+                  },
+                ),
+              ],
+            ),
+          ),
+
+          // Bottom section
+          Column(
+            children: [
+              const Divider(height: 1),
+              _buildDrawerItem(
+                context: context,
+                icon: Icons.info_outline_rounded,
+                title: 'About',
+                onTap: () {
+                  Navigator.pop(context);
+                  showAboutDialog(
+                    context: context,
+                    applicationName: 'Medicus Translation',
+                    applicationVersion: '1.0.0',
+                    applicationLegalese: '© 2024 Medicus',
+                  );
+                },
+              ),
+              if (userProvider.isLoggedIn)
+                _buildDrawerItem(
+                  context: context,
+                  icon: Icons.logout_rounded,
+                  title: 'Logout',
+                  onTap: () async {
+                    Navigator.pop(context);
+                    await userProvider.logout();
+                    if (context.mounted) {
+                      context.go('/');
+                    }
+                  },
+                ),
+              const SizedBox(height: 8),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildDrawerItem({
+    required BuildContext context,
+    required IconData icon,
+    required String title,
+    String? subtitle,
+    bool isSelected = false,
+    required VoidCallback onTap,
+  }) {
+    return ListTile(
+      leading: Icon(
+        icon,
+        color: isSelected ? AppColors.accent : AppColors.textSecondary,
+      ),
+      title: Text(
+        title,
+        style: TextStyle(
+          fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
+          color: isSelected ? AppColors.accent : AppColors.textPrimary,
+        ),
+      ),
+      subtitle: subtitle != null
+          ? Text(
+              subtitle,
+              style: TextStyle(fontSize: 12, color: AppColors.textSecondary),
+            )
+          : null,
+      selected: isSelected,
+      selectedTileColor: AppColors.accent.withOpacity(0.1),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+      contentPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 4),
+      onTap: onTap,
     );
   }
 }
