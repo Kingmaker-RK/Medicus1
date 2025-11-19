@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'dart:io';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
 import '../providers/translation_provider.dart';
 import '../providers/user_provider.dart';
+import '../providers/user_profile_provider.dart';
 import '../constants/colors.dart';
 import '../constants/app_constants.dart';
 import '../widgets/anatomy_viewer.dart';
@@ -282,13 +284,42 @@ class _TranslationScreenState extends State<TranslationScreen>
           ],
         ),
       ),
+      leadingWidth: 100,
       leading: Builder(
-        builder: (context) => IconButton(
-          icon: const Icon(Icons.menu_rounded),
-          onPressed: () {
-            Scaffold.of(context).openDrawer();
-          },
-        ),
+        builder: (context) {
+          final userProfileProvider = Provider.of<UserProfileProvider>(context);
+          final profile = userProfileProvider.profile;
+          return Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              IconButton(
+                icon: const Icon(Icons.menu_rounded),
+                onPressed: () {
+                  Scaffold.of(context).openDrawer();
+                },
+              ),
+              const SizedBox(width: 4),
+              InkWell(
+                onTap: () => context.push('/profile'),
+                customBorder: const CircleBorder(),
+                child: CircleAvatar(
+                  radius: 16,
+                  backgroundColor: Colors.white.withOpacity(0.2),
+                  backgroundImage: profile.profilePicturePath.isNotEmpty
+                      ? FileImage(File(profile.profilePicturePath))
+                      : null,
+                  child: profile.profilePicturePath.isEmpty
+                      ? const Icon(
+                          Icons.person_rounded,
+                          size: 20,
+                          color: Colors.white,
+                        )
+                      : null,
+                ),
+              ),
+            ],
+          );
+        },
       ),
       actions: [
         // History button

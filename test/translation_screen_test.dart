@@ -5,10 +5,71 @@ import 'package:provider/provider.dart';
 import 'package:medicus/screens/translation_screen.dart';
 import 'package:medicus/providers/translation_provider.dart';
 import 'package:medicus/providers/user_provider.dart';
+import 'package:medicus/providers/user_profile_provider.dart';
 import 'package:medicus/models/user_model.dart';
 import 'package:medicus/models/translation_result.dart';
+import 'package:medicus/models/user_profile_model.dart';
 import 'package:medicus/constants/app_constants.dart';
 import 'package:medicus/constants/colors.dart';
+
+// Fake UserProfileProvider
+class FakeUserProfileProvider extends ChangeNotifier implements UserProfileProvider {
+  UserProfileModel _profile = UserProfileModel();
+
+  @override
+  UserProfileModel get profile => _profile;
+
+  @override
+  bool get isLoading => false;
+
+  @override
+  int get unreadMessageCount => 0;
+
+  @override
+  Future<void> initialize() async {}
+
+  @override
+  Future<void> updatePersonalInfo({
+    String? firstName,
+    String? secondName,
+    String? insuranceNumber,
+    String? insuranceProvider,
+    String? profilePicturePath,
+  }) async {
+    _profile = _profile.copyWith(
+      firstName: firstName,
+      secondName: secondName,
+      insuranceNumber: insuranceNumber,
+      insuranceProvider: insuranceProvider,
+      profilePicturePath: profilePicturePath,
+    );
+    notifyListeners();
+  }
+
+  @override
+  Future<void> updateProfilePicture(String path) async {
+    _profile = _profile.copyWith(profilePicturePath: path);
+    notifyListeners();
+  }
+
+  // Stubs for other methods
+  @override
+  Future<void> addCertificate(Certificate certificate) async {}
+  @override
+  Future<void> removeCertificate(String certificateId) async {}
+  @override
+  Future<void> submitSickNote(SickNote sickNote) async {}
+  @override
+  Future<void> updateSickNoteStatus(String sickNoteId, String status) async {}
+  @override
+  Future<void> addReimbursement(Reimbursement reimbursement) async {}
+  @override
+  Future<void> updateReimbursementStatus(String reimbursementId, String status) async {}
+  @override
+  Future<void> addMailboxMessage(MailboxMessage message) async {}
+  @override
+  Future<void> markMessageAsRead(String messageId) async {}
+}
 
 // Fake UserProvider
 class FakeUserProvider extends ChangeNotifier implements UserProvider {
@@ -214,10 +275,12 @@ void main() {
   group('TranslationScreen Tests', () {
     late FakeUserProvider userProvider;
     late FakeTranslationProvider translationProvider;
+    late FakeUserProfileProvider userProfileProvider;
 
     setUp(() {
       userProvider = FakeUserProvider();
       translationProvider = FakeTranslationProvider();
+      userProfileProvider = FakeUserProfileProvider();
     });
 
     Widget createTestScreen() {
@@ -225,6 +288,7 @@ void main() {
         providers: [
           ChangeNotifierProvider<UserProvider>.value(value: userProvider),
           ChangeNotifierProvider<TranslationProvider>.value(value: translationProvider),
+          ChangeNotifierProvider<UserProfileProvider>.value(value: userProfileProvider),
         ],
         child: MaterialApp(
           home: const TranslationScreen(),
