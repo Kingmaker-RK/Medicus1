@@ -22,7 +22,7 @@ class MedicusLogo extends StatelessWidget {
           ),
           child: Center(
             child: CustomPaint(
-              size: Size(size * 0.6, size * 0.6),
+              size: Size(size * 0.9, size * 0.9),
               painter: CaduceusPainter(),
             ),
           ),
@@ -53,7 +53,7 @@ class CaduceusPainter extends CustomPainter {
     final staffPaint = Paint()
       ..color = AppColors.logoWhite
       ..style = PaintingStyle.stroke
-      ..strokeWidth = size.width * 0.07
+      ..strokeWidth = size.width * 0.09
       ..strokeCap = StrokeCap.round;
 
     // Draw main staff (vertical line)
@@ -70,7 +70,7 @@ class CaduceusPainter extends CustomPainter {
 
     canvas.drawCircle(
       Offset(center.dx, size.height * 0.15),
-      size.width * 0.065,
+      size.width * 0.08,
       orbPaint,
     );
 
@@ -147,7 +147,7 @@ class CaduceusPainter extends CustomPainter {
     final serpentPaint = Paint()
       ..color = AppColors.logoWhite
       ..style = PaintingStyle.stroke
-      ..strokeWidth = size.width * 0.055
+      ..strokeWidth = size.width * 0.075
       ..strokeCap = StrokeCap.round;
 
     // Left serpent with improved curves
@@ -197,7 +197,7 @@ class CaduceusPainter extends CustomPainter {
 
     // Left serpent head
     final leftHeadCenter = Offset(center.dx - size.width * 0.18, size.height * 0.32);
-    canvas.drawCircle(leftHeadCenter, size.width * 0.055, headPaint);
+    canvas.drawCircle(leftHeadCenter, size.width * 0.07, headPaint);
 
     // Left serpent eye
     final eyePaint = Paint()
@@ -205,18 +205,18 @@ class CaduceusPainter extends CustomPainter {
       ..style = PaintingStyle.fill;
     canvas.drawCircle(
       Offset(leftHeadCenter.dx + size.width * 0.02, leftHeadCenter.dy),
-      size.width * 0.015,
+      size.width * 0.02,
       eyePaint,
     );
 
     // Right serpent head
     final rightHeadCenter = Offset(center.dx + size.width * 0.18, size.height * 0.32);
-    canvas.drawCircle(rightHeadCenter, size.width * 0.055, headPaint);
+    canvas.drawCircle(rightHeadCenter, size.width * 0.07, headPaint);
 
     // Right serpent eye
     canvas.drawCircle(
       Offset(rightHeadCenter.dx - size.width * 0.02, rightHeadCenter.dy),
-      size.width * 0.015,
+      size.width * 0.02,
       eyePaint,
     );
 
@@ -224,7 +224,7 @@ class CaduceusPainter extends CustomPainter {
     final tonguePaint = Paint()
       ..color = AppColors.logoWhite
       ..style = PaintingStyle.stroke
-      ..strokeWidth = size.width * 0.012
+      ..strokeWidth = size.width * 0.018
       ..strokeCap = StrokeCap.round;
 
     // Left tongue
