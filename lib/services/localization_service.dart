@@ -19,19 +19,20 @@ class LocalizationService {
   Future<void> setLanguage(String languageCode) async {
     print('🌍 LocalizationService: Setting language from $_currentLanguageCode to $languageCode');
 
-    if (_currentLanguageCode == languageCode) {
-      print('🌍 LocalizationService: Language already set to $languageCode, skipping');
-      return;
-    }
-
+    // Always update language and clear cache to ensure fresh state
     _currentLanguageCode = languageCode;
     print('✅ LocalizationService: Language changed to $_currentLanguageCode');
 
     // Pre-cache common strings for better performance
     if (languageCode != 'en') {
-      print('🔄 LocalizationService: Pre-caching common strings for $languageCode...');
-      await _llmService.precacheCommonStrings(languageCode);
-      print('✅ LocalizationService: Pre-caching complete for $languageCode');
+      try {
+        print('🔄 LocalizationService: Pre-caching common strings for $languageCode...');
+        await _llmService.precacheCommonStrings(languageCode);
+        print('✅ LocalizationService: Pre-caching complete for $languageCode');
+      } catch (e) {
+        print('⚠️ LocalizationService: Pre-caching failed - $e');
+        // Continue even if pre-caching fails - translations will work on-demand
+      }
     } else {
       print('ℹ️ LocalizationService: English selected, skipping pre-cache');
     }
