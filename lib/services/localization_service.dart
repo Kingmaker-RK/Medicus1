@@ -17,13 +17,23 @@ class LocalizationService {
 
   /// Set current language
   Future<void> setLanguage(String languageCode) async {
-    if (_currentLanguageCode == languageCode) return;
+    print('🌍 LocalizationService: Setting language from $_currentLanguageCode to $languageCode');
+
+    if (_currentLanguageCode == languageCode) {
+      print('🌍 LocalizationService: Language already set to $languageCode, skipping');
+      return;
+    }
 
     _currentLanguageCode = languageCode;
+    print('✅ LocalizationService: Language changed to $_currentLanguageCode');
 
     // Pre-cache common strings for better performance
     if (languageCode != 'en') {
+      print('🔄 LocalizationService: Pre-caching common strings for $languageCode...');
       await _llmService.precacheCommonStrings(languageCode);
+      print('✅ LocalizationService: Pre-caching complete for $languageCode');
+    } else {
+      print('ℹ️ LocalizationService: English selected, skipping pre-cache');
     }
   }
 
@@ -33,7 +43,10 @@ class LocalizationService {
       return text;
     }
 
-    return await _llmService.translate(text, _currentLanguageCode);
+    print('🔤 Translating "$text" to $_currentLanguageCode...');
+    final result = await _llmService.translate(text, _currentLanguageCode);
+    print('✅ Translation result: "$result"');
+    return result;
   }
 
   /// Synchronous translation (uses cache, returns original if not cached)

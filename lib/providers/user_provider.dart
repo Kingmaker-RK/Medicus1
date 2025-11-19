@@ -304,20 +304,29 @@ class UserProvider with ChangeNotifier {
 
   // Change language with immediate UI update
   Future<void> changeLanguage(String languageCode) async {
+    print('🎯 UserProvider.changeLanguage: Changing language to $languageCode');
+    print('🎯 UserProvider.changeLanguage: Previous language was $_selectedLanguage');
+
     _selectedLanguage = languageCode;
 
     if (_currentUser != null) {
       _currentUser = _currentUser!.copyWith(languageCode: languageCode);
+      print('🎯 UserProvider.changeLanguage: Updated user model with new language');
     }
 
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString(AppConstants.keyLanguage, languageCode);
+    print('🎯 UserProvider.changeLanguage: Saved language to SharedPreferences');
 
     // Update localization service for instant UI translation
+    print('🎯 UserProvider.changeLanguage: Updating LocalizationService...');
     await _localizationService.setLanguage(languageCode);
+    print('🎯 UserProvider.changeLanguage: LocalizationService updated');
 
     // Notify listeners to rebuild UI with new language
+    print('🎯 UserProvider.changeLanguage: Calling notifyListeners() to rebuild UI');
     notifyListeners();
+    print('✅ UserProvider.changeLanguage: Language change complete!');
   }
 
   // Change role

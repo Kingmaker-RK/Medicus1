@@ -40,13 +40,29 @@ class AutoTranslateText extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Watch for language changes
-    context.watch<UserProvider>().selectedLanguage;
+    // Watch for language changes - this triggers rebuild
+    final languageCode = context.watch<UserProvider>().selectedLanguage;
 
+    // FutureBuilder with key that changes when language changes
+    // This forces a new future to be created and executed
     return FutureBuilder<String>(
+      key: ValueKey('${text}_$languageCode'), // Force rebuild on language change
       future: LocalizationService().translate(text),
       initialData: text,
       builder: (context, snapshot) {
+        // Show loading indicator briefly while translating (only for non-English)
+        if (snapshot.connectionState == ConnectionState.waiting &&
+            languageCode != 'en') {
+          return Text(
+            text, // Show original text while loading
+            style: style?.copyWith(color: style?.color?.withOpacity(0.7)),
+            textAlign: textAlign,
+            maxLines: maxLines,
+            overflow: overflow,
+            softWrap: softWrap,
+          );
+        }
+
         return Text(
           snapshot.data ?? text,
           style: style,
