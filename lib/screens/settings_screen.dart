@@ -82,7 +82,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         leading: const Icon(Icons.person),
                         title: const AutoTranslateText('User Role'),
                         subtitle: Text(
-                          userProvider.currentUser?.role.toUpperCase() ?? 'Guest',
+                          userProvider.currentUser?.role.toUpperCase() ??
+                              'Guest',
                         ),
                         trailing: const Icon(Icons.arrow_forward_ios, size: 16),
                       ),
@@ -143,7 +144,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         subtitle: 'Required for voice translation',
                         granted: _permissions['microphone'] ?? false,
                         onTap: () async {
-                          await _permissionService.requestMicrophonePermission();
+                          await _permissionService
+                              .requestMicrophonePermission();
                           await _checkPermissions();
                         },
                       ),
@@ -181,7 +183,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       ListTile(
                         leading: const Icon(Icons.settings),
                         title: const AutoTranslateText('Open System Settings'),
-                        subtitle: const AutoTranslateText('Manage all permissions'),
+                        subtitle: const AutoTranslateText(
+                          'Manage all permissions',
+                        ),
                         trailing: const Icon(Icons.arrow_forward_ios, size: 16),
                         onTap: () async {
                           await _permissionService.openAppSettings();
@@ -326,10 +330,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     : null,
                 selected: isSelected,
                 onTap: () async {
+                  // Close dialog first to ensure proper context
+                  Navigator.pop(context);
+
+                  // Then change language with a slight delay to ensure dialog is closed
+                  await Future.delayed(const Duration(milliseconds: 100));
                   await userProvider.changeLanguage(lang['code']!);
-                  if (mounted) {
-                    Navigator.pop(context);
-                  }
                 },
               );
             },

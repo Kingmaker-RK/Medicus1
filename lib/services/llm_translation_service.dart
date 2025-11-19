@@ -4,7 +4,8 @@ import '../constants/app_constants.dart';
 /// Advanced LLM-powered translation service using Google Gemini Flash 2.0
 /// Provides instant, contextually accurate translations for 200+ languages
 class LLMTranslationService {
-  static final LLMTranslationService _instance = LLMTranslationService._internal();
+  static final LLMTranslationService _instance =
+      LLMTranslationService._internal();
   factory LLMTranslationService() => _instance;
   LLMTranslationService._internal();
 
@@ -36,7 +37,6 @@ class LLMTranslationService {
     if (text.isEmpty) return text;
 
     // Check cache first
-    final cacheKey = '${text}_$targetLanguageCode';
     if (_translationCache.containsKey(targetLanguageCode) &&
         _translationCache[targetLanguageCode]!.containsKey(text)) {
       return _translationCache[targetLanguageCode]![text]!;
@@ -50,7 +50,8 @@ class LLMTranslationService {
     try {
       final targetLang = _getLanguageName(targetLanguageCode);
 
-      final prompt = '''Translate the following text to $targetLang.
+      final prompt =
+          '''Translate the following text to $targetLang.
 Provide ONLY the translated text, no explanations or additional text.
 Keep the same tone, formality, and style as the original.
 For medical or healthcare terms, maintain professional accuracy.
@@ -76,7 +77,7 @@ Translation:''';
   /// Batch translate multiple strings efficiently
   Future<Map<String, String>> translateBatch(
     List<String> texts,
-    String targetLanguageCode
+    String targetLanguageCode,
   ) async {
     if (texts.isEmpty) return {};
 
@@ -108,11 +109,14 @@ Translation:''';
       final targetLang = _getLanguageName(targetLanguageCode);
 
       // Create batch translation prompt
-      final textList = uncachedTexts.asMap().entries
+      final textList = uncachedTexts
+          .asMap()
+          .entries
           .map((e) => '${e.key + 1}. "${e.value}"')
           .join('\n');
 
-      final prompt = '''Translate the following texts to $targetLang.
+      final prompt =
+          '''Translate the following texts to $targetLang.
 Provide translations in the same numbered format, one per line.
 Keep the same tone, formality, and style as the original.
 For medical or healthcare terms, maintain professional accuracy.
@@ -228,6 +232,8 @@ Translations (numbered format):''';
     ];
 
     await translateBatch(commonStrings, targetLanguageCode);
-    print('✅ Pre-cached ${commonStrings.length} common strings for ${_getLanguageName(targetLanguageCode)}');
+    print(
+      '✅ Pre-cached ${commonStrings.length} common strings for ${_getLanguageName(targetLanguageCode)}',
+    );
   }
 }
