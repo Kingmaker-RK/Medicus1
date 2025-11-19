@@ -9,7 +9,7 @@ class TranslationService {
 
   final Dio _dio = Dio();
 
-  // Translate text using Google Translate API for fast, accurate real-time translation
+  // Translate text using multiple translation services with fallback chain
   Future<TranslationResult> translateText({
     required String text,
     required String sourceLanguage,
@@ -17,9 +17,8 @@ class TranslationService {
     bool isMedicalContext = true,
   }) async {
     try {
-      // First, try Google Translate API for fast, real-time translation
+      // 1. Try Google Translate API (if configured)
       final googleApiKey = AppConstants.googleTranslateApiKey;
-
       if (googleApiKey.isNotEmpty && googleApiKey != 'YOUR_GOOGLE_TRANSLATE_API_KEY') {
         try {
           final googleResult = await _translateWithGoogle(
@@ -42,96 +41,74 @@ class TranslationService {
           );
         } catch (e) {
           print('Google Translate failed: $e');
-          // Fall through to OpenAI or mock
         }
       }
 
-      // Fallback to OpenAI GPT-4 for medical context enhancement
-      final apiKey = AppConstants.openaiApiKey;
-
-      if (apiKey.isEmpty || apiKey == 'YOUR_OPENAI_API_KEY') {
-        print('Translation APIs not configured, using mock translation');
-        return _mockTranslation(text, sourceLanguage, targetLanguage);
-      }
-
-      // Build a medical-context aware prompt for GPT-4
-      final systemPrompt =
-          '''You are a professional medical translator specializing in healthcare communication.
-Your task is to translate medical texts accurately while preserving medical terminology and context.
-Provide translations that are culturally appropriate and medically accurate.
-Extract any medical terms mentioned in the text.
-Identify relevant anatomy parts that should be visualized.''';
-
-      final userPrompt =
-          '''Translate the following medical text from $sourceLanguage to $targetLanguage.
-Provide the response in JSON format with these fields:
-- "translatedText": the translated text
-- "medicalTerms": array of medical terms found in the text
-- "anatomyParts": array of anatomy parts mentioned that should be visualized
-
-Text to translate: "$text"''';
-
-      final response = await _dio.post(
-        'https://api.openai.com/v1/chat/completions',
-        data: {
-          'model': 'gpt-4',
-          'messages': [
-            {'role': 'system', 'content': systemPrompt},
-            {'role': 'user', 'content': userPrompt},
-          ],
-          'temperature':
-              0.3, // Lower temperature for more consistent translations
-          'max_tokens': 1000,
-        },
-        options: Options(
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': 'Bearer $apiKey',
-          },
-        ),
-      );
-
-      // Parse GPT-4 response
-      final content =
-          response.data['choices'][0]['message']['content'] as String;
-
-      // Try to parse as JSON
+      // 2. Try LibreTranslate (Free, no API key needed)
       try {
-        final jsonStart = content.indexOf('{');
-        final jsonEnd = content.lastIndexOf('}') + 1;
-        if (jsonStart != -1 && jsonEnd > jsonStart) {
-          final jsonStr = content.substring(jsonStart, jsonEnd);
-          // Parse manually using regex helpers
-          final translatedText = _extractJsonValue(jsonStr, 'translatedText');
-          final medicalTerms = _extractJsonArray(jsonStr, 'medicalTerms');
-          final anatomyParts = _extractJsonArray(jsonStr, 'anatomyParts');
+        final libreResult = await _translateWithLibreTranslate(
+          text,
+          sourceLanguage,
+          targetLanguage,
+        );
 
-          final anatomyImages = await getAnatomyImages(anatomyParts);
+        final medicalTerms = _mockMedicalTerms(text);
+        final anatomyImages = await getAnatomyImages(medicalTerms);
 
-          return TranslationResult(
-            originalText: text,
-            translatedText: translatedText.isNotEmpty
-                ? translatedText
-                : content,
-            sourceLanguage: sourceLanguage,
-            targetLanguage: targetLanguage,
-            medicalTerms: medicalTerms,
-            anatomyImages: anatomyImages,
-          );
-        }
+        return TranslationResult(
+          originalText: text,
+          translatedText: libreResult,
+          sourceLanguage: sourceLanguage,
+          targetLanguage: targetLanguage,
+          medicalTerms: medicalTerms,
+          anatomyImages: anatomyImages,
+        );
       } catch (e) {
-        print('Could not parse JSON from GPT-4 response: $e');
+        print('LibreTranslate failed: $e');
       }
 
-      // If JSON parsing fails, use the raw content as translation
-      return TranslationResult(
-        originalText: text,
-        translatedText: content,
-        sourceLanguage: sourceLanguage,
-        targetLanguage: targetLanguage,
-        medicalTerms: _mockMedicalTerms(text),
-        anatomyImages: [],
-      );
+      // 3. Try MyMemory API (Free, no API key needed)
+      try {
+        final myMemoryResult = await _translateWithMyMemory(
+          text,
+          sourceLanguage,
+          targetLanguage,
+        );
+
+        final medicalTerms = _mockMedicalTerms(text);
+        final anatomyImages = await getAnatomyImages(medicalTerms);
+
+        return TranslationResult(
+          originalText: text,
+          translatedText: myMemoryResult,
+          sourceLanguage: sourceLanguage,
+          targetLanguage: targetLanguage,
+          medicalTerms: medicalTerms,
+          anatomyImages: anatomyImages,
+        );
+      } catch (e) {
+        print('MyMemory translation failed: $e');
+      }
+
+      // 4. Try OpenAI GPT-4 (if configured)
+      final apiKey = AppConstants.openaiApiKey;
+      if (apiKey.isNotEmpty && apiKey != 'YOUR_OPENAI_API_KEY') {
+        try {
+          final openAIResult = await _translateWithOpenAI(
+            text,
+            sourceLanguage,
+            targetLanguage,
+            apiKey,
+          );
+          return openAIResult;
+        } catch (e) {
+          print('OpenAI translation failed: $e');
+        }
+      }
+
+      // 5. Fallback to mock translation for testing
+      print('All translation APIs failed or not configured, using mock translation');
+      return _mockTranslation(text, sourceLanguage, targetLanguage);
     } catch (e) {
       print('Error translating with GPT-4: $e');
 
@@ -183,6 +160,165 @@ Text to translate: "$text"''';
     }
   }
 
+  // LibreTranslate API - Free, open-source translation (no API key required)
+  Future<String> _translateWithLibreTranslate(
+    String text,
+    String sourceLanguage,
+    String targetLanguage,
+  ) async {
+    try {
+      // Using public LibreTranslate instance
+      final url = 'https://libretranslate.com/translate';
+
+      final sourceLang = _normalizeLanguageCodeForLibre(sourceLanguage);
+      final targetLang = _normalizeLanguageCodeForLibre(targetLanguage);
+
+      final response = await _dio.post(
+        url,
+        data: {
+          'q': text,
+          'source': sourceLang,
+          'target': targetLang,
+          'format': 'text',
+        },
+        options: Options(
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          receiveTimeout: const Duration(seconds: 10),
+          sendTimeout: const Duration(seconds: 10),
+        ),
+      );
+
+      if (response.statusCode == 200 && response.data['translatedText'] != null) {
+        return response.data['translatedText'] as String;
+      }
+
+      throw Exception('LibreTranslate failed: Invalid response');
+    } catch (e) {
+      print('LibreTranslate API error: $e');
+      rethrow;
+    }
+  }
+
+  // MyMemory API - Free translation with good quality (no API key required)
+  Future<String> _translateWithMyMemory(
+    String text,
+    String sourceLanguage,
+    String targetLanguage,
+  ) async {
+    try {
+      final sourceLang = _normalizeLanguageCode(sourceLanguage);
+      final targetLang = _normalizeLanguageCode(targetLanguage);
+
+      final langPair = '$sourceLang|$targetLang';
+      final encodedText = Uri.encodeComponent(text);
+      final url = 'https://api.mymemory.translated.net/get?q=$encodedText&langpair=$langPair';
+
+      final response = await _dio.get(
+        url,
+        options: Options(
+          receiveTimeout: const Duration(seconds: 10),
+          sendTimeout: const Duration(seconds: 10),
+        ),
+      );
+
+      if (response.statusCode == 200) {
+        final responseData = response.data['responseData'];
+        if (responseData != null && responseData['translatedText'] != null) {
+          return responseData['translatedText'] as String;
+        }
+      }
+
+      throw Exception('MyMemory translation failed: Invalid response');
+    } catch (e) {
+      print('MyMemory API error: $e');
+      rethrow;
+    }
+  }
+
+  // OpenAI GPT-4 translation with medical context
+  Future<TranslationResult> _translateWithOpenAI(
+    String text,
+    String sourceLanguage,
+    String targetLanguage,
+    String apiKey,
+  ) async {
+    try {
+      final systemPrompt = '''You are a professional medical translator specializing in healthcare communication.
+Your task is to translate medical texts accurately while preserving medical terminology and context.
+Provide translations that are culturally appropriate and medically accurate.
+Extract any medical terms mentioned in the text.
+Identify relevant anatomy parts that should be visualized.''';
+
+      final userPrompt = '''Translate the following medical text from $sourceLanguage to $targetLanguage.
+Provide the response in JSON format with these fields:
+- "translatedText": the translated text
+- "medicalTerms": array of medical terms found in the text
+- "anatomyParts": array of anatomy parts mentioned that should be visualized
+
+Text to translate: "$text"''';
+
+      final response = await _dio.post(
+        'https://api.openai.com/v1/chat/completions',
+        data: {
+          'model': 'gpt-4',
+          'messages': [
+            {'role': 'system', 'content': systemPrompt},
+            {'role': 'user', 'content': userPrompt},
+          ],
+          'temperature': 0.3,
+          'max_tokens': 1000,
+        },
+        options: Options(
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer $apiKey',
+          },
+        ),
+      );
+
+      final content = response.data['choices'][0]['message']['content'] as String;
+
+      // Try to parse as JSON
+      try {
+        final jsonStart = content.indexOf('{');
+        final jsonEnd = content.lastIndexOf('}') + 1;
+        if (jsonStart != -1 && jsonEnd > jsonStart) {
+          final jsonStr = content.substring(jsonStart, jsonEnd);
+          final translatedText = _extractJsonValue(jsonStr, 'translatedText');
+          final medicalTerms = _extractJsonArray(jsonStr, 'medicalTerms');
+          final anatomyParts = _extractJsonArray(jsonStr, 'anatomyParts');
+          final anatomyImages = await getAnatomyImages(anatomyParts);
+
+          return TranslationResult(
+            originalText: text,
+            translatedText: translatedText.isNotEmpty ? translatedText : content,
+            sourceLanguage: sourceLanguage,
+            targetLanguage: targetLanguage,
+            medicalTerms: medicalTerms,
+            anatomyImages: anatomyImages,
+          );
+        }
+      } catch (e) {
+        print('Could not parse JSON from GPT-4 response: $e');
+      }
+
+      // If JSON parsing fails, use the raw content as translation
+      return TranslationResult(
+        originalText: text,
+        translatedText: content,
+        sourceLanguage: sourceLanguage,
+        targetLanguage: targetLanguage,
+        medicalTerms: _mockMedicalTerms(text),
+        anatomyImages: [],
+      );
+    } catch (e) {
+      print('OpenAI API error: $e');
+      rethrow;
+    }
+  }
+
   // Normalize language codes for Google Translate API
   String _normalizeLanguageCode(String code) {
     // Google Translate uses simplified codes for some languages
@@ -211,6 +347,40 @@ Text to translate: "$text"''';
 
     // Return mapped code or original
     return codeMap[code] ?? code;
+  }
+
+  // Normalize language codes for LibreTranslate API
+  String _normalizeLanguageCodeForLibre(String code) {
+    // LibreTranslate uses simplified codes
+    final codeMap = {
+      'zh-CN': 'zh',
+      'zh-TW': 'zh',
+      'zh-HK': 'zh',
+      'pt-BR': 'pt',
+      'pt-PT': 'pt',
+      'es-MX': 'es',
+      'es-AR': 'es',
+      'fr-CA': 'fr',
+      'en-GB': 'en',
+      'en-US': 'en',
+      'en-AU': 'en',
+      'fil': 'tl',
+      'iw': 'he',
+      'jw': 'jv',
+      'pus': 'ps',
+      'kok': 'hi', // Konkani -> Hindi fallback
+      'mni': 'hi', // Manipuri -> Hindi fallback
+      'doi': 'hi', // Dogri -> Hindi fallback
+      'sat': 'hi', // Santali -> Hindi fallback
+      'mai': 'hi', // Maithili -> Hindi fallback
+    };
+
+    // Return mapped code or extract base language code (e.g., 'en' from 'en-US')
+    String normalized = codeMap[code] ?? code;
+    if (normalized.contains('-')) {
+      normalized = normalized.split('-')[0];
+    }
+    return normalized;
   }
 
   // Helper to extract JSON string value
