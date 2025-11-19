@@ -137,10 +137,15 @@ class _TranslationScreenState extends State<TranslationScreen>
       backgroundColor: Colors.white,
       foregroundColor: AppColors.textPrimary,
       iconTheme: const IconThemeData(color: AppColors.textPrimary),
+      systemOverlayStyle: const SystemUiOverlayStyle(
+        statusBarColor: Colors.transparent,
+        statusBarIconBrightness: Brightness.dark, // For Android (dark icons)
+        statusBarBrightness: Brightness.light, // For iOS (dark icons)
+      ),
       elevation: 0,
       leading: Builder(
         builder: (context) => IconButton(
-          icon: const Icon(Icons.menu_rounded),
+          icon: const Icon(Icons.menu_rounded, color: AppColors.textPrimary),
           onPressed: () {
             Scaffold.of(context).openDrawer();
           },
