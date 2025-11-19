@@ -11,6 +11,7 @@ import '../widgets/anatomy_viewer.dart';
 import '../widgets/app_bottom_navigation_bar.dart';
 import '../widgets/handwriting_input_widget.dart';
 import '../services/permission_service.dart';
+import '../services/pdf_export_service.dart';
 
 class TranslationScreen extends StatefulWidget {
   const TranslationScreen({Key? key}) : super(key: key);
@@ -1324,7 +1325,19 @@ class _TranslationScreenState extends State<TranslationScreen>
                       ),
                     ),
                     const Spacer(),
-                    if (translationProvider.translationHistory.isNotEmpty)
+                    if (translationProvider.translationHistory.isNotEmpty) ...[
+                      IconButton(
+                        icon: const Icon(
+                          Icons.picture_as_pdf_rounded,
+                          color: Colors.white,
+                        ),
+                        onPressed: () async {
+                          await PdfExportService().exportHistory(
+                            translationProvider.translationHistory,
+                          );
+                        },
+                        tooltip: 'Export History as PDF',
+                      ),
                       IconButton(
                         icon: const Icon(
                           Icons.delete_outline,
@@ -1359,6 +1372,7 @@ class _TranslationScreenState extends State<TranslationScreen>
                         },
                         tooltip: 'Clear history',
                       ),
+                    ],
                   ],
                 ),
                 const SizedBox(height: 16),
