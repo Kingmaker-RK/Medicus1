@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:model_viewer_plus/model_viewer_plus.dart';
 import 'translated_widget.dart';
 import '../constants/colors.dart';
 
@@ -178,37 +179,52 @@ class _AnatomyViewerState extends State<AnatomyViewer> {
   }
 
   Widget _build3DView(String modelUrl) {
-    // TODO: Integrate with model_viewer_plus for actual 3D rendering
-    // For now, showing a placeholder
+    // In a production environment, we would map specific anatomy parts to their corresponding 3D models.
+    // Since we currently rely on 2D image URLs, we will use a high-quality 3D model placeholder
+    // to demonstrate the viewer's capabilities if the URL is not a 3D file.
+    const String sampleModelUrl = 'https://modelviewer.dev/shared-assets/models/Astronaut.glb';
+    
+    final bool isLikely3D = modelUrl.toLowerCase().endsWith('.glb') || modelUrl.toLowerCase().endsWith('.gltf');
+    final String urlToLoad = isLikely3D ? modelUrl : sampleModelUrl;
+
     return Container(
       decoration: BoxDecoration(
         color: AppColors.background,
         borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: AppColors.shadow.withValues(alpha: 0.5)),
       ),
-      child: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(8),
+        child: Stack(
           children: [
-            Icon(Icons.view_in_ar, size: 60, color: AppColors.primary),
-            const SizedBox(height: 16),
-            Text(
-              '3D Model View',
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-                color: AppColors.textPrimary,
+            ModelViewer(
+              src: urlToLoad,
+              alt: 'Anatomy 3D Model',
+              ar: true,
+              autoRotate: true,
+              cameraControls: true,
+              backgroundColor: Colors.transparent,
+              loading: Loading.eager,
+            ),
+            if (!isLikely3D)
+              Positioned(
+                bottom: 8,
+                left: 0,
+                right: 0,
+                child: Center(
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                    decoration: BoxDecoration(
+                      color: Colors.black.withValues(alpha: 0.6),
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: const Text(
+                      'Demo Model View',
+                      style: TextStyle(color: Colors.white, fontSize: 12),
+                    ),
+                  ),
+                ),
               ),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              'Interactive 3D anatomy model',
-              style: TextStyle(fontSize: 12, color: AppColors.textSecondary),
-            ),
-            const SizedBox(height: 16),
-            Text(
-              'Rotate • Zoom • Explore',
-              style: TextStyle(fontSize: 10, color: AppColors.textSecondary),
-            ),
           ],
         ),
       ),
@@ -441,35 +457,48 @@ class _FullscreenAnatomyViewerState extends State<_FullscreenAnatomyViewer> {
   }
 
   Widget _build3DView(String modelUrl) {
+    // Same implementation for fullscreen, but with dark background
+    const String sampleModelUrl = 'https://modelviewer.dev/shared-assets/models/Astronaut.glb';
+    
+    final bool isLikely3D = modelUrl.toLowerCase().endsWith('.glb') || modelUrl.toLowerCase().endsWith('.gltf');
+    final String urlToLoad = isLikely3D ? modelUrl : sampleModelUrl;
+
     return Container(
       decoration: BoxDecoration(
         color: Colors.grey[900],
         borderRadius: BorderRadius.circular(12),
       ),
-      child: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(12),
+        child: Stack(
           children: [
-            Icon(Icons.view_in_ar, size: 80, color: AppColors.accent),
-            const SizedBox(height: 24),
-            const Text(
-              '3D Model View',
-              style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-                color: Colors.white,
+            ModelViewer(
+              src: urlToLoad,
+              alt: 'Anatomy 3D Model',
+              ar: true,
+              autoRotate: true,
+              cameraControls: true,
+              backgroundColor: Colors.transparent,
+            ),
+            if (!isLikely3D)
+              Positioned(
+                bottom: 20,
+                left: 0,
+                right: 0,
+                child: Center(
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                    decoration: BoxDecoration(
+                      color: Colors.white.withValues(alpha: 0.2),
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: const Text(
+                      'Demo Model View',
+                      style: TextStyle(color: Colors.white, fontSize: 12),
+                    ),
+                  ),
+                ),
               ),
-            ),
-            const SizedBox(height: 12),
-            const Text(
-              'Interactive 3D anatomy model',
-              style: TextStyle(fontSize: 14, color: Colors.white70),
-            ),
-            const SizedBox(height: 24),
-            const Text(
-              'Rotate • Zoom • Explore',
-              style: TextStyle(fontSize: 12, color: Colors.white60),
-            ),
           ],
         ),
       ),
