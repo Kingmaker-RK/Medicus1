@@ -187,7 +187,7 @@ class _VerifyPasswordResetScreenState extends State<VerifyPasswordResetScreen> {
           ),
         ),
         child: Container(
-          decoration: BoxDecoration(color: Colors.white.withOpacity(0.85)),
+          decoration: BoxDecoration(color: Colors.white.withValues(alpha: 0.85)),
           child: SafeArea(
             child: SingleChildScrollView(
               child: Padding(

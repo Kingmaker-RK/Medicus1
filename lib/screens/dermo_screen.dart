@@ -364,9 +364,9 @@ class _DermoScreenState extends State<DermoScreen>
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.1),
+        color: color.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: color.withOpacity(0.3)),
+        border: Border.all(color: color.withValues(alpha: 0.3)),
       ),
       child: Row(
         children: [
@@ -375,7 +375,7 @@ class _DermoScreenState extends State<DermoScreen>
           Expanded(
             child: Text(
               text,
-              style: TextStyle(color: color.withOpacity(0.9)),
+              style: TextStyle(color: color.withValues(alpha: 0.9)),
             ),
           ),
         ],
@@ -403,7 +403,7 @@ class _DermoScreenState extends State<DermoScreen>
           Container(
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: color.withOpacity(0.1),
+              color: color.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(10),
             ),
             child: Icon(icon, color: color, size: 28),
@@ -511,7 +511,7 @@ class _DermoScreenState extends State<DermoScreen>
             Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: color.withOpacity(0.1),
+                color: color.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(10),
               ),
               child: Icon(icon, color: color, size: 28),

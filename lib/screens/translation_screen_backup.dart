@@ -616,13 +616,13 @@ class _TranslationScreenState extends State<TranslationScreen>
             Container(
               padding: const EdgeInsets.all(24),
               decoration: BoxDecoration(
-                color: AppColors.accent.withOpacity(0.1),
+                color: AppColors.accent.withValues(alpha: 0.1),
                 shape: BoxShape.circle,
               ),
               child: Icon(
                 Icons.translate_rounded,
                 size: 64,
-                color: AppColors.accent.withOpacity(0.5),
+                color: AppColors.accent.withValues(alpha: 0.5),
               ),
             ),
             const SizedBox(height: 24),
@@ -679,7 +679,7 @@ class _TranslationScreenState extends State<TranslationScreen>
                 Container(
                   padding: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
-                    color: AppColors.medicalGreen.withOpacity(0.1),
+                    color: AppColors.medicalGreen.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: Icon(
@@ -731,10 +731,10 @@ class _TranslationScreenState extends State<TranslationScreen>
                           vertical: 8,
                         ),
                         decoration: BoxDecoration(
-                          color: AppColors.medicalGreen.withOpacity(0.1),
+                          color: AppColors.medicalGreen.withValues(alpha: 0.1),
                           borderRadius: BorderRadius.circular(20),
                           border: Border.all(
-                            color: AppColors.medicalGreen.withOpacity(0.3),
+                            color: AppColors.medicalGreen.withValues(alpha: 0.3),
                           ),
                         ),
                         child: Text(
@@ -742,7 +742,7 @@ class _TranslationScreenState extends State<TranslationScreen>
                           style: TextStyle(
                             fontSize: 13,
                             fontWeight: FontWeight.w500,
-                            color: AppColors.medicalGreen.withOpacity(0.9),
+                            color: AppColors.medicalGreen.withValues(alpha: 0.9),
                           ),
                         ),
                       );
@@ -846,8 +846,8 @@ class _TranslationScreenState extends State<TranslationScreen>
               boxShadow: [
                 BoxShadow(
                   color: translationProvider.isListening
-                      ? AppColors.error.withOpacity(0.4)
-                      : AppColors.accent.withOpacity(0.4),
+                      ? AppColors.error.withValues(alpha: 0.4)
+                      : AppColors.accent.withValues(alpha: 0.4),
                   blurRadius: translationProvider.isListening ? 24 : 16,
                   spreadRadius: translationProvider.isListening ? 4 : 0,
                 ),
@@ -907,7 +907,7 @@ class _TranslationScreenState extends State<TranslationScreen>
                 Container(
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.2),
+                    color: Colors.white.withValues(alpha: 0.2),
                     shape: BoxShape.circle,
                   ),
                   child: Icon(
@@ -935,7 +935,7 @@ class _TranslationScreenState extends State<TranslationScreen>
                           : 'No email'),
                   style: TextStyle(
                     fontSize: 14,
-                    color: Colors.white.withOpacity(0.9),
+                    color: Colors.white.withValues(alpha: 0.9),
                   ),
                 ),
               ],
@@ -1070,7 +1070,7 @@ class _TranslationScreenState extends State<TranslationScreen>
             )
           : null,
       selected: isSelected,
-      selectedTileColor: AppColors.accent.withOpacity(0.1),
+      selectedTileColor: AppColors.accent.withValues(alpha: 0.1),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
       contentPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 4),
       onTap: onTap,
@@ -1089,7 +1089,7 @@ class _TranslationScreenState extends State<TranslationScreen>
               gradient: LinearGradient(
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
-                colors: [AppColors.accent, AppColors.accent.withOpacity(0.8)],
+                colors: [AppColors.accent, AppColors.accent.withValues(alpha: 0.8)],
               ),
             ),
             child: Column(
@@ -1100,7 +1100,7 @@ class _TranslationScreenState extends State<TranslationScreen>
                     Container(
                       padding: const EdgeInsets.all(12),
                       decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.2),
+                        color: Colors.white.withValues(alpha: 0.2),
                         shape: BoxShape.circle,
                       ),
                       child: const Icon(
@@ -1161,7 +1161,7 @@ class _TranslationScreenState extends State<TranslationScreen>
                   '${translationProvider.translationHistory.length} translations',
                   style: TextStyle(
                     fontSize: 14,
-                    color: Colors.white.withOpacity(0.9),
+                    color: Colors.white.withValues(alpha: 0.9),
                   ),
                 ),
               ],
@@ -1283,7 +1283,7 @@ class _TranslationScreenState extends State<TranslationScreen>
                                       vertical: 4,
                                     ),
                                     decoration: BoxDecoration(
-                                      color: AppColors.primary.withOpacity(0.1),
+                                      color: AppColors.primary.withValues(alpha: 0.1),
                                       borderRadius: BorderRadius.circular(4),
                                     ),
                                     child: Text(

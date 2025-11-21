@@ -5,10 +5,14 @@ import 'package:image_picker_platform_interface/image_picker_platform_interface.
 import 'package:medicus/screens/translation_screen.dart';
 import 'package:medicus/providers/translation_provider.dart';
 import 'package:medicus/providers/user_provider.dart';
+import 'package:medicus/providers/patient_profile_provider.dart';
+import 'package:medicus/providers/doctor_profile_provider.dart';
 import 'package:medicus/models/translation_result.dart';
 import 'package:medicus/models/user_model.dart';
+import 'package:medicus/models/patient_profile_model.dart';
+import 'package:medicus/models/doctor_profile_model.dart';
+import 'package:medicus/constants/app_constants.dart';
 import 'package:provider/provider.dart';
-import 'package:mockito/mockito.dart';
 
 // Mock classes
 class MockTranslationProvider extends ChangeNotifier implements TranslationProvider {
@@ -121,6 +125,69 @@ class MockUserProvider extends ChangeNotifier implements UserProvider {
   }
 }
 
+class FakePatientProfileProvider extends ChangeNotifier implements PatientProfileProvider {
+  PatientProfileModel _profile = PatientProfileModel();
+
+  @override
+  PatientProfileModel get profile => _profile;
+  @override
+  bool get isLoading => false;
+  @override
+  int get unreadMessageCount => 0;
+
+  @override
+  Future<void> initialize() async {}
+  @override
+  Future<void> updatePersonalInfo({String? firstName, String? secondName, String? insuranceNumber, String? insuranceProvider, String? profilePicturePath}) async {}
+  @override
+  Future<void> updateProfilePicture(String path) async {}
+  @override
+  Future<void> addCertificate(Certificate certificate) async {}
+  @override
+  Future<void> removeCertificate(String certificateId) async {}
+  @override
+  Future<void> submitSickNote(SickNote sickNote) async {}
+  @override
+  Future<void> updateSickNoteStatus(String sickNoteId, String status) async {}
+  @override
+  Future<void> addReimbursement(Reimbursement reimbursement) async {}
+  @override
+  Future<void> updateReimbursementStatus(String reimbursementId, String status) async {}
+  @override
+  Future<void> addMailboxMessage(MailboxMessage message) async {}
+  @override
+  Future<void> markMessageAsRead(String messageId) async {}
+}
+
+class FakeDoctorProfileProvider extends ChangeNotifier implements DoctorProfileProvider {
+  DoctorProfileModel _profile = DoctorProfileModel();
+
+  @override
+  DoctorProfileModel get profile => _profile;
+  @override
+  bool get isLoading => false;
+
+  @override
+  Future<void> initialize() async {}
+  @override
+  Future<void> updateProfile(DoctorProfileModel newProfile) async {}
+  @override
+  Future<void> updateProfilePicture(String url) async {}
+  @override
+  Future<void> updateClinicAddress(String address) async {}
+  @override
+  Future<void> updateExperience(int years) async {}
+  @override
+  Future<void> updateName(String name) async {}
+  @override
+  Future<void> updateQualification(String qualification) async {}
+  @override
+  Future<void> updateSpeciality(String speciality) async {}
+  @override
+  Future<void> clearProfile() async {}
+}
+
+
 // Mock ImagePicker
 class MockImagePicker extends ImagePickerPlatform {
   bool cameraCalled = false;
@@ -178,6 +245,8 @@ void main() {
         providers: [
           ChangeNotifierProvider<UserProvider>(create: (_) => MockUserProvider()),
           ChangeNotifierProvider<TranslationProvider>(create: (_) => MockTranslationProvider()),
+          ChangeNotifierProvider<PatientProfileProvider>(create: (_) => FakePatientProfileProvider()),
+          ChangeNotifierProvider<DoctorProfileProvider>(create: (_) => FakeDoctorProfileProvider()),
         ],
         child: MaterialApp(
           home: const TranslationScreen(),

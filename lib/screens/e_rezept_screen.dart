@@ -70,9 +70,9 @@ class _ERezeptScreenState extends State<ERezeptScreen> {
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: Colors.blue.withOpacity(0.1),
+                color: Colors.blue.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: Colors.blue.withOpacity(0.3)),
+                border: Border.all(color: Colors.blue.withValues(alpha: 0.3)),
               ),
               child: Row(
                 children: [
@@ -144,7 +144,7 @@ class _ERezeptScreenState extends State<ERezeptScreen> {
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),
                   ),
-                  disabledBackgroundColor: AppColors.textSecondary.withOpacity(0.3),
+                  disabledBackgroundColor: AppColors.textSecondary.withValues(alpha: 0.3),
                 ),
                 child: const Text(
                   'Submit Prescription',
@@ -185,7 +185,7 @@ class _ERezeptScreenState extends State<ERezeptScreen> {
           border: Border.all(
             color: hasImage
                 ? AppColors.success
-                : AppColors.textSecondary.withOpacity(0.3),
+                : AppColors.textSecondary.withValues(alpha: 0.3),
             width: 2,
           ),
           boxShadow: [
@@ -202,8 +202,8 @@ class _ERezeptScreenState extends State<ERezeptScreen> {
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
                 color: hasImage
-                    ? AppColors.success.withOpacity(0.1)
-                    : Colors.blue.withOpacity(0.1),
+                    ? AppColors.success.withValues(alpha: 0.1)
+                    : Colors.blue.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Icon(

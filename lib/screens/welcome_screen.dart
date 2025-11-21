@@ -276,7 +276,8 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                                   role: _selectedRole,
                                   rememberMe: _rememberMe,
                                 );
-                                if (mounted && userProvider.isLoggedIn) {
+                                if (!mounted) return;
+                                if (userProvider.isLoggedIn) {
                                   // Sign In: Skip profile completion, go directly to app
                                   context.go('/translation');
                                 }
@@ -288,7 +289,8 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                                   role: _selectedRole,
                                   rememberMe: _rememberMe,
                                 );
-                                if (mounted && userProvider.isLoggedIn) {
+                                if (!mounted) return;
+                                if (userProvider.isLoggedIn) {
                                   // Sign Up: Navigate to email verification
                                   context.go(
                                     '/verify-email?email=${Uri.encodeComponent(_emailController.text.trim())}',
@@ -296,24 +298,23 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                                 }
                               }
                             } catch (e) {
+                              if (!mounted) return;
                               setState(() {
                                 _loginAttempts++;
                                 if (_loginAttempts >= 1) {
                                   _showForgotPassword = true;
                                 }
                               });
-                              if (mounted) {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(
-                                    content: AutoTranslateText(
-                                      _isSignIn
-                                          ? 'Login failed. Please check your credentials.'
-                                          : 'Sign up failed. Please try again.',
-                                    ),
-                                    backgroundColor: Colors.red,
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: AutoTranslateText(
+                                    _isSignIn
+                                        ? 'Login failed. Please check your credentials.'
+                                        : 'Sign up failed. Please try again.',
                                   ),
-                                );
-                              }
+                                  backgroundColor: Colors.red,
+                                ),
+                              );
                             }
                           },
                     style: ElevatedButton.styleFrom(
@@ -347,26 +348,19 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                   OutlinedButton(
                     onPressed: () async {
                       await userProvider.continueAsGuest(_selectedRole);
-                      if (mounted) {
-                        // Guest: Skip profile completion, go directly to app
-                        context.go('/translation');
-                      }
+                      if (!mounted) return;
+                      context.go('/translation');
                     },
                     style: OutlinedButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(vertical: 14),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
                       side: BorderSide(color: AppColors.primary),
+                      foregroundColor: AppColors.primary,
                     ),
                     child: const AutoTranslateText(
                       'Continue as Guest',
-                      style: TextStyle(
-                        fontSize: 15,
-                        fontWeight: FontWeight.bold,
-                      ),
+                      style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
                     ),
                   ),
+
                 ],
               ),
             ),

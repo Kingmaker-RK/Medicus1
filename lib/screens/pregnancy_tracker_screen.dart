@@ -46,7 +46,7 @@ class _PregnancyTrackerScreenState extends State<PregnancyTrackerScreen> {
                 borderRadius: BorderRadius.circular(16),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.pink.withOpacity(0.3),
+                    color: Colors.pink.withValues(alpha: 0.3),
                     blurRadius: 12,
                     offset: const Offset(0, 4),
                   ),
@@ -67,7 +67,7 @@ class _PregnancyTrackerScreenState extends State<PregnancyTrackerScreen> {
                     borderRadius: BorderRadius.circular(10),
                     child: LinearProgressIndicator(
                       value: progress,
-                      backgroundColor: Colors.white.withOpacity(0.3),
+                      backgroundColor: Colors.white.withValues(alpha: 0.3),
                       valueColor:
                           const AlwaysStoppedAnimation<Color>(Colors.white),
                       minHeight: 12,
@@ -78,7 +78,7 @@ class _PregnancyTrackerScreenState extends State<PregnancyTrackerScreen> {
                     '${(progress * 100).toInt()}% Complete',
                     style: TextStyle(
                       fontSize: 16,
-                      color: Colors.white.withOpacity(0.9),
+                      color: Colors.white.withValues(alpha: 0.9),
                     ),
                   ),
                 ],
@@ -191,7 +191,7 @@ class _PregnancyTrackerScreenState extends State<PregnancyTrackerScreen> {
           Container(
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: color.withOpacity(0.1),
+              color: color.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(10),
             ),
             child: Icon(icon, color: color, size: 28),

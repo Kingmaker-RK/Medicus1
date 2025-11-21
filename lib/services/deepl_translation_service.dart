@@ -10,7 +10,7 @@ class DeepLTranslationService {
   factory DeepLTranslationService() => _instance;
   DeepLTranslationService._internal();
 
-  Translator? _translator;
+  DeepL? _translator;
   bool _isInitialized = false;
 
   /// Initialize the DeepL translator
@@ -20,7 +20,7 @@ class DeepLTranslationService {
       final deeplApiKey = AppConstants.deeplApiKey;
 
       if (deeplApiKey.isNotEmpty && deeplApiKey != 'YOUR_DEEPL_API_KEY') {
-        _translator = Translator(authKey: deeplApiKey);
+        _translator = DeepL(authKey: deeplApiKey);
         _isInitialized = true;
         print('✅ DeepL Translation Service initialized successfully');
       } else {
@@ -55,7 +55,7 @@ class DeepLTranslationService {
       final targetLang = _convertToDeepLLanguageCode(targetLanguage);
 
       // Perform translation
-      final result = await _translator!.translateTextSingular(
+      final result = await _translator!.translate.translateText(
         text,
         targetLang,
         sourceLang: sourceLang,
@@ -195,7 +195,7 @@ class DeepLTranslationService {
     if (!isAvailable) return [];
 
     try {
-      final languages = await _translator!.getSourceLanguages();
+      final languages = await _translator!.languages.getSources();
       return languages.map((lang) => lang.languageCode).toList();
     } catch (e) {
       print('❌ Failed to get supported languages: $e');

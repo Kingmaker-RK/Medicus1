@@ -83,7 +83,7 @@ class _PatientProfileScreenState extends State<PatientProfileScreen>
               children: [
                 CircleAvatar(
                   radius: 50,
-                  backgroundColor: AppColors.primary.withOpacity(0.1),
+                  backgroundColor: AppColors.primary.withValues(alpha: 0.1),
                   backgroundImage: profile.profilePicturePath.isNotEmpty
                       ? FileImage(File(profile.profilePicturePath))
                       : null,
@@ -165,7 +165,7 @@ class _PatientProfileScreenState extends State<PatientProfileScreen>
       margin: const EdgeInsets.only(bottom: 12),
       child: ListTile(
         leading: CircleAvatar(
-          backgroundColor: AppColors.primary.withOpacity(0.1),
+          backgroundColor: AppColors.primary.withValues(alpha: 0.1),
           child: Icon(LucideIcons.fileText, color: AppColors.primary),
         ),
         title: Text(
@@ -228,7 +228,7 @@ class _PatientProfileScreenState extends State<PatientProfileScreen>
       margin: const EdgeInsets.only(bottom: 12),
       child: ListTile(
         leading: CircleAvatar(
-          backgroundColor: statusColor.withOpacity(0.1),
+          backgroundColor: statusColor.withValues(alpha: 0.1),
           child: Icon(LucideIcons.stethoscope, color: statusColor),
         ),
         title: Text(
@@ -249,7 +249,7 @@ class _PatientProfileScreenState extends State<PatientProfileScreen>
                     vertical: 2,
                   ),
                   decoration: BoxDecoration(
-                    color: statusColor.withOpacity(0.1),
+                    color: statusColor.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Text(
@@ -301,7 +301,7 @@ class _PatientProfileScreenState extends State<PatientProfileScreen>
       margin: const EdgeInsets.only(bottom: 12),
       child: ListTile(
         leading: CircleAvatar(
-          backgroundColor: AppColors.primary.withOpacity(0.1),
+          backgroundColor: AppColors.primary.withValues(alpha: 0.1),
           child: Icon(LucideIcons.banknote, color: AppColors.primary),
         ),
         title: Text(
@@ -320,7 +320,7 @@ class _PatientProfileScreenState extends State<PatientProfileScreen>
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
               decoration: BoxDecoration(
-                color: statusColor.withOpacity(0.1),
+                color: statusColor.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Text(
@@ -355,12 +355,12 @@ class _PatientProfileScreenState extends State<PatientProfileScreen>
       margin: const EdgeInsets.only(bottom: 12),
       color: message.isRead
           ? Colors.white
-          : AppColors.primary.withOpacity(0.05),
+          : AppColors.primary.withValues(alpha: 0.05),
       child: ListTile(
         leading: CircleAvatar(
           backgroundColor: message.isRead
-              ? Colors.grey.withOpacity(0.2)
-              : AppColors.primary.withOpacity(0.1),
+              ? Colors.grey.withValues(alpha: 0.2)
+              : AppColors.primary.withValues(alpha: 0.1),
           child: Icon(
             message.isRead ? LucideIcons.mailOpen : LucideIcons.mail,
             color: message.isRead ? Colors.grey : AppColors.primary,
@@ -439,7 +439,7 @@ class _PatientProfileScreenState extends State<PatientProfileScreen>
             children: [
               CircleAvatar(
                 radius: 30,
-                backgroundColor: AppColors.primary.withOpacity(0.1),
+                backgroundColor: AppColors.primary.withValues(alpha: 0.1),
                 child: Icon(icon, color: AppColors.primary, size: 30),
               ),
               const SizedBox(width: 16),

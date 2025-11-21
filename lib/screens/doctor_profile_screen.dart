@@ -124,7 +124,7 @@ class DoctorProfileScreen extends StatelessWidget {
                 children: [
                   CircleAvatar(
                     radius: 60,
-                    backgroundColor: AppColors.primary.withOpacity(0.1),
+                    backgroundColor: AppColors.primary.withValues(alpha: 0.1),
                     backgroundImage: backgroundImage,
                     child: backgroundImage == null
                         ? Icon(Icons.person, size: 60, color: AppColors.primary)
@@ -186,7 +186,7 @@ class DoctorProfileScreen extends StatelessWidget {
                   vertical: 8,
                 ),
                 decoration: BoxDecoration(
-                  color: AppColors.primary.withOpacity(0.1),
+                  color: AppColors.primary.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(20),
                 ),
                 child: Text(
@@ -215,6 +215,7 @@ class DoctorProfileScreen extends StatelessWidget {
         await provider.updateProfilePicture(pickedFile.path);
       }
     } catch (e) {
+      if (!context.mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: AutoTranslateText('Error picking image: $e')),
       );
@@ -447,11 +448,13 @@ class DoctorProfileScreen extends StatelessWidget {
                 );
 
                 await provider.updateProfile(updatedProfile);
+                if (!context.mounted) return;
                 Navigator.pop(context);
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(content: AutoTranslateText('Profile updated successfully')),
                 );
               } catch (e) {
+                if (!context.mounted) return;
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
                     content: AutoTranslateText('Error updating profile: $e'),

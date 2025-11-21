@@ -98,7 +98,7 @@ class _DentistScreenState extends State<DentistScreen> {
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(12),
                             borderSide: BorderSide(
-                              color: AppColors.textSecondary.withOpacity(0.3),
+                              color: AppColors.textSecondary.withValues(alpha: 0.3),
                             ),
                           ),
                           filled: true,
@@ -183,7 +183,7 @@ class _DentistScreenState extends State<DentistScreen> {
                     Container(
                       padding: const EdgeInsets.all(12),
                       decoration: BoxDecoration(
-                        color: Colors.teal.withOpacity(0.1),
+                        color: Colors.teal.withValues(alpha: 0.1),
                         borderRadius: BorderRadius.circular(12),
                       ),
                       child: const Icon(
@@ -223,7 +223,7 @@ class _DentistScreenState extends State<DentistScreen> {
                           vertical: 4,
                         ),
                         decoration: BoxDecoration(
-                          color: Colors.green.withOpacity(0.1),
+                          color: Colors.green.withValues(alpha: 0.1),
                           borderRadius: BorderRadius.circular(6),
                         ),
                         child: const Text(
@@ -244,7 +244,7 @@ class _DentistScreenState extends State<DentistScreen> {
                     vertical: 6,
                   ),
                   decoration: BoxDecoration(
-                    color: AppColors.primary.withOpacity(0.1),
+                    color: AppColors.primary.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(6),
                   ),
                   child: Text(
@@ -338,7 +338,7 @@ class _DentistScreenState extends State<DentistScreen> {
               ],
             ),
           ),
-          Divider(height: 1, color: AppColors.textSecondary.withOpacity(0.2)),
+          Divider(height: 1, color: AppColors.textSecondary.withValues(alpha: 0.2)),
           Padding(
             padding: const EdgeInsets.all(12),
             child: Row(

@@ -55,7 +55,7 @@ class AutoTranslateText extends StatelessWidget {
             languageCode != 'en') {
           return Text(
             text, // Show original text while loading
-            style: style?.copyWith(color: style?.color?.withOpacity(0.7)),
+            style: style?.copyWith(color: style?.color?.withValues(alpha: 0.7)),
             textAlign: textAlign,
             maxLines: maxLines,
             overflow: overflow,

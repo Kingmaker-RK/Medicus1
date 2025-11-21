@@ -358,7 +358,7 @@ class _OrthopedicScreenState extends State<OrthopedicScreen>
             Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: color.withOpacity(0.1),
+                color: color.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Icon(icon, color: color, size: 32),
@@ -405,7 +405,7 @@ class _OrthopedicScreenState extends State<OrthopedicScreen>
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
-          color: AppColors.textSecondary.withOpacity(0.2),
+          color: AppColors.textSecondary.withValues(alpha: 0.2),
         ),
       ),
       child: Row(
@@ -464,7 +464,7 @@ class _OrthopedicScreenState extends State<OrthopedicScreen>
           Container(
             padding: const EdgeInsets.all(10),
             decoration: BoxDecoration(
-              color: color.withOpacity(0.1),
+              color: color.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(10),
             ),
             child: Icon(icon, color: color, size: 24),

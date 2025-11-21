@@ -123,7 +123,7 @@ class _AnatomyViewerState extends State<AnatomyViewer> {
                       shape: BoxShape.circle,
                       color: _currentIndex == index
                           ? AppColors.primary
-                          : AppColors.textSecondary.withOpacity(0.3),
+                          : AppColors.textSecondary.withValues(alpha: 0.3),
                     ),
                   ),
                 ),
@@ -159,7 +159,7 @@ class _AnatomyViewerState extends State<AnatomyViewer> {
                 Icon(
                   Icons.medical_services,
                   size: 60,
-                  color: AppColors.primary.withOpacity(0.5),
+                  color: AppColors.primary.withValues(alpha: 0.5),
                 ),
                 const SizedBox(height: 8),
                 Text(
@@ -257,7 +257,7 @@ class _FullscreenAnatomyViewerState extends State<_FullscreenAnatomyViewer> {
     return Scaffold(
       backgroundColor: Colors.black,
       appBar: AppBar(
-        backgroundColor: Colors.black.withOpacity(0.5),
+        backgroundColor: Colors.black.withValues(alpha: 0.5),
         foregroundColor: Colors.white,
         elevation: 0,
         title: Text(
@@ -391,7 +391,7 @@ class _FullscreenAnatomyViewerState extends State<_FullscreenAnatomyViewer> {
                       shape: BoxShape.circle,
                       color: _currentIndex == index
                           ? Colors.white
-                          : Colors.white.withOpacity(0.4),
+                          : Colors.white.withValues(alpha: 0.4),
                     ),
                   ),
                 ),
@@ -426,7 +426,7 @@ class _FullscreenAnatomyViewerState extends State<_FullscreenAnatomyViewer> {
               Icon(
                 Icons.medical_services,
                 size: 80,
-                color: Colors.white.withOpacity(0.5),
+                color: Colors.white.withValues(alpha: 0.5),
               ),
               const SizedBox(height: 16),
               const Text(

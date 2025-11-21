@@ -184,7 +184,7 @@ class _FitPhysicScreenState extends State<FitPhysicScreen> {
             decoration: BoxDecoration(
               gradient: LinearGradient(
                 colors: [
-                  program['color'].withOpacity(0.7),
+                  program['color'].withValues(alpha: 0.7),
                   program['color'],
                 ],
               ),
@@ -199,7 +199,7 @@ class _FitPhysicScreenState extends State<FitPhysicScreen> {
                   child: Icon(
                     Icons.play_circle_outline_rounded,
                     size: 60,
-                    color: Colors.white.withOpacity(0.9),
+                    color: Colors.white.withValues(alpha: 0.9),
                   ),
                 ),
                 Positioned(
@@ -209,7 +209,7 @@ class _FitPhysicScreenState extends State<FitPhysicScreen> {
                     padding:
                         const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
                     decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.9),
+                      color: Colors.white.withValues(alpha: 0.9),
                       borderRadius: BorderRadius.circular(20),
                     ),
                     child: Text(
@@ -337,7 +337,7 @@ class _FitPhysicScreenState extends State<FitPhysicScreen> {
                   width: 40,
                   height: 4,
                   decoration: BoxDecoration(
-                    color: AppColors.textSecondary.withOpacity(0.3),
+                    color: AppColors.textSecondary.withValues(alpha: 0.3),
                     borderRadius: BorderRadius.circular(2),
                   ),
                 ),
@@ -461,7 +461,7 @@ class _FitPhysicScreenState extends State<FitPhysicScreen> {
                 width: 40,
                 height: 4,
                 decoration: BoxDecoration(
-                  color: AppColors.textSecondary.withOpacity(0.3),
+                  color: AppColors.textSecondary.withValues(alpha: 0.3),
                   borderRadius: BorderRadius.circular(2),
                 ),
               ),

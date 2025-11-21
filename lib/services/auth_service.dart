@@ -108,12 +108,6 @@ class AuthService {
   // Send password reset code
   Future<void> sendPasswordResetCode(String email) async {
     try {
-      // Check if user exists
-      final methods = await _auth.fetchSignInMethodsForEmail(email);
-      if (methods.isEmpty) {
-        throw Exception('No account found with this email address.');
-      }
-
       // Generate and store reset code
       final resetCode = _generateVerificationCode();
       _resetPasswordCodes[email] = resetCode;

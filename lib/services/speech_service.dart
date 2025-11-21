@@ -61,9 +61,11 @@ class SpeechService {
           _recognizedText = result.recognizedWords;
           onResult(_recognizedText);
         },
-        listenMode: stt.ListenMode.confirmation,
-        cancelOnError: true,
-        partialResults: true,
+        listenOptions: stt.SpeechListenOptions(
+          listenMode: stt.ListenMode.confirmation,
+          cancelOnError: true,
+          partialResults: true,
+        ),
       );
     }
   }

@@ -67,7 +67,7 @@ class ServicesHubScreen extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(14),
               decoration: BoxDecoration(
-                color: service.color.withOpacity(0.1),
+                color: service.color.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Icon(service.icon, color: service.color, size: 32),
