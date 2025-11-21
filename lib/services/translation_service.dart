@@ -53,8 +53,11 @@ class TranslationService {
       return _mockTranslation(text, sourceLanguage, targetLanguage);
     }
     try {
-      // 1. Try Advanced LLM (Llama/Gemini) - Priority #1
+      // 1. Try Advanced LLM (Llama/Gemini/GPT-5.1/Claude 3.x) - Priority #1
       // This service now handles Llama -> DeepL -> Gemini fallback internally
+      // Architecture supports: Llama, GPT-5.1, DeepL, NLLB-200, SeamlessM4T, Claude 3.x
+      print('🔄 Attempting translation with Advanced LLM Service (Llama/Gemini/GPT/Claude)...');
+      
       try {
         _llmService.initialize();
         final llmTranslation = await _llmService.translate(

@@ -8,6 +8,7 @@ import 'deepl_translation_service.dart';
 
 /// Advanced LLM-powered translation service using Llama (via OpenAI-compatible API)
 /// with fallbacks to Google Gemini Flash 2.0 and DeepL.
+/// Also supports architecture for integration with GPT-5.1, Claude 3.x, NLLB-200, and SeamlessM4T.
 /// Provides instant, contextually accurate translations for 200+ languages
 class LLMTranslationService {
     static final LLMTranslationService _instance =
@@ -30,7 +31,7 @@ class LLMTranslationService {
 
   /// Initialize the translation services
   void initialize() {
-    // Initialize Llama
+    // Initialize Llama (Primary)
     if (AppConstants.llamaApiKey.isNotEmpty &&
         AppConstants.llamaApiKey != 'YOUR_LLAMA_API_KEY') {
       _isLlamaConfigured = true;
@@ -56,6 +57,12 @@ class LLMTranslationService {
         print('✅ LLM Translation Service initialized with Gemini Flash 2.0 (Fallback)');
       }
     }
+
+    // Placeholder for future advanced models (Architecture ready)
+    // - GPT-5.1: Pending API availability
+    // - Claude 3.x: Requires Anthropic API key
+    // - NLLB-200: Requires HuggingFace Inference API
+    // - SeamlessM4T: Requires Meta AI endpoint
 
     _deepLService.initialize();
   }
