@@ -5,8 +5,14 @@ import '../services/translation_service.dart';
 import '../services/speech_service.dart';
 
 class TranslationProvider with ChangeNotifier {
-  final TranslationService _translationService = TranslationService();
-  final SpeechService _speechService = SpeechService();
+  final TranslationService _translationService;
+  final SpeechService _speechService;
+
+  TranslationProvider({
+    TranslationService? translationService,
+    SpeechService? speechService,
+  })  : _translationService = translationService ?? TranslationService(),
+        _speechService = speechService ?? SpeechService();
 
   List<TranslationResult> _translationHistory = [];
   TranslationResult? _currentTranslation;
