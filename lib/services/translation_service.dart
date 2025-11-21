@@ -70,32 +70,37 @@ class TranslationService {
            final result = await _llmService.translateMedical(text, targetLanguage);
            
            final translatedText = result['translatedText'] as String? ?? text;
-           var medicalTerms = List<String>.from(result['medicalTerms'] ?? []);
-           final anatomyPart = result['anatomyPart'] as String?;
-
-           // Fallback: If LLM didn't find terms, try simple keyword matching
-           // This ensures 100% matching based on specific keywords even if LLM fails
-           if (medicalTerms.isEmpty) {
-             medicalTerms = _mockMedicalTerms(text);
-           }
            
-           // Map anatomy part to image
-           List<String> anatomyImages = [];
-           if (anatomyPart != null && anatomyPart.isNotEmpty) {
-             anatomyImages = await getAnatomyImages([anatomyPart]);
-           } else if (medicalTerms.isNotEmpty) {
-             anatomyImages = await getAnatomyImages(medicalTerms);
-           }
+           // Only return if we actually got a translation
+           if (translatedText != text) {
+             var medicalTerms = List<String>.from(result['medicalTerms'] ?? []);
+             final anatomyPart = result['anatomyPart'] as String?;
 
-           print('✅ Medical Translation completed using Advanced LLM Service');
-           return TranslationResult(
-             originalText: text,
-             translatedText: translatedText,
-             sourceLanguage: sourceLanguage,
-             targetLanguage: targetLanguage,
-             medicalTerms: medicalTerms,
-             anatomyImages: anatomyImages,
-           );
+             // Fallback: If LLM didn't find terms, try simple keyword matching
+             if (medicalTerms.isEmpty) {
+               medicalTerms = _mockMedicalTerms(text);
+             }
+             
+             // Map anatomy part to image
+             List<String> anatomyImages = [];
+             if (anatomyPart != null && anatomyPart.isNotEmpty) {
+               anatomyImages = await getAnatomyImages([anatomyPart]);
+             } else if (medicalTerms.isNotEmpty) {
+               anatomyImages = await getAnatomyImages(medicalTerms);
+             }
+
+             print('✅ Medical Translation completed using Advanced LLM Service');
+             return TranslationResult(
+               originalText: text,
+               translatedText: translatedText,
+               sourceLanguage: sourceLanguage,
+               targetLanguage: targetLanguage,
+               medicalTerms: medicalTerms,
+               anatomyImages: anatomyImages,
+             );
+           } else {
+             print('⚠️ Advanced LLM returned original text. Proceeding to fallbacks...');
+           }
         }
         
         final llmTranslation = await _llmService.translate(

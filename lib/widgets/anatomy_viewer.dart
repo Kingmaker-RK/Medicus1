@@ -182,7 +182,8 @@ class _AnatomyViewerState extends State<AnatomyViewer> {
     // In a production environment, we would map specific anatomy parts to their corresponding 3D models.
     // Since we currently rely on 2D image URLs, we will use a high-quality 3D model placeholder
     // to demonstrate the viewer's capabilities if the URL is not a 3D file.
-    const String sampleModelUrl = 'https://modelviewer.dev/shared-assets/models/Astronaut.glb';
+    // Using BrainStem model as a more appropriate medical example than the default astronaut.
+    const String sampleModelUrl = 'https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/BrainStem/glTF-Binary/BrainStem.glb';
     
     final bool isLikely3D = modelUrl.toLowerCase().endsWith('.glb') || modelUrl.toLowerCase().endsWith('.gltf');
     final String urlToLoad = isLikely3D ? modelUrl : sampleModelUrl;
@@ -205,26 +206,33 @@ class _AnatomyViewerState extends State<AnatomyViewer> {
               cameraControls: true,
               backgroundColor: Colors.transparent,
               loading: Loading.eager,
+              poster: 'https://via.placeholder.com/400x300.png?text=Loading+3D+Model',
             ),
-            if (!isLikely3D)
-              Positioned(
-                bottom: 8,
-                left: 0,
-                right: 0,
-                child: Center(
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                    decoration: BoxDecoration(
-                      color: Colors.black.withValues(alpha: 0.6),
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    child: const Text(
-                      'Demo Model View',
-                      style: TextStyle(color: Colors.white, fontSize: 12),
-                    ),
+            Positioned(
+              bottom: 8,
+              left: 0,
+              right: 0,
+              child: Center(
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  decoration: BoxDecoration(
+                    color: Colors.black.withValues(alpha: 0.6),
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Icon(Icons.3d_rotation, color: Colors.white, size: 14),
+                      const SizedBox(width: 6),
+                      Text(
+                        isLikely3D ? 'Interactive 3D View' : 'Demo 3D Model (Brain Stem)',
+                        style: const TextStyle(color: Colors.white, fontSize: 12),
+                      ),
+                    ],
                   ),
                 ),
               ),
+            ),
           ],
         ),
       ),
@@ -458,7 +466,7 @@ class _FullscreenAnatomyViewerState extends State<_FullscreenAnatomyViewer> {
 
   Widget _build3DView(String modelUrl) {
     // Same implementation for fullscreen, but with dark background
-    const String sampleModelUrl = 'https://modelviewer.dev/shared-assets/models/Astronaut.glb';
+    const String sampleModelUrl = 'https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/BrainStem/glTF-Binary/BrainStem.glb';
     
     final bool isLikely3D = modelUrl.toLowerCase().endsWith('.glb') || modelUrl.toLowerCase().endsWith('.gltf');
     final String urlToLoad = isLikely3D ? modelUrl : sampleModelUrl;
@@ -480,25 +488,31 @@ class _FullscreenAnatomyViewerState extends State<_FullscreenAnatomyViewer> {
               cameraControls: true,
               backgroundColor: Colors.transparent,
             ),
-            if (!isLikely3D)
-              Positioned(
-                bottom: 20,
-                left: 0,
-                right: 0,
-                child: Center(
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                    decoration: BoxDecoration(
-                      color: Colors.white.withValues(alpha: 0.2),
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    child: const Text(
-                      'Demo Model View',
-                      style: TextStyle(color: Colors.white, fontSize: 12),
-                    ),
+            Positioned(
+              bottom: 20,
+              left: 0,
+              right: 0,
+              child: Center(
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withValues(alpha: 0.2),
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Icon(Icons.3d_rotation, color: Colors.white, size: 14),
+                      const SizedBox(width: 6),
+                      Text(
+                        isLikely3D ? 'Interactive 3D View' : 'Demo 3D Model (Brain Stem)',
+                        style: const TextStyle(color: Colors.white, fontSize: 12),
+                      ),
+                    ],
                   ),
                 ),
               ),
+            ),
           ],
         ),
       ),
