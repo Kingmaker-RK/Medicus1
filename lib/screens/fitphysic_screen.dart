@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../widgets/translated_widget.dart';
 import '../constants/colors.dart';
 
 class FitPhysicScreen extends StatefulWidget {
@@ -80,7 +81,7 @@ class _FitPhysicScreenState extends State<FitPhysicScreen> {
       appBar: AppBar(
         backgroundColor: AppColors.primary,
         foregroundColor: Colors.white,
-        title: const AutoTranslateAutoTranslateText('FitPhysic'),
+        title: const AutoTranslateText('FitPhysic'),
         centerTitle: true,
         actions: [
           IconButton(
@@ -156,7 +157,7 @@ class _FitPhysicScreenState extends State<FitPhysicScreen> {
         },
         backgroundColor: Colors.green,
         icon: const Icon(Icons.trending_up_rounded),
-        label: const AutoTranslateAutoTranslateText('My Progress'),
+        label: const AutoTranslateText('My Progress'),
       ),
     );
   }
@@ -376,7 +377,7 @@ class _FitPhysicScreenState extends State<FitPhysicScreen> {
                     Navigator.pop(context);
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
-                        content: AutoTranslateAutoTranslateText('Started: ${program['title']}'),
+                        content: AutoTranslateText('Started: ${program['title']}'),
                         backgroundColor: AppColors.success,
                       ),
                     );

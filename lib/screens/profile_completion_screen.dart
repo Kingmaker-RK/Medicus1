@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../widgets/translated_widget.dart';
 import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -64,7 +65,7 @@ class _ProfileCompletionScreenState extends State<ProfileCompletionScreen> {
       appBar: AppBar(
         backgroundColor: AppColors.primary,
         foregroundColor: Colors.white,
-        title: const AutoTranslateAutoTranslateText('Complete Your Profile'),
+        title: const AutoTranslateText('Complete Your Profile'),
         automaticallyImplyLeading: false, // Prevent back navigation
       ),
       body: SingleChildScrollView(
@@ -382,7 +383,7 @@ class _ProfileCompletionScreenState extends State<ProfileCompletionScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: AutoTranslateAutoTranslateText('Error saving profile: $e'),
+            content: AutoTranslateText('Error saving profile: $e'),
             backgroundColor: AppColors.error,
           ),
         );

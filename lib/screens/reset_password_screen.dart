@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../widgets/translated_widget.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import '../providers/user_provider.dart';
@@ -89,7 +90,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
               children: [
                 Icon(Icons.check_circle, color: Colors.green, size: 32),
                 const SizedBox(width: 12),
-                const AutoTranslateAutoTranslateText('Success!'),
+                const AutoTranslateText('Success!'),
               ],
             ),
             content: const Text(
@@ -108,7 +109,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                     borderRadius: BorderRadius.circular(12),
                   ),
                 ),
-                child: const AutoTranslateAutoTranslateText('Go to Sign In'),
+                child: const AutoTranslateText('Go to Sign In'),
               ),
             ],
           ),

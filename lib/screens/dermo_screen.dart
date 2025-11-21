@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../widgets/translated_widget.dart';
 import 'package:image_picker/image_picker.dart';
 import '../constants/colors.dart';
 
@@ -44,7 +45,7 @@ class _DermoScreenState extends State<DermoScreen>
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: const AutoTranslateAutoTranslateText('Image uploaded successfully'),
+              content: const AutoTranslateText('Image uploaded successfully'),
               backgroundColor: AppColors.success,
             ),
           );
@@ -54,7 +55,7 @@ class _DermoScreenState extends State<DermoScreen>
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: AutoTranslateAutoTranslateText('Error capturing photo: $e'),
+            content: AutoTranslateText('Error capturing photo: $e'),
             backgroundColor: AppColors.error,
           ),
         );
@@ -69,7 +70,7 @@ class _DermoScreenState extends State<DermoScreen>
       appBar: AppBar(
         backgroundColor: AppColors.primary,
         foregroundColor: Colors.white,
-        title: const AutoTranslateAutoTranslateText('Dermo - Dermatology'),
+        title: const AutoTranslateText('Dermo - Dermatology'),
         centerTitle: true,
         bottom: TabBar(
           controller: _tabController,
@@ -98,7 +99,7 @@ class _DermoScreenState extends State<DermoScreen>
         onPressed: _takePicture,
         backgroundColor: Colors.orange,
         icon: const Icon(Icons.camera_alt_rounded),
-        label: const AutoTranslateAutoTranslateText('Take Photo'),
+        label: const AutoTranslateText('Take Photo'),
       ),
     );
   }
@@ -215,7 +216,7 @@ class _DermoScreenState extends State<DermoScreen>
                   borderRadius: BorderRadius.circular(12),
                 ),
               ),
-              child: const AutoTranslateAutoTranslateText('Submit Question'),
+              child: const AutoTranslateText('Submit Question'),
             ),
           ),
         ],

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../widgets/translated_widget.dart';
 import '../constants/colors.dart';
 
 class BloodDonationScreen extends StatefulWidget {
@@ -46,7 +47,7 @@ class _BloodDonationScreenState extends State<BloodDonationScreen> {
       appBar: AppBar(
         backgroundColor: AppColors.primary,
         foregroundColor: Colors.white,
-        title: const AutoTranslateAutoTranslateText('Blood Donation'),
+        title: const AutoTranslateText('Blood Donation'),
         centerTitle: true,
         actions: [
           IconButton(
@@ -89,7 +90,7 @@ class _BloodDonationScreenState extends State<BloodDonationScreen> {
                       items: bloodTypes.map((String type) {
                         return DropdownMenuItem<String>(
                           value: type,
-                          child: AutoTranslateAutoTranslateText('Blood Type: $type'),
+                          child: AutoTranslateText('Blood Type: $type'),
                         );
                       }).toList(),
                       onChanged: (String? newValue) {
@@ -121,7 +122,7 @@ class _BloodDonationScreenState extends State<BloodDonationScreen> {
         },
         backgroundColor: Colors.red,
         icon: const Icon(Icons.favorite_rounded),
-        label: const AutoTranslateAutoTranslateText('Check Eligibility'),
+        label: const AutoTranslateText('Check Eligibility'),
       ),
     );
   }
@@ -252,7 +253,7 @@ class _BloodDonationScreenState extends State<BloodDonationScreen> {
                 child: OutlinedButton.icon(
                   onPressed: () {},
                   icon: const Icon(Icons.phone_rounded, size: 18),
-                  label: const AutoTranslateAutoTranslateText('Call'),
+                  label: const AutoTranslateText('Call'),
                   style: OutlinedButton.styleFrom(
                     foregroundColor: AppColors.primary,
                     side: BorderSide(color: AppColors.primary),
@@ -265,13 +266,13 @@ class _BloodDonationScreenState extends State<BloodDonationScreen> {
                   onPressed: () {
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
-                        content: AutoTranslateAutoTranslateText('Booking appointment at ${center['name']}'),
+                        content: AutoTranslateText('Booking appointment at ${center['name']}'),
                         backgroundColor: AppColors.success,
                       ),
                     );
                   },
                   icon: const Icon(Icons.calendar_today_rounded, size: 18),
-                  label: const AutoTranslateAutoTranslateText('Book'),
+                  label: const AutoTranslateText('Book'),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.primary,
                     foregroundColor: Colors.white,
@@ -344,7 +345,7 @@ class _BloodDonationScreenState extends State<BloodDonationScreen> {
                       borderRadius: BorderRadius.circular(12),
                     ),
                   ),
-                  child: const AutoTranslateAutoTranslateText('I\'m Eligible'),
+                  child: const AutoTranslateText('I\'m Eligible'),
                 ),
               ),
             ],

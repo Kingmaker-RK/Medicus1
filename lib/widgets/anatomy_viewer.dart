@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'translated_widget.dart';
 import '../constants/colors.dart';
 
 class AnatomyViewer extends StatefulWidget {
@@ -278,7 +279,7 @@ class _FullscreenAnatomyViewerState extends State<_FullscreenAnatomyViewer> {
               // TODO: Implement download functionality
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(
-                  content: AutoTranslateAutoTranslateText('Download functionality coming soon'),
+                  content: AutoTranslateText('Download functionality coming soon'),
                   behavior: SnackBarBehavior.floating,
                 ),
               );
@@ -291,7 +292,7 @@ class _FullscreenAnatomyViewerState extends State<_FullscreenAnatomyViewer> {
               // TODO: Implement share functionality
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(
-                  content: AutoTranslateAutoTranslateText('Share functionality coming soon'),
+                  content: AutoTranslateText('Share functionality coming soon'),
                   behavior: SnackBarBehavior.floating,
                 ),
               );

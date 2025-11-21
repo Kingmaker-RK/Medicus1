@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../widgets/translated_widget.dart';
 import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
@@ -86,7 +87,7 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
         // Show success message
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: AutoTranslateAutoTranslateText('Email verified successfully!'),
+            content: AutoTranslateText('Email verified successfully!'),
             backgroundColor: Colors.green,
           ),
         );
@@ -129,7 +130,7 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: AutoTranslateAutoTranslateText('Verification code sent!'),
+            content: AutoTranslateText('Verification code sent!'),
             backgroundColor: Colors.green,
           ),
         );

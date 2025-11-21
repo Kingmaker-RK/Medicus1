@@ -61,7 +61,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
       appBar: AppBar(
         backgroundColor: AppColors.primary,
         foregroundColor: Colors.white,
-        title: const AutoTranslateAutoTranslateAutoTranslateText('Settings'),
+        title: const AutoTranslateText('Settings'),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () {
@@ -80,7 +80,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     children: [
                       ListTile(
                         leading: const Icon(Icons.person),
-                        title: const AutoTranslateAutoTranslateAutoTranslateText('User Role'),
+                        title: const AutoTranslateText('User Role'),
                         subtitle: AutoTranslateText(
                           userProvider.currentUser?.role.toUpperCase() ??
                               'Guest',
@@ -89,7 +89,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       ),
                       ListTile(
                         leading: const Icon(Icons.email),
-                        title: const AutoTranslateAutoTranslateAutoTranslateText('Email'),
+                        title: const AutoTranslateText('Email'),
                         subtitle: AutoTranslateText(
                           userProvider.currentUser?.email ?? 'Guest User',
                         ),
@@ -97,7 +97,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       if (userProvider.isLoggedIn)
                         ListTile(
                           leading: const Icon(Icons.logout),
-                          title: const AutoTranslateAutoTranslateAutoTranslateText('Logout'),
+                          title: const AutoTranslateText('Logout'),
                           onTap: () async {
                             await userProvider.logout();
                             if (mounted) {
@@ -118,7 +118,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     children: [
                       ListTile(
                         leading: const Icon(Icons.language),
-                        title: const AutoTranslateAutoTranslateAutoTranslateText('App Language'),
+                        title: const AutoTranslateText('App Language'),
                         subtitle: AutoTranslateText(
                           _getLanguageName(userProvider.selectedLanguage),
                         ),
@@ -182,7 +182,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       ),
                       ListTile(
                         leading: const Icon(Icons.settings),
-                        title: const AutoTranslateAutoTranslateAutoTranslateText('Open System Settings'),
+                        title: const AutoTranslateText('Open System Settings'),
                         subtitle: const AutoTranslateText(
                           'Manage all permissions',
                         ),
@@ -204,19 +204,19 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     children: [
                       ListTile(
                         leading: const Icon(Icons.info),
-                        title: const AutoTranslateAutoTranslateAutoTranslateText('App Version'),
+                        title: const AutoTranslateText('App Version'),
                         subtitle: AutoTranslateText(AppConstants.appVersion),
                       ),
                       ListTile(
                         leading: const Icon(Icons.medical_services),
-                        title: const AutoTranslateAutoTranslateAutoTranslateText('About Medicus'),
+                        title: const AutoTranslateText('About Medicus'),
                         subtitle: const AutoTranslateText(
                           'Breaking language barriers in healthcare',
                         ),
                       ),
                       ListTile(
                         leading: const Icon(Icons.help),
-                        title: const AutoTranslateAutoTranslateAutoTranslateText('Help & Support'),
+                        title: const AutoTranslateText('Help & Support'),
                         trailing: const Icon(Icons.arrow_forward_ios, size: 16),
                         onTap: () {
                           // TODO: Implement help screen
@@ -224,7 +224,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       ),
                       ListTile(
                         leading: const Icon(Icons.privacy_tip),
-                        title: const AutoTranslateAutoTranslateAutoTranslateText('Privacy Policy'),
+                        title: const AutoTranslateText('Privacy Policy'),
                         trailing: const Icon(Icons.arrow_forward_ios, size: 16),
                         onTap: () {
                           // TODO: Implement privacy policy screen
@@ -312,7 +312,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const AutoTranslateAutoTranslateAutoTranslateText('Select Language'),
+        title: const AutoTranslateText('Select Language'),
         content: SizedBox(
           width: double.maxFinite,
           child: ListView.builder(
@@ -346,7 +346,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
             onPressed: () {
               Navigator.pop(context);
             },
-            child: const AutoTranslateAutoTranslateAutoTranslateText('Cancel'),
+            child: const AutoTranslateText('Cancel'),
           ),
         ],
       ),

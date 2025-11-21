@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../widgets/translated_widget.dart';
 import '../constants/colors.dart';
 
 class PregnancyTrackerScreen extends StatefulWidget {
@@ -21,7 +22,7 @@ class _PregnancyTrackerScreenState extends State<PregnancyTrackerScreen> {
       appBar: AppBar(
         backgroundColor: AppColors.primary,
         foregroundColor: Colors.white,
-        title: const AutoTranslateAutoTranslateText('Pregnancy Tracker'),
+        title: const AutoTranslateText('Pregnancy Tracker'),
         centerTitle: true,
         actions: [
           IconButton(
@@ -149,7 +150,7 @@ class _PregnancyTrackerScreenState extends State<PregnancyTrackerScreen> {
               child: ElevatedButton.icon(
                 onPressed: () {},
                 icon: const Icon(Icons.add_rounded),
-                label: const AutoTranslateAutoTranslateText('Log Symptoms'),
+                label: const AutoTranslateText('Log Symptoms'),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.primary,
                   foregroundColor: Colors.white,

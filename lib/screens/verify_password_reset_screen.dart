@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../widgets/translated_widget.dart';
 import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
@@ -89,7 +90,7 @@ class _VerifyPasswordResetScreenState extends State<VerifyPasswordResetScreen> {
         // Show success message
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: AutoTranslateAutoTranslateAutoTranslateText('Code verified! Enter your new password.'),
+            content: AutoTranslateText('Code verified! Enter your new password.'),
             backgroundColor: Colors.green,
           ),
         );
@@ -134,7 +135,7 @@ class _VerifyPasswordResetScreenState extends State<VerifyPasswordResetScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: AutoTranslateAutoTranslateAutoTranslateText('Reset code sent!'),
+            content: AutoTranslateText('Reset code sent!'),
             backgroundColor: Colors.green,
           ),
         );

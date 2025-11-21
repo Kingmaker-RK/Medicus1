@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../widgets/translated_widget.dart';
 import '../constants/colors.dart';
 
 class BabyTrackerScreen extends StatefulWidget {
@@ -31,7 +32,7 @@ class _BabyTrackerScreenState extends State<BabyTrackerScreen>
       appBar: AppBar(
         backgroundColor: AppColors.primary,
         foregroundColor: Colors.white,
-        title: const AutoTranslateAutoTranslateText('Baby Tracker'),
+        title: const AutoTranslateText('Baby Tracker'),
         centerTitle: true,
         bottom: TabBar(
           controller: _tabController,
@@ -177,13 +178,13 @@ class _BabyTrackerScreenState extends State<BabyTrackerScreen>
               onPressed: () {
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
-                    content: const AutoTranslateAutoTranslateText('Sleep session started'),
+                    content: const AutoTranslateText('Sleep session started'),
                     backgroundColor: AppColors.success,
                   ),
                 );
               },
               icon: const Icon(Icons.bedtime_rounded),
-              label: const AutoTranslateAutoTranslateText('Start Sleep Session'),
+              label: const AutoTranslateText('Start Sleep Session'),
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.indigo,
                 foregroundColor: Colors.white,
@@ -333,7 +334,7 @@ class _BabyTrackerScreenState extends State<BabyTrackerScreen>
             child: ElevatedButton.icon(
               onPressed: () {},
               icon: const Icon(Icons.add_rounded),
-              label: const AutoTranslateAutoTranslateText('Add Measurement'),
+              label: const AutoTranslateText('Add Measurement'),
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppColors.primary,
                 foregroundColor: Colors.white,
@@ -416,7 +417,7 @@ class _BabyTrackerScreenState extends State<BabyTrackerScreen>
       onPressed: () {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: AutoTranslateAutoTranslateText('$label logged'),
+            content: AutoTranslateText('$label logged'),
             backgroundColor: AppColors.success,
           ),
         );

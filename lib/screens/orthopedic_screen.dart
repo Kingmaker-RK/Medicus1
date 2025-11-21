@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../widgets/translated_widget.dart';
 import '../constants/colors.dart';
 
 class OrthopedicScreen extends StatefulWidget {
@@ -31,7 +32,7 @@ class _OrthopedicScreenState extends State<OrthopedicScreen>
       appBar: AppBar(
         backgroundColor: AppColors.primary,
         foregroundColor: Colors.white,
-        title: const AutoTranslateAutoTranslateText('Orthopedic Examination'),
+        title: const AutoTranslateText('Orthopedic Examination'),
         centerTitle: true,
         bottom: TabBar(
           controller: _tabController,
@@ -312,13 +313,13 @@ class _OrthopedicScreenState extends State<OrthopedicScreen>
               onPressed: () {
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
-                    content: const AutoTranslateAutoTranslateText('Starting new examination'),
+                    content: const AutoTranslateText('Starting new examination'),
                     backgroundColor: AppColors.success,
                   ),
                 );
               },
               icon: const Icon(Icons.add_rounded),
-              label: const AutoTranslateAutoTranslateText('Start New Examination'),
+              label: const AutoTranslateText('Start New Examination'),
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppColors.primary,
                 foregroundColor: Colors.white,

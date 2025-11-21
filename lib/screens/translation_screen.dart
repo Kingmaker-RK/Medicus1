@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../widgets/translated_widget.dart';
 import 'package:flutter/services.dart';
 import 'dart:io';
 import 'package:image_picker/image_picker.dart';
@@ -109,7 +110,7 @@ class _TranslationScreenState extends State<TranslationScreen>
             _inputController.text = text;
           } else if (mounted) {
             ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: AutoTranslateAutoTranslateText('Could not recognize handwriting')),
+              const SnackBar(content: AutoTranslateText('Could not recognize handwriting')),
             );
           }
         },
@@ -121,21 +122,21 @@ class _TranslationScreenState extends State<TranslationScreen>
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const AutoTranslateAutoTranslateText('Camera Permission Required'),
+        title: const AutoTranslateText('Camera Permission Required'),
         content: const Text(
           'Please enable camera access in settings to take photos for translation.',
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const AutoTranslateAutoTranslateText('Cancel'),
+            child: const AutoTranslateText('Cancel'),
           ),
           ElevatedButton(
             onPressed: () {
               Navigator.pop(context);
               PermissionService().openSettings();
             },
-            child: const AutoTranslateAutoTranslateText('Settings'),
+            child: const AutoTranslateText('Settings'),
           ),
         ],
       ),
@@ -181,7 +182,7 @@ class _TranslationScreenState extends State<TranslationScreen>
         _inputController.text = text;
       } else if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: AutoTranslateAutoTranslateText('Could not extract text from image')),
+          const SnackBar(content: AutoTranslateText('Could not extract text from image')),
         );
       }
     }
@@ -422,21 +423,21 @@ class _TranslationScreenState extends State<TranslationScreen>
                           final shouldRetranslate = await showDialog<bool>(
                             context: context,
                             builder: (context) => AlertDialog(
-                              title: const AutoTranslateAutoTranslateText('Swap Languages'),
+                              title: const AutoTranslateText('Swap Languages'),
                               content: const Text(
                                 'Would you like to re-translate the text with swapped languages?',
                               ),
                               actions: [
                                 TextButton(
                                   onPressed: () => Navigator.pop(context, false),
-                                  child: const AutoTranslateAutoTranslateText('Just Swap'),
+                                  child: const AutoTranslateText('Just Swap'),
                                 ),
                                 ElevatedButton(
                                   onPressed: () => Navigator.pop(context, true),
                                   style: ElevatedButton.styleFrom(
                                     backgroundColor: AppColors.accent,
                                   ),
-                                  child: const AutoTranslateAutoTranslateText('Swap & Translate'),
+                                  child: const AutoTranslateText('Swap & Translate'),
                                 ),
                               ],
                             ),
@@ -712,7 +713,7 @@ class _TranslationScreenState extends State<TranslationScreen>
                       setState(() {});
                     },
                     icon: const Icon(Icons.close_rounded, size: 18),
-                    label: const AutoTranslateAutoTranslateText('Clear'),
+                    label: const AutoTranslateText('Clear'),
                     style: TextButton.styleFrom(
                       foregroundColor: AppColors.textSecondary,
                     ),
@@ -741,7 +742,7 @@ class _TranslationScreenState extends State<TranslationScreen>
                           ),
                         )
                       : const Icon(Icons.translate_rounded, size: 18),
-                  label: const AutoTranslateAutoTranslateText('Translate'),
+                  label: const AutoTranslateText('Translate'),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.accent,
                     foregroundColor: Colors.white,
@@ -851,7 +852,7 @@ class _TranslationScreenState extends State<TranslationScreen>
                           );
                         },
                         icon: const Icon(Icons.copy_rounded, size: 18),
-                        label: const AutoTranslateAutoTranslateText('Copy'),
+                        label: const AutoTranslateText('Copy'),
                         style: TextButton.styleFrom(
                           foregroundColor: AppColors.accent,
                         ),
@@ -1413,14 +1414,14 @@ class _TranslationScreenState extends State<TranslationScreen>
                           showDialog(
                             context: context,
                             builder: (context) => AlertDialog(
-                              title: const AutoTranslateAutoTranslateText('Clear History'),
+                              title: const AutoTranslateText('Clear History'),
                               content: const Text(
                                 'Are you sure you want to clear all translation history?',
                               ),
                               actions: [
                                 TextButton(
                                   onPressed: () => Navigator.pop(context),
-                                  child: const AutoTranslateAutoTranslateText('Cancel'),
+                                  child: const AutoTranslateText('Cancel'),
                                 ),
                                 ElevatedButton(
                                   onPressed: () {
@@ -1430,7 +1431,7 @@ class _TranslationScreenState extends State<TranslationScreen>
                                   style: ElevatedButton.styleFrom(
                                     backgroundColor: AppColors.error,
                                   ),
-                                  child: const AutoTranslateAutoTranslateText('Clear All'),
+                                  child: const AutoTranslateText('Clear All'),
                                 ),
                               ],
                             ),

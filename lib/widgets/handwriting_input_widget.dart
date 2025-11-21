@@ -3,6 +3,7 @@ import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import '../constants/colors.dart';
+import 'translated_widget.dart';
 
 class HandwritingInputWidget extends StatefulWidget {
   final Function(Uint8List) onHandwritingCaptured;
@@ -132,7 +133,7 @@ class _HandwritingInputWidgetState extends State<HandwritingInputWidget> {
               TextButton.icon(
                 onPressed: _clear,
                 icon: const Icon(Icons.delete_outline),
-                label: const AutoTranslateAutoTranslateText('Clear'),
+                label: const AutoTranslateText('Clear'),
                 style: TextButton.styleFrom(
                   foregroundColor: AppColors.error,
                 ),
@@ -141,7 +142,7 @@ class _HandwritingInputWidgetState extends State<HandwritingInputWidget> {
               ElevatedButton.icon(
                 onPressed: _captureAndSubmit,
                 icon: const Icon(Icons.check_rounded),
-                label: const AutoTranslateAutoTranslateText('Done'),
+                label: const AutoTranslateText('Done'),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.accent,
                   foregroundColor: Colors.white,

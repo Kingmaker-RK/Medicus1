@@ -1,5 +1,6 @@
 
 import 'package:flutter/material.dart';
+import '../widgets/translated_widget.dart';
 import 'package:provider/provider.dart';
 import '../constants/app_constants.dart';
 import '../providers/user_provider.dart';
@@ -45,7 +46,7 @@ class _LanguageSelectionScreenState extends State<LanguageSelectionScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const AutoTranslateAutoTranslateAutoTranslateText('Select Language'),
+        title: const AutoTranslateText('Select Language'),
       ),
       body: Column(
         children: [

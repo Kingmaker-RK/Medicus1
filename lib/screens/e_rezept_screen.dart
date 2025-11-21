@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../widgets/translated_widget.dart';
 import 'package:image_picker/image_picker.dart';
 import '../constants/colors.dart';
 
@@ -33,7 +34,7 @@ class _ERezeptScreenState extends State<ERezeptScreen> {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: AutoTranslateAutoTranslateText('${type == 'prescription' ? 'Prescription' : 'Insurance card'} photo captured'),
+              content: AutoTranslateText('${type == 'prescription' ? 'Prescription' : 'Insurance card'} photo captured'),
               backgroundColor: AppColors.success,
             ),
           );
@@ -43,7 +44,7 @@ class _ERezeptScreenState extends State<ERezeptScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: AutoTranslateAutoTranslateText('Error capturing photo: $e'),
+            content: AutoTranslateText('Error capturing photo: $e'),
             backgroundColor: AppColors.error,
           ),
         );
@@ -58,7 +59,7 @@ class _ERezeptScreenState extends State<ERezeptScreen> {
       appBar: AppBar(
         backgroundColor: AppColors.primary,
         foregroundColor: Colors.white,
-        title: const AutoTranslateAutoTranslateText('E-Rezept'),
+        title: const AutoTranslateText('E-Rezept'),
         centerTitle: true,
       ),
       body: SingleChildScrollView(

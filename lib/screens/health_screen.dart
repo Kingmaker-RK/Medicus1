@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../widgets/translated_widget.dart';
 import '../constants/colors.dart';
 import '../widgets/app_bottom_navigation_bar.dart';
 
@@ -51,7 +52,7 @@ class _HealthScreenState extends State<HealthScreen> {
           if (mounted) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
-                content: const AutoTranslateAutoTranslateAutoTranslateText('Health data updated'),
+                content: const AutoTranslateText('Health data updated'),
                 backgroundColor: AppColors.success,
                 behavior: SnackBarBehavior.floating,
                 duration: const Duration(seconds: 2),
@@ -714,13 +715,13 @@ class _HealthScreenState extends State<HealthScreen> {
             const SizedBox(height: 20),
             ListTile(
               leading: Icon(Icons.sync_rounded, color: AppColors.primary),
-              title: const AutoTranslateAutoTranslateAutoTranslateText('Sync Data'),
-              subtitle: const AutoTranslateAutoTranslateAutoTranslateText('Refresh health data from devices'),
+              title: const AutoTranslateText('Sync Data'),
+              subtitle: const AutoTranslateText('Refresh health data from devices'),
               onTap: () {
                 Navigator.pop(context);
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
-                    content: const AutoTranslateAutoTranslateAutoTranslateText('Syncing health data...'),
+                    content: const AutoTranslateText('Syncing health data...'),
                     backgroundColor: AppColors.primary,
                   ),
                 );
@@ -728,8 +729,8 @@ class _HealthScreenState extends State<HealthScreen> {
             ),
             ListTile(
               leading: Icon(Icons.settings_rounded, color: AppColors.primary),
-              title: const AutoTranslateAutoTranslateAutoTranslateText('Data Sources'),
-              subtitle: const AutoTranslateAutoTranslateAutoTranslateText('Manage connected devices'),
+              title: const AutoTranslateText('Data Sources'),
+              subtitle: const AutoTranslateText('Manage connected devices'),
               onTap: () {
                 Navigator.pop(context);
               },
@@ -739,8 +740,8 @@ class _HealthScreenState extends State<HealthScreen> {
                 Icons.privacy_tip_rounded,
                 color: AppColors.primary,
               ),
-              title: const AutoTranslateAutoTranslateAutoTranslateText('Privacy'),
-              subtitle: const AutoTranslateAutoTranslateAutoTranslateText('Control data sharing'),
+              title: const AutoTranslateText('Privacy'),
+              subtitle: const AutoTranslateText('Control data sharing'),
               onTap: () {
                 Navigator.pop(context);
               },
