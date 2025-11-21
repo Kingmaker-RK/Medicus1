@@ -78,7 +78,7 @@ class TranslationService {
 
              // Fallback: If LLM didn't find terms, try simple keyword matching
              if (medicalTerms.isEmpty) {
-               medicalTerms = _mockMedicalTerms(text);
+               medicalTerms = _mockMedicalTerms('$text $translatedText');
              }
              
              // Map anatomy part to image
@@ -112,7 +112,7 @@ class TranslationService {
         );
 
         if (llmTranslation.isNotEmpty && llmTranslation != text) {
-           final medicalTerms = _mockMedicalTerms(text);
+           final medicalTerms = _mockMedicalTerms('$text $llmTranslation');
            final anatomyImages = await getAnatomyImages(medicalTerms);
 
            print('✅ Translation completed using Advanced LLM Service');
@@ -156,7 +156,7 @@ class TranslationService {
           );
 
           // Extract medical terms and get anatomy images
-          final medicalTerms = _mockMedicalTerms(text);
+          final medicalTerms = _mockMedicalTerms('$text $googleResult');
           final anatomyImages = await getAnatomyImages(medicalTerms);
 
           print('✅ Translation completed using Google Translate');
@@ -181,7 +181,7 @@ class TranslationService {
           targetLanguage,
         );
 
-        final medicalTerms = _mockMedicalTerms(text);
+        final medicalTerms = _mockMedicalTerms('$text $libreResult');
         final anatomyImages = await getAnatomyImages(medicalTerms);
 
         print('✅ Translation completed using LibreTranslate');
@@ -205,7 +205,7 @@ class TranslationService {
           targetLanguage,
         );
 
-        final medicalTerms = _mockMedicalTerms(text);
+        final medicalTerms = _mockMedicalTerms('$text $myMemoryResult');
         final anatomyImages = await getAnatomyImages(medicalTerms);
 
         print('✅ Translation completed using MyMemory');
@@ -583,9 +583,20 @@ Text to translate: "$text"''';
     String sourceLanguage,
     String targetLanguage,
   ) {
-    // Simple mock translation
-    final translatedText = '[Translated: $text]';
-    final medicalTerms = _mockMedicalTerms(text);
+    // Simple mock translation with basic keyword mapping for testing
+    var translatedContent = text;
+    if (targetLanguage == 'en') {
+      if (translatedContent.contains('corazón')) {
+        translatedContent = translatedContent.replaceAll('corazón', 'heart');
+      }
+      if (translatedContent.contains('dolor')) {
+        translatedContent = translatedContent.replaceAll('dolor', 'pain');
+      }
+    }
+    
+    final translatedText = '[Translated: $translatedContent]';
+    // Use combined text to ensure we catch keywords in either language
+    final medicalTerms = _mockMedicalTerms('$text $translatedText');
     final anatomyImages = _mockAnatomyImages(medicalTerms);
 
     return TranslationResult(
