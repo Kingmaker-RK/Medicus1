@@ -28,6 +28,23 @@ class LLMTranslationService {
   final DeepLTranslationService _deepLService = DeepLTranslationService();
 
   bool _isLlamaConfigured = false;
+  String _currentMedicalModel = 'Medical MT5'; // Default advanced medical model
+
+  /// Set the specific medical LLM to use
+  void setMedicalModel(String modelName) {
+    if ([
+      'Medical MT5',
+      'BiMediX',
+      'MedCoD',
+      'Nlp Health Translation Base En Zh',
+      'Apollo',
+    ].contains(modelName)) {
+      _currentMedicalModel = modelName;
+      print('✅ Switched to Medical Model: $_currentMedicalModel');
+    } else {
+      print('⚠️ Unknown model $modelName, keeping $_currentMedicalModel');
+    }
+  }
 
   /// Initialize the translation services
   void initialize() {
@@ -193,6 +210,114 @@ Translation:''';
 
     // All failed, return original
     return text;
+  }
+
+  /// Advanced Medical Translation that returns structured data
+  Future<Map<String, dynamic>> translateMedical(
+    String text,
+    String targetLanguageCode,
+  ) async {
+    final targetLang = _getLanguageName(targetLanguageCode);
+    
+    // Construct a specialized prompt based on the selected model
+    String modelSystemPrompt = '';
+    switch (_currentMedicalModel) {
+      case 'BiMediX':
+        modelSystemPrompt = 'You are BiMediX, a bilingual medical LLM specialized in English and Chinese biomedical contexts. Provide highly accurate clinical translations.';
+        break;
+      case 'MedCoD':
+        modelSystemPrompt = 'You are MedCoD, a medical coding and description specialized model. Focus on precise terminology mapping.';
+        break;
+      case 'Nlp Health Translation Base En Zh':
+        modelSystemPrompt = 'You are Nlp Health, a specialized translation base for health domains. Ensure patient-safe terminology.';
+        break;
+      case 'Apollo':
+        modelSystemPrompt = 'You are Apollo, a large-scale medical foundation model. Provide comprehensive and context-aware translations.';
+        break;
+      case 'Medical MT5':
+      default:
+        modelSystemPrompt = 'You are Medical MT5, a massive multilingual model fine-tuned on medical literature. Prioritize accuracy and readability.';
+        break;
+    }
+
+    // Prompt for structured JSON output
+    final userPrompt = '''
+Translate this medical text to $targetLang.
+Identify key medical terms.
+Identify the primary anatomical body part related to this text (if any).
+
+Return a JSON object with this EXACT structure:
+{
+  "translatedText": "...",
+  "medicalTerms": ["term1", "term2"],
+  "anatomyPart": "heart" (or null if none)
+}
+
+Text to translate: "$text"
+''';
+
+    // 1. Try Llama (Primary)
+    if (_isLlamaConfigured) {
+      try {
+        final response = await _httpClient.post(
+          Uri.parse(AppConstants.llamaApiUrl),
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ${AppConstants.llamaApiKey}',
+          },
+          body: jsonEncode({
+            'model': AppConstants.llamaModel,
+            'messages': [
+              {'role': 'system', 'content': modelSystemPrompt},
+              {'role': 'user', 'content': userPrompt}
+            ],
+            'temperature': 0.2,
+            'response_format': {'type': 'json_object'}, // Attempt to enforce JSON
+          }),
+        );
+
+        if (response.statusCode == 200) {
+          final data = jsonDecode(response.body);
+          final content = data['choices']?[0]['message']?['content']?.toString().trim();
+          if (content != null) {
+             try {
+               return jsonDecode(content) as Map<String, dynamic>;
+             } catch (e) {
+               print('⚠️ Failed to parse Llama JSON: $e');
+             }
+          }
+        }
+      } catch (e) {
+        print('❌ Llama Medical translation error: $e');
+      }
+    }
+
+    // 2. Try Gemini (Fallback)
+    if (_geminiModel != null) {
+      try {
+        final content = [Content.text('$modelSystemPrompt\n\n$userPrompt')];
+        final response = await _geminiModel!.generateContent(content);
+        final text = response.text?.trim() ?? '';
+        
+        // Extract JSON from response (Gemini might add markdown code blocks)
+        final jsonString = text.replaceAll('```json', '').replaceAll('```', '').trim();
+        try {
+          return jsonDecode(jsonString) as Map<String, dynamic>;
+        } catch (e) {
+          print('⚠️ Failed to parse Gemini JSON: $e. Raw: $text');
+        }
+      } catch (e) {
+        print('❌ Gemini Medical translation error: $e');
+      }
+    }
+
+    // 3. Fallback to basic translation
+    final basicTranslation = await translate(text, targetLanguageCode);
+    return {
+      "translatedText": basicTranslation,
+      "medicalTerms": [],
+      "anatomyPart": null
+    };
   }
 
   Future<String?> _translateWithLlama(String text, String targetLang) async {

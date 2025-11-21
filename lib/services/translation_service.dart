@@ -60,6 +60,38 @@ class TranslationService {
       
       try {
         _llmService.initialize();
+        
+        // Use specialized medical translation if applicable
+        if (isMedicalContext) {
+           // Cycle through advanced models or pick one (for demo purposes we use BiMediX as default or rotate)
+           // In a real app, this could be a user setting
+           _llmService.setMedicalModel('BiMediX');
+           
+           final result = await _llmService.translateMedical(text, targetLanguage);
+           
+           final translatedText = result['translatedText'] as String? ?? text;
+           final medicalTerms = List<String>.from(result['medicalTerms'] ?? []);
+           final anatomyPart = result['anatomyPart'] as String?;
+           
+           // Map anatomy part to image
+           List<String> anatomyImages = [];
+           if (anatomyPart != null && anatomyPart.isNotEmpty) {
+             anatomyImages = await getAnatomyImages([anatomyPart]);
+           } else if (medicalTerms.isNotEmpty) {
+             anatomyImages = await getAnatomyImages(medicalTerms);
+           }
+
+           print('✅ Medical Translation completed using Advanced LLM Service');
+           return TranslationResult(
+             originalText: text,
+             translatedText: translatedText,
+             sourceLanguage: sourceLanguage,
+             targetLanguage: targetLanguage,
+             medicalTerms: medicalTerms,
+             anatomyImages: anatomyImages,
+           );
+        }
+        
         final llmTranslation = await _llmService.translate(
           text,
           targetLanguage,
@@ -587,10 +619,34 @@ Text to translate: "$text"''';
 
   // Mock anatomy images
   List<String> _mockAnatomyImages(List<String> terms) {
-    // In production, this would return actual 3D model URLs or image URLs
-    return terms
-        .map((term) => 'https://via.placeholder.com/300?text=$term')
-        .toList();
+    if (terms.isEmpty) return [];
+
+    // Map common terms to local assets or reliable placeholders
+    // In a real app, this would query a CMS or Asset Bundle
+    final images = <String>[];
+    
+    for (final term in terms) {
+      final lowerTerm = term.toLowerCase();
+      if (lowerTerm.contains('heart')) {
+        images.add('https://upload.wikimedia.org/wikipedia/commons/thumb/e/e5/Diagram_of_the_human_heart_%28cropped%29.svg/200px-Diagram_of_the_human_heart_%28cropped%29.svg.png'); 
+      } else if (lowerTerm.contains('brain')) {
+        images.add('https://upload.wikimedia.org/wikipedia/commons/thumb/6/62/Brain_human_normal_inferior_view_with_labels_en-2.svg/200px-Brain_human_normal_inferior_view_with_labels_en-2.svg.png');
+      } else if (lowerTerm.contains('lung')) {
+        images.add('https://upload.wikimedia.org/wikipedia/commons/thumb/a/a1/Lungs_diagram_simple.svg/200px-Lungs_diagram_simple.svg.png');
+      } else {
+        // Generic medical placeholder (using the local asset we know exists)
+        // Or a generic placeholder URL
+        images.add('https://via.placeholder.com/300?text=$term');
+      }
+    }
+
+    // If we found nothing specific but have terms, return a generic image
+    if (images.isEmpty && terms.isNotEmpty) {
+       // Use a generic placeholder or the doctor_patient image if suitable (though that's not anatomical)
+       images.add('https://via.placeholder.com/300?text=Anatomy');
+    }
+
+    return images;
   }
 
   // Batch translation for conversation history
