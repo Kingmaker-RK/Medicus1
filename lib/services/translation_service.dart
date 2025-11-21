@@ -53,7 +53,34 @@ class TranslationService {
       return _mockTranslation(text, sourceLanguage, targetLanguage);
     }
     try {
-      // 1. Try DeepL API (highest quality, priority #1)
+      // 1. Try Advanced LLM (Llama/Gemini) - Priority #1
+      // This service now handles Llama -> DeepL -> Gemini fallback internally
+      try {
+        _llmService.initialize();
+        final llmTranslation = await _llmService.translate(
+          text,
+          targetLanguage,
+        );
+
+        if (llmTranslation.isNotEmpty && llmTranslation != text) {
+           final medicalTerms = _mockMedicalTerms(text);
+           final anatomyImages = await getAnatomyImages(medicalTerms);
+
+           print('✅ Translation completed using Advanced LLM Service');
+           return TranslationResult(
+             originalText: text,
+             translatedText: llmTranslation,
+             sourceLanguage: sourceLanguage,
+             targetLanguage: targetLanguage,
+             medicalTerms: medicalTerms,
+             anatomyImages: anatomyImages,
+           );
+        }
+      } catch (e) {
+        print('⚠️ Advanced LLM translation failed: $e');
+      }
+
+      // 2. Try DeepL API (Direct fallback if LLM service completely fails)
       if (_deeplService.isAvailable) {
         try {
           final deeplResult = await _deeplService.translateText(
@@ -61,35 +88,11 @@ class TranslationService {
             sourceLanguage: sourceLanguage,
             targetLanguage: targetLanguage,
           );
-          print('✅ Translation completed using DeepL');
+          print('✅ Translation completed using DeepL (Direct)');
           return deeplResult;
         } catch (e) {
           print('⚠️ DeepL translation failed: $e');
         }
-      }
-
-      // 2. Try Gemini LLM (contextual translation, priority #2)
-      try {
-        _llmService.initialize();
-        final geminiTranslation = await _llmService.translate(
-          text,
-          targetLanguage,
-        );
-
-        final medicalTerms = _mockMedicalTerms(text);
-        final anatomyImages = await getAnatomyImages(medicalTerms);
-
-        print('✅ Translation completed using Gemini LLM');
-        return TranslationResult(
-          originalText: text,
-          translatedText: geminiTranslation,
-          sourceLanguage: sourceLanguage,
-          targetLanguage: targetLanguage,
-          medicalTerms: medicalTerms,
-          anatomyImages: anatomyImages,
-        );
-      } catch (e) {
-        print('⚠️ Gemini LLM translation failed: $e');
       }
 
       // 3. Try Google Translate API (if configured)

@@ -35,31 +35,23 @@ Your Medicus medical translation app has been successfully created! Here's what 
 
 ### 1. Integrate Translation API (CRITICAL)
 
-The app currently uses mock translations. You MUST integrate a real translation service:
+The app is now configured to use **Llama (via OpenAI-compatible API)** as the primary translation engine, with fallbacks to DeepL and Gemini.
 
-**Option A: OpenAI GPT-4** (Recommended for medical accuracy)
-```bash
-# Cost: ~$30-50/month for 10,000 translations
-# Best for: Medical terminology accuracy
-```
+**Current Status:**
+- `LLMTranslationService` is implemented to use Llama.
+- `TranslationService` prioritizes Llama.
+- Configuration keys are in `lib/constants/app_constants.dart`.
 
-**Option B: Google Cloud Translation**
-```bash
-# Cost: ~$200/month for 10,000 translations
-# Best for: Wide language support
-```
+**Required Action:**
+1. Get an API key for a Llama provider (e.g., Groq, Together AI, or local Ollama).
+2. Edit `lib/constants/app_constants.dart`:
+   - Set `llamaApiKey` to your actual key.
+   - Set `llamaApiUrl` to your provider's endpoint (default is Groq).
+   - Set `llamaModel` to your desired model (default is `llama-3.1-70b-versatile`).
 
-**Option C: Azure Translator**
-```bash
-# Cost: ~$100/month for 10,000 translations
-# Best for: Enterprise integration
-```
-
-**How to integrate:**
-1. Get API key from your chosen service
-2. Edit `lib/constants/app_constants.dart` - add API URL
-3. Edit `lib/services/translation_service.dart` - implement integration
-4. See `INTEGRATION_GUIDE.md` for detailed steps
+**Fallback Options:**
+- **DeepL**: Configure `deeplApiKey` in constants.
+- **Gemini**: Configure `geminiApiKey` in constants.
 
 ### 2. Add 3D Anatomy Models (IMPORTANT)
 

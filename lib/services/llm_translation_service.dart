@@ -1,25 +1,48 @@
+import 'dart:convert';
 import 'dart:typed_data';
+import 'package:meta/meta.dart';
 import 'package:google_generative_ai/google_generative_ai.dart';
+import 'package:http/http.dart' as http;
 import '../constants/app_constants.dart';
 import 'deepl_translation_service.dart';
 
-/// Advanced LLM-powered translation service using Google Gemini Flash 2.0
+/// Advanced LLM-powered translation service using Llama (via OpenAI-compatible API)
+/// with fallbacks to Google Gemini Flash 2.0 and DeepL.
 /// Provides instant, contextually accurate translations for 200+ languages
 class LLMTranslationService {
-  static final LLMTranslationService _instance =
-      LLMTranslationService._internal();
-  factory LLMTranslationService() => _instance;
-  LLMTranslationService._internal();
-
-  GenerativeModel? _model;
-  final Map<String, Map<String, String>> _translationCache = {};
+    static final LLMTranslationService _instance =
+        LLMTranslationService._internal();
+    factory LLMTranslationService() => _instance;
+    LLMTranslationService._internal();
+  
+    http.Client _httpClient = http.Client();
+    
+    /// Set HTTP client for testing
+    @visibleForTesting
+    void setHttpClient(http.Client client) {
+      _httpClient = client;
+    }
+  
+    GenerativeModel? _geminiModel;  final Map<String, Map<String, String>> _translationCache = {};
   final DeepLTranslationService _deepLService = DeepLTranslationService();
 
-  /// Initialize the Gemini model
+  bool _isLlamaConfigured = false;
+
+  /// Initialize the translation services
   void initialize() {
+    // Initialize Llama
+    if (AppConstants.llamaApiKey.isNotEmpty &&
+        AppConstants.llamaApiKey != 'YOUR_LLAMA_API_KEY') {
+      _isLlamaConfigured = true;
+      print('✅ LLM Translation Service initialized with Llama (${AppConstants.llamaModel})');
+    } else {
+      print('⚠️ Llama API key not configured. Will attempt fallbacks.');
+    }
+
+    // Initialize Gemini as fallback
     if (AppConstants.geminiApiKey.isNotEmpty &&
         AppConstants.geminiApiKey != 'YOUR_GEMINI_API_KEY') {
-      _model = GenerativeModel(
+      _geminiModel = GenerativeModel(
         model: 'gemini-2.0-flash-exp',
         apiKey: AppConstants.geminiApiKey,
         generationConfig: GenerationConfig(
@@ -29,72 +52,74 @@ class LLMTranslationService {
           maxOutputTokens: 8192,
         ),
       );
-      print('✅ LLM Translation Service initialized with Gemini Flash 2.0');
-    } else {
-      print('⚠️ Gemini API key not configured. Using fallback translations.');
+      if (!_isLlamaConfigured) {
+        print('✅ LLM Translation Service initialized with Gemini Flash 2.0 (Fallback)');
+      }
     }
+
     _deepLService.initialize();
   }
 
   /// Recognize handwriting from image bytes
+  /// Note: Vision tasks currently fallback to Gemini as Llama text-only models can't process images directly
+  /// unless using a Llama-Vision variant. Assuming text-only Llama for now.
   Future<String> recognizeHandwriting(Uint8List imageBytes) async {
-    if (_model == null) {
-      print('⚠️ Model not initialized for handwriting recognition');
-      return '';
+    // Fallback to Gemini for vision tasks if available
+    if (_geminiModel != null) {
+      try {
+        final prompt =
+            'Transcribe the handwriting in this image. '
+            'Detect the language automatically. '
+            'Return ONLY the transcribed text, no explanations. '
+            'If the image is unclear, return "Unable to recognize text".';
+
+        final content = [
+          Content.multi([
+            TextPart(prompt),
+            DataPart('image/png', imageBytes),
+          ])
+        ];
+
+        final response = await _geminiModel!.generateContent(content);
+        return response.text?.trim() ?? '';
+      } catch (e) {
+        print('❌ Gemini Handwriting recognition error: $e');
+      }
     }
-
-    try {
-      final prompt =
-          'Transcribe the handwriting in this image. '
-          'Detect the language automatically. '
-          'Return ONLY the transcribed text, no explanations. '
-          'If the image is unclear, return "Unable to recognize text".';
-
-      final content = [
-        Content.multi([
-          TextPart(prompt),
-          DataPart('image/png', imageBytes),
-        ])
-      ];
-
-      final response = await _model!.generateContent(content);
-      return response.text?.trim() ?? '';
-    } catch (e) {
-      print('❌ Handwriting recognition error: $e');
-      return '';
-    }
+    
+    print('⚠️ No vision model available for handwriting recognition');
+    return '';
   }
 
   /// Extract text from any image (handwriting or printed)
   Future<String> extractTextFromImage(Uint8List imageBytes) async {
-    if (_model == null) {
-      print('⚠️ Model not initialized for image text extraction');
-      return '';
+    if (_geminiModel != null) {
+      try {
+        final prompt =
+            'Analyze this image and extract all visible text. '
+            'Detect the language automatically. '
+            'Return ONLY the extracted text, no explanations. '
+            'If the image contains no text, return "Unable to extract text".';
+
+        final content = [
+          Content.multi([
+            TextPart(prompt),
+            DataPart('image/png', imageBytes),
+          ])
+        ];
+
+        final response = await _geminiModel!.generateContent(content);
+        return response.text?.trim() ?? '';
+      } catch (e) {
+        print('❌ Gemini Image text extraction error: $e');
+      }
     }
 
-    try {
-      final prompt =
-          'Analyze this image and extract all visible text. '
-          'Detect the language automatically. '
-          'Return ONLY the extracted text, no explanations. '
-          'If the image contains no text, return "Unable to extract text".';
-
-      final content = [
-        Content.multi([
-          TextPart(prompt),
-          DataPart('image/png', imageBytes),
-        ])
-      ];
-
-      final response = await _model!.generateContent(content);
-      return response.text?.trim() ?? '';
-    } catch (e) {
-      print('❌ Image text extraction error: $e');
-      return '';
-    }
+    print('⚠️ No vision model available for image text extraction');
+    return '';
   }
 
-  /// Translate text using advanced LLM
+  /// Translate text using Llama (primary) or fallbacks
   Future<String> translate(String text, String targetLanguageCode) async {
     if (text.isEmpty) return text;
 
@@ -104,7 +129,23 @@ class LLMTranslationService {
       return _translationCache[targetLanguageCode]![text]!;
     }
 
-    // Use DeepL if available and language is supported
+    final targetLang = _getLanguageName(targetLanguageCode);
+
+    // 1. Try Llama (Primary)
+    if (_isLlamaConfigured) {
+      try {
+        final translatedText = await _translateWithLlama(text, targetLang);
+        if (translatedText != null && translatedText.isNotEmpty) {
+          _cacheTranslation(text, targetLanguageCode, translatedText);
+          return translatedText;
+        }
+      } catch (e) {
+        print('❌ Llama translation error: $e');
+        // Continue to fallbacks
+      }
+    }
+
+    // 2. Try DeepL (First Fallback)
     if (_deepLService.isAvailable &&
         _deepLService.getSupportedLanguages().toString().contains(targetLanguageCode)) {
       try {
@@ -114,24 +155,18 @@ class LLMTranslationService {
           targetLanguage: targetLanguageCode,
         );
         final translatedText = result.translatedText;
-        _translationCache.putIfAbsent(targetLanguageCode, () => {});
-        _translationCache[targetLanguageCode]![text] = translatedText;
+        _cacheTranslation(text, targetLanguageCode, translatedText);
         return translatedText;
       } catch (e) {
-        print('❌ DeepL translation error, falling back to Gemini: $e');
+        print('❌ DeepL translation error: $e');
       }
     }
 
-    // If model not available, return original text
-    if (_model == null) {
-      return text;
-    }
-
-    try {
-      final targetLang = _getLanguageName(targetLanguageCode);
-
-      final prompt =
-          '''Translate the following text to $targetLang.
+    // 3. Try Gemini (Second Fallback)
+    if (_geminiModel != null) {
+      try {
+        final prompt =
+            '''Translate the following text to $targetLang.
 Provide ONLY the translated text, no explanations or additional text.
 Keep the same tone, formality, and style as the original.
 For medical or healthcare terms, maintain professional accuracy.
@@ -140,17 +175,54 @@ Text to translate: "$text"
 
 Translation:''';
 
-      final response = await _model!.generateContent([Content.text(prompt)]);
-      final translatedText = response.text?.trim() ?? text;
+        final response = await _geminiModel!.generateContent([Content.text(prompt)]);
+        final translatedText = response.text?.trim() ?? text;
+        _cacheTranslation(text, targetLanguageCode, translatedText);
+        return translatedText;
+      } catch (e) {
+        print('❌ Gemini translation error: $e');
+      }
+    }
 
-      // Cache the translation
-      _translationCache.putIfAbsent(targetLanguageCode, () => {});
-      _translationCache[targetLanguageCode]![text] = translatedText;
+    // All failed, return original
+    return text;
+  }
 
-      return translatedText;
+  Future<String?> _translateWithLlama(String text, String targetLang) async {
+    try {
+      final response = await _httpClient.post(
+        Uri.parse(AppConstants.llamaApiUrl),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ${AppConstants.llamaApiKey}',
+        },
+        body: jsonEncode({
+          'model': AppConstants.llamaModel,
+          'messages': [
+            {
+              'role': 'system',
+              'content': 'You are a professional medical translator. Translate the user text to $targetLang. Return ONLY the translation, nothing else. Maintain medical accuracy.'
+            },
+            {
+              'role': 'user',
+              'content': text
+            }
+          ],
+          'temperature': 0.3,
+        }),
+      );
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        final content = data['choices']?[0]['message']?['content']?.toString().trim();
+        return content;
+      } else {
+        print('❌ Llama API Error: ${response.statusCode} - ${response.body}');
+        return null;
+      }
     } catch (e) {
-      print('❌ Translation error: $e');
-      return text;
+      print('❌ Llama Exception: $e');
+      return null;
     }
   }
 
@@ -162,9 +234,9 @@ Translation:''';
     if (texts.isEmpty) return {};
 
     final results = <String, String>{};
-
-    // Check cache and separate cached vs uncached
     final uncachedTexts = <String>[];
+
+    // Check cache
     for (final text in texts) {
       if (_translationCache.containsKey(targetLanguageCode) &&
           _translationCache[targetLanguageCode]!.containsKey(text)) {
@@ -174,29 +246,19 @@ Translation:''';
       }
     }
 
-    // If all cached, return early
     if (uncachedTexts.isEmpty) return results;
 
-    // If model not available, return original texts
-    if (_model == null) {
-      for (final text in uncachedTexts) {
-        results[text] = text;
-      }
-      return results;
-    }
+    final targetLang = _getLanguageName(targetLanguageCode);
 
-    try {
-      final targetLang = _getLanguageName(targetLanguageCode);
+    // Prepare batch prompt
+    final textList = uncachedTexts
+        .asMap()
+        .entries
+        .map((e) => '${e.key + 1}. "${e.value}"')
+        .join('\n');
 
-      // Create batch translation prompt
-      final textList = uncachedTexts
-          .asMap()
-          .entries
-          .map((e) => '${e.key + 1}. "${e.value}"')
-          .join('\n');
-
-      final prompt =
-          '''Translate the following texts to $targetLang.
+    final prompt =
+        '''Translate the following texts to $targetLang.
 Provide translations in the same numbered format, one per line.
 Keep the same tone, formality, and style as the original.
 For medical or healthcare terms, maintain professional accuracy.
@@ -206,42 +268,79 @@ $textList
 
 Translations (numbered format):''';
 
-      final response = await _model!.generateContent([Content.text(prompt)]);
-      final translatedText = response.text?.trim() ?? '';
+    String? translatedText;
 
-      // Parse numbered responses
-      final lines = translatedText.split('\n');
-      for (int i = 0; i < uncachedTexts.length && i < lines.length; i++) {
-        var line = lines[i].trim();
-        // Remove number prefix like "1. " or "1) "
-        line = line.replaceFirst(RegExp(r'^\d+[\.\)]\s*'), '');
-        // Remove surrounding quotes if present
-        if ((line.startsWith('"') && line.endsWith('"')) ||
-            (line.startsWith("'") && line.endsWith("'")) ||
-            (line.startsWith('`') && line.endsWith('`'))) {
-          line = line.substring(1, line.length - 1);
+    // 1. Try Llama Batch
+    if (_isLlamaConfigured) {
+      try {
+        final response = await _httpClient.post(
+          Uri.parse(AppConstants.llamaApiUrl),
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ${AppConstants.llamaApiKey}',
+          },
+          body: jsonEncode({
+            'model': AppConstants.llamaModel,
+            'messages': [
+              {
+                'role': 'system',
+                'content': 'You are a professional medical translator. Translate the list of texts to $targetLang in the requested numbered format. Return ONLY the numbered list.'
+              },
+              {
+                'role': 'user',
+                'content': prompt
+              }
+            ],
+            'temperature': 0.3,
+          }),
+        );
+
+        if (response.statusCode == 200) {
+          final data = jsonDecode(response.body);
+          translatedText = data['choices']?[0]['message']?['content']?.toString().trim();
         }
-
-        results[uncachedTexts[i]] = line;
-
-        // Cache the translation
-        _translationCache.putIfAbsent(targetLanguageCode, () => {});
-        _translationCache[targetLanguageCode]![uncachedTexts[i]] = line;
-      }
-
-      // Fill any missing translations with original text
-      for (final text in uncachedTexts) {
-        results.putIfAbsent(text, () => text);
-      }
-    } catch (e) {
-      print('❌ Batch translation error: $e');
-      // Return original texts for failed translations
-      for (final text in uncachedTexts) {
-        results[text] = text;
+      } catch (e) {
+        print('❌ Llama batch error: $e');
       }
     }
 
+    // 2. Fallback to Gemini if Llama failed or not configured
+    if (translatedText == null && _geminiModel != null) {
+       try {
+        final response = await _geminiModel!.generateContent([Content.text(prompt)]);
+        translatedText = response.text?.trim();
+       } catch (e) {
+         print('❌ Gemini batch error: $e');
+       }
+    }
+
+    // Process results if we got a translation from either service
+    if (translatedText != null) {
+       final lines = translatedText.split('\n');
+      for (int i = 0; i < uncachedTexts.length && i < lines.length; i++) {
+        var line = lines[i].trim();
+        line = line.replaceFirst(RegExp(r'^\d+[\.\)]\s*'), '');
+        if ((line.startsWith('"') && line.endsWith('"')) ||
+            (line.startsWith("'" ) && line.endsWith("'" )) ||
+            (line.startsWith('`') && line.endsWith('`'))) {
+          line = line.substring(1, line.length - 1);
+        }
+        results[uncachedTexts[i]] = line;
+        _cacheTranslation(uncachedTexts[i], targetLanguageCode, line);
+      }
+    }
+
+    // Fill missing
+    for (final text in uncachedTexts) {
+      results.putIfAbsent(text, () => text);
+    }
+
     return results;
+  }
+
+  void _cacheTranslation(String text, String langCode, String translation) {
+    _translationCache.putIfAbsent(langCode, () => {});
+    _translationCache[langCode]![text] = translation;
   }
 
   /// Get full language name from code

@@ -34,6 +34,13 @@ class AppConstants {
   // PLEASE REPLACE THIS WITH YOUR ACTUAL DEEPL API KEY
   static const String deeplApiKey = 'YOUR_DEEPL_API_KEY_HERE';
 
+  // Llama API Configuration (e.g., via Groq, Together AI, or Local Ollama)
+  // IMPORTANT: Replace with your actual API key and URL
+  // Standard OpenAI-compatible endpoint format
+  static const String llamaApiKey = 'YOUR_LLAMA_API_KEY'; 
+  static const String llamaApiUrl = 'https://api.groq.com/openai/v1/chat/completions'; // Default to Groq for speed
+  static const String llamaModel = 'llama-3.1-70b-versatile'; // Default model
+
   // Supported Languages - 200+ languages including all Indian languages
   // Language codes follow ISO 639-1 standard
   static const List<Map<String, String>> supportedLanguages = [
