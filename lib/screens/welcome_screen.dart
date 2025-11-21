@@ -308,7 +308,6 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                                     content: AutoTranslateText(
                                       _isSignIn
                                           ? 'Login failed. Please check your credentials.'
-                                          -
                                           : 'Sign up failed. Please try again.',
                                     ),
                                     backgroundColor: Colors.red,
