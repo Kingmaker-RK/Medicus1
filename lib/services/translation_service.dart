@@ -600,26 +600,34 @@ Text to translate: "$text"''';
     final terms = <String>[];
     final lowerText = text.toLowerCase();
 
-    // Common medical terms
+    // Comprehensive list of medical keywords
     final medicalKeywords = [
-      'heart',
-      'lung',
-      'brain',
-      'liver',
-      'kidney',
-      'stomach',
-      'pain',
-      'fever',
-      'blood',
-      'pressure',
-      'diabetes',
-      'infection',
-      'surgery',
-      'medicine',
-      'prescription',
+      // Organs & Systems
+      'heart', 'lung', 'brain', 'liver', 'kidney', 'stomach', 'pancreas', 
+      'spleen', 'bladder', 'intestine', 'colon', 'appendix', 'thyroid', 
+      'esophagus', 'throat', 'nose', 'ear', 'eye', 'skin',
+      
+      // Bones & Skeleton
+      'bone', 'skeleton', 'skull', 'spine', 'vertebra', 'rib', 'pelvis', 
+      'femur', 'tibia', 'fibula', 'humerus', 'radius', 'ulna', 'knee', 
+      'elbow', 'shoulder', 'hip', 'wrist', 'ankle', 'finger', 'toe', 'joint',
+      
+      // Muscles & Tissues
+      'muscle', 'tendon', 'ligament', 'nerve', 'vein', 'artery', 'blood',
+      
+      // Conditions & Symptoms
+      'pain', 'fever', 'infection', 'inflammation', 'swelling', 'fracture', 
+      'break', 'sprain', 'strain', 'bruise', 'cut', 'wound', 'burn', 
+      'rash', 'itch', 'cough', 'cold', 'flu', 'virus', 'bacteria', 
+      'cancer', 'tumor', 'cyst', 'diabetes', 'pressure', 'hypertension', 
+      'anemia', 'asthma', 'allergy', 'headache', 'migraine', 'nausea', 
+      'vomit', 'diarrhea', 'constipation', 'surgery', 'operation', 
+      'medicine', 'prescription', 'dose', 'pill', 'tablet', 'injection',
+      'vaccine', 'therapy', 'treatment', 'diagnosis', 'symptom'
     ];
 
     for (final keyword in medicalKeywords) {
+      // Check for whole words or significant parts
       if (lowerText.contains(keyword)) {
         terms.add(keyword);
       }
@@ -632,29 +640,90 @@ Text to translate: "$text"''';
   List<String> _mockAnatomyImages(List<String> terms) {
     if (terms.isEmpty) return [];
 
-    // Map common terms to local assets or reliable placeholders
-    // In a real app, this would query a CMS or Asset Bundle
     final images = <String>[];
-    
-    for (final term in terms) {
-      final lowerTerm = term.toLowerCase();
-      if (lowerTerm.contains('heart')) {
-        images.add('https://upload.wikimedia.org/wikipedia/commons/thumb/e/e5/Diagram_of_the_human_heart_%28cropped%29.svg/200px-Diagram_of_the_human_heart_%28cropped%29.svg.png'); 
-      } else if (lowerTerm.contains('brain')) {
-        images.add('https://upload.wikimedia.org/wikipedia/commons/thumb/6/62/Brain_human_normal_inferior_view_with_labels_en-2.svg/200px-Brain_human_normal_inferior_view_with_labels_en-2.svg.png');
-      } else if (lowerTerm.contains('lung')) {
-        images.add('https://upload.wikimedia.org/wikipedia/commons/thumb/a/a1/Lungs_diagram_simple.svg/200px-Lungs_diagram_simple.svg.png');
-      } else {
-        // Generic medical placeholder (using the local asset we know exists)
-        // Or a generic placeholder URL
-        images.add('https://via.placeholder.com/300?text=$term');
+    final uniqueImages = <String>{}; // To prevent duplicates
+
+    void addImage(String url) {
+      if (uniqueImages.add(url)) {
+        images.add(url);
       }
     }
 
-    // If we found nothing specific but have terms, return a generic image
+    for (final term in terms) {
+      final lowerTerm = term.toLowerCase();
+      
+      // Circulatory System
+      if (lowerTerm.contains('heart') || lowerTerm.contains('cardio') || 
+          lowerTerm.contains('blood') || lowerTerm.contains('artery') || 
+          lowerTerm.contains('vein') || lowerTerm.contains('pressure')) {
+        addImage('https://upload.wikimedia.org/wikipedia/commons/thumb/e/e5/Diagram_of_the_human_heart_%28cropped%29.svg/200px-Diagram_of_the_human_heart_%28cropped%29.svg.png');
+      } 
+      
+      // Nervous System
+      else if (lowerTerm.contains('brain') || lowerTerm.contains('nerve') || 
+               lowerTerm.contains('head') || lowerTerm.contains('migraine') ||
+               lowerTerm.contains('stroke')) {
+        addImage('https://upload.wikimedia.org/wikipedia/commons/thumb/6/62/Brain_human_normal_inferior_view_with_labels_en-2.svg/200px-Brain_human_normal_inferior_view_with_labels_en-2.svg.png');
+      } 
+      
+      // Respiratory System
+      else if (lowerTerm.contains('lung') || lowerTerm.contains('breath') || 
+               lowerTerm.contains('cough') || lowerTerm.contains('asthma') ||
+               lowerTerm.contains('respiratory')) {
+        addImage('https://upload.wikimedia.org/wikipedia/commons/thumb/a/a1/Lungs_diagram_simple.svg/200px-Lungs_diagram_simple.svg.png');
+      }
+      
+      // Digestive System
+      else if (lowerTerm.contains('stomach') || lowerTerm.contains('intestine') || 
+               lowerTerm.contains('colon') || lowerTerm.contains('liver') || 
+               lowerTerm.contains('digest') || lowerTerm.contains('belly') || 
+               lowerTerm.contains('abdomen') || lowerTerm.contains('nausea')) {
+        addImage('https://upload.wikimedia.org/wikipedia/commons/thumb/c/c5/Digestive_system_diagram_en.svg/200px-Digestive_system_diagram_en.svg.png');
+      }
+      
+      // Skeletal System
+      else if (lowerTerm.contains('bone') || lowerTerm.contains('skeleton') || 
+               lowerTerm.contains('fracture') || lowerTerm.contains('break') || 
+               lowerTerm.contains('rib') || lowerTerm.contains('skull') || 
+               lowerTerm.contains('spine') || lowerTerm.contains('joint')) {
+        addImage('https://upload.wikimedia.org/wikipedia/commons/thumb/6/6d/Human_skeleton_front_en.svg/200px-Human_skeleton_front_en.svg.png');
+      }
+      
+      // Limb specific (Legs/Arms)
+      else if (lowerTerm.contains('leg') || lowerTerm.contains('knee') || 
+               lowerTerm.contains('ankle') || lowerTerm.contains('foot') || 
+               lowerTerm.contains('femur') || lowerTerm.contains('tibia')) {
+        addImage('https://upload.wikimedia.org/wikipedia/commons/thumb/5/51/Human_leg_bones_labeled.svg/200px-Human_leg_bones_labeled.svg.png');
+      }
+      
+      else if (lowerTerm.contains('arm') || lowerTerm.contains('elbow') || 
+               lowerTerm.contains('wrist') || lowerTerm.contains('hand') || 
+               lowerTerm.contains('humerus')) {
+        addImage('https://upload.wikimedia.org/wikipedia/commons/thumb/f/f1/Human_arm_bones_diagram.svg/200px-Human_arm_bones_diagram.svg.png');
+      }
+
+      // Eye
+      else if (lowerTerm.contains('eye') || lowerTerm.contains('vision') || 
+               lowerTerm.contains('blind')) {
+        addImage('https://upload.wikimedia.org/wikipedia/commons/thumb/1/1e/Schematic_diagram_of_the_human_eye_en.svg/200px-Schematic_diagram_of_the_human_eye_en.svg.png');
+      }
+      
+      // Ear
+      else if (lowerTerm.contains('ear') || lowerTerm.contains('hear')) {
+        addImage('https://upload.wikimedia.org/wikipedia/commons/thumb/d/d2/Anatomy_of_the_Human_Ear.svg/200px-Anatomy_of_the_Human_Ear.svg.png');
+      }
+      
+      // Skin
+      else if (lowerTerm.contains('skin') || lowerTerm.contains('derm') || 
+               lowerTerm.contains('rash') || lowerTerm.contains('burn') || 
+               lowerTerm.contains('cut') || lowerTerm.contains('wound')) {
+        addImage('https://upload.wikimedia.org/wikipedia/commons/thumb/6/6d/Skin_layers.svg/200px-Skin_layers.svg.png');
+      }
+    }
+
+    // If we found nothing specific but have terms, return a generic human body image
     if (images.isEmpty && terms.isNotEmpty) {
-       // Use a generic placeholder or the doctor_patient image if suitable (though that's not anatomical)
-       images.add('https://via.placeholder.com/300?text=Anatomy');
+       images.add('https://upload.wikimedia.org/wikipedia/commons/thumb/4/4b/Human_body_features.jpg/200px-Human_body_features.jpg');
     }
 
     return images;

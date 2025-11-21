@@ -222,7 +222,7 @@ class _AnatomyViewerState extends State<AnatomyViewer> {
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      const Icon(Icons.threed_rotation, color: Colors.white, size: 14),
+                      const Icon(Icons.three_d_rotation, color: Colors.white, size: 14),
                       const SizedBox(width: 6),
                       Text(
                         isLikely3D ? 'Interactive 3D View' : 'Demo 3D Model (Brain Stem)',
@@ -502,7 +502,7 @@ class _FullscreenAnatomyViewerState extends State<_FullscreenAnatomyViewer> {
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      const Icon(Icons.3d_rotation, color: Colors.white, size: 14),
+                      const Icon(Icons.three_d_rotation, color: Colors.white, size: 14),
                       const SizedBox(width: 6),
                       Text(
                         isLikely3D ? 'Interactive 3D View' : 'Demo 3D Model (Brain Stem)',
