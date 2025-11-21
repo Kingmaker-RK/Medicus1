@@ -83,7 +83,10 @@ class TranslationService {
              
              // Map anatomy part to image
              List<String> anatomyImages = [];
-             if (anatomyPart != null && anatomyPart.isNotEmpty) {
+             if (anatomyPart != null && 
+                 anatomyPart.isNotEmpty && 
+                 anatomyPart.toLowerCase() != 'null' && 
+                 anatomyPart.toLowerCase() != 'none') {
                anatomyImages = await getAnatomyImages([anatomyPart]);
              } else if (medicalTerms.isNotEmpty) {
                anatomyImages = await getAnatomyImages(medicalTerms);

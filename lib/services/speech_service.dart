@@ -84,11 +84,45 @@ class SpeechService {
     required String languageCode,
   }) async {
     try {
-      await _flutterTts.setLanguage(languageCode);
-      await _flutterTts.speak(text);
+      String code = _normalizeLanguageCode(languageCode);
+      
+      // Check if language is available
+      var isAvailable = await _flutterTts.isLanguageAvailable(code);
+      
+      // If not available, try base language (e.g. "es-MX" -> "es")
+      if (isAvailable != true && code.contains('-')) {
+        code = code.split('-')[0];
+        isAvailable = await _flutterTts.isLanguageAvailable(code);
+      }
+      
+      if (isAvailable == true) {
+        await _flutterTts.setLanguage(code);
+        await _flutterTts.speak(text);
+      } else {
+        print('TTS language not available: $languageCode (normalized: $code)');
+        // Fallback: Try English as a last resort for specific system messages, 
+        // but for translation output, it's better to notify the user.
+        // For now, we throw so the UI can handle it.
+        throw Exception('Voice output not available for this language ($languageCode)');
+      }
     } catch (e) {
       print('Error speaking text: $e');
+      rethrow; // Allow provider to handle the error
     }
+  }
+
+  // Normalize language codes for TTS (Android legacy support)
+  String _normalizeLanguageCode(String code) {
+    final codeMap = {
+      'fil': 'tl', // Filipino -> Tagalog
+      'iw': 'he', // Hebrew old code
+      'jw': 'jv', // Javanese old code
+      'pus': 'ps', // Pashto
+      'kok': 'gom', // Konkani
+      // Add more mappings as needed for TTS engines
+    };
+
+    return codeMap[code] ?? code;
   }
 
   // Stop speaking

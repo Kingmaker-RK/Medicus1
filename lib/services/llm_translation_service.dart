@@ -299,8 +299,15 @@ Text to translate: "$text"
         final response = await _geminiModel!.generateContent(content);
         final text = response.text?.trim() ?? '';
         
-        // Extract JSON from response (Gemini might add markdown code blocks)
-        final jsonString = text.replaceAll('```json', '').replaceAll('```', '').trim();
+        // Extract JSON from response (Robust extraction)
+        String jsonString = text;
+        final int startIndex = text.indexOf('{');
+        final int endIndex = text.lastIndexOf('}');
+        
+        if (startIndex != -1 && endIndex != -1 && endIndex > startIndex) {
+          jsonString = text.substring(startIndex, endIndex + 1);
+        }
+        
         try {
           return jsonDecode(jsonString) as Map<String, dynamic>;
         } catch (e) {
