@@ -688,11 +688,20 @@ Text to translate: "$text"''';
       }
       
       // Digestive System
+      else if (lowerTerm.contains('liver') || lowerTerm.contains('hepat')) {
+        addImage('https://upload.wikimedia.org/wikipedia/commons/thumb/5/5c/Liver_and_nearby_organs.svg/200px-Liver_and_nearby_organs.svg.png');
+      }
       else if (lowerTerm.contains('stomach') || lowerTerm.contains('intestine') || 
-               lowerTerm.contains('colon') || lowerTerm.contains('liver') || 
-               lowerTerm.contains('digest') || lowerTerm.contains('belly') || 
-               lowerTerm.contains('abdomen') || lowerTerm.contains('nausea')) {
+               lowerTerm.contains('colon') || lowerTerm.contains('digest') || 
+               lowerTerm.contains('belly') || lowerTerm.contains('abdomen') || 
+               lowerTerm.contains('nausea')) {
         addImage('https://upload.wikimedia.org/wikipedia/commons/thumb/c/c5/Digestive_system_diagram_en.svg/200px-Digestive_system_diagram_en.svg.png');
+      }
+      
+      // Urinary/Renal
+      else if (lowerTerm.contains('kidney') || lowerTerm.contains('renal') || 
+               lowerTerm.contains('bladder') || lowerTerm.contains('urine')) {
+        addImage('https://upload.wikimedia.org/wikipedia/commons/thumb/e/e1/Kidney_cross_section.svg/200px-Kidney_cross_section.svg.png');
       }
       
       // Skeletal System

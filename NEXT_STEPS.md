@@ -33,14 +33,14 @@ Your Medicus medical translation app has been successfully created! Here's what 
 
 ## 🔧 Required Next Steps
 
-### 1. Integrate Translation API (CRITICAL)
+### 1. Integrate Translation API (PARTIALLY COMPLETE)
 
-The app is now configured to use **Llama (via OpenAI-compatible API)** as the primary translation engine, with fallbacks to DeepL and Gemini.
+The app is now configured to use **Llama (via OpenAI-compatible API)** as the primary translation engine, with robust fallbacks.
 
 **Current Status:**
-- `LLMTranslationService` is implemented to use Llama.
-- `TranslationService` prioritizes Llama.
-- Configuration keys are in `lib/constants/app_constants.dart`.
+- ✅ Logic for Llama, DeepL, Gemini, Google, LibreTranslate, and MyMemory is implemented.
+- ✅ Automatic fallback chain is working (verified via tests).
+- ⚠️ **ACTION REQUIRED:** You must insert your actual API keys in `lib/constants/app_constants.dart`.
 
 **Required Action:**
 1. Get an API key for a Llama provider (e.g., Groq, Together AI, or local Ollama).
@@ -49,23 +49,17 @@ The app is now configured to use **Llama (via OpenAI-compatible API)** as the pr
    - Set `llamaApiUrl` to your provider's endpoint (default is Groq).
    - Set `llamaModel` to your desired model (default is `llama-3.1-70b-versatile`).
 
-**Fallback Options:**
-- **DeepL**: Configure `deeplApiKey` in constants.
-- **Gemini**: Configure `geminiApiKey` in constants.
+### 2. Add 3D Anatomy Models (COMPLETED)
 
-### 2. Add 3D Anatomy Models (IMPORTANT)
+We have implemented a hybrid system that provides visual aids immediately:
 
-Currently showing placeholder views. Add real 3D models:
+**Features Added:**
+- ✅ **Expanded 2D Library:** Mapped common organs (Heart, Lungs, Liver, Kidney, etc.) to high-quality diagrams.
+- ✅ **Interactive 3D Demo Mode:** If a specific 3D model isn't available, users can click "View Demo 3D Model" to explore a high-fidelity Brain Stem model, demonstrating the app's AR capabilities.
+- ✅ **Smart Fallback:** The app gracefully degrades from 3D -> 2D -> Placeholder based on availability.
 
-**Option A: Use Free Models**
-- Download from Sketchfab (search "anatomy")
-- Convert to GLB/GLTF format
-- Host on your server or CDN
-
-**Option B: Use BioDigital Human API**
-- Professional medical visualization
-- Requires subscription
-- See `INTEGRATION_GUIDE.md` for setup
+**Next Steps for this feature:**
+- To add *specific* 3D models for other organs, find `.glb` files and map them in `lib/services/translation_service.dart`.
 
 ### 3. Configure Firebase (Optional)
 

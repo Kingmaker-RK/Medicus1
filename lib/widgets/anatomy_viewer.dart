@@ -15,6 +15,7 @@ class AnatomyViewer extends StatefulWidget {
 class _AnatomyViewerState extends State<AnatomyViewer> {
   int _currentIndex = 0;
   bool _is3DView = false;
+  bool _showDemoModel = false;
 
   void _openFullscreen(BuildContext context) {
     Navigator.of(context).push(
@@ -80,6 +81,8 @@ class _AnatomyViewerState extends State<AnatomyViewer> {
                   onPressed: () {
                     setState(() {
                       _is3DView = !_is3DView;
+                      // Reset demo state when toggling
+                      if (!_is3DView) _showDemoModel = false;
                     });
                   },
                   tooltip: _is3DView ? 'Switch to 2D' : 'Switch to 3D',
@@ -95,6 +98,7 @@ class _AnatomyViewerState extends State<AnatomyViewer> {
               onPageChanged: (index) {
                 setState(() {
                   _currentIndex = index;
+                  _showDemoModel = false; // Reset demo model when changing images
                 });
               },
               itemBuilder: (context, index) {
@@ -186,6 +190,44 @@ class _AnatomyViewerState extends State<AnatomyViewer> {
     const String sampleModelUrl = 'https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/BrainStem/glTF-Binary/BrainStem.glb';
     
     final bool isLikely3D = modelUrl.toLowerCase().endsWith('.glb') || modelUrl.toLowerCase().endsWith('.gltf');
+
+    // If it's not a 3D model and user hasn't requested the demo yet
+    if (!isLikely3D && !_showDemoModel) {
+      return Container(
+        decoration: BoxDecoration(
+          color: Colors.black87,
+          borderRadius: BorderRadius.circular(8),
+        ),
+        child: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Icon(Icons.threed_rotation, color: Colors.white, size: 48),
+              const SizedBox(height: 16),
+              const Text(
+                'No specific 3D model for this organ',
+                style: TextStyle(color: Colors.white70),
+              ),
+              const SizedBox(height: 16),
+              ElevatedButton.icon(
+                onPressed: () {
+                  setState(() {
+                    _showDemoModel = true;
+                  });
+                }, 
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColors.primary,
+                  foregroundColor: Colors.white,
+                ),
+                icon: const Icon(Icons.visibility), 
+                label: const Text('View Demo 3D Model'),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+
     final String urlToLoad = isLikely3D ? modelUrl : sampleModelUrl;
 
     return Container(
@@ -260,6 +302,7 @@ class _FullscreenAnatomyViewer extends StatefulWidget {
 class _FullscreenAnatomyViewerState extends State<_FullscreenAnatomyViewer> {
   late int _currentIndex;
   late bool _is3DView;
+  bool _showDemoModel = false;
   late PageController _pageController;
 
   @override
@@ -293,6 +336,7 @@ class _FullscreenAnatomyViewerState extends State<_FullscreenAnatomyViewer> {
             onPressed: () {
               setState(() {
                 _is3DView = !_is3DView;
+                if (!_is3DView) _showDemoModel = false;
               });
             },
             tooltip: _is3DView ? 'Switch to 2D' : 'Switch to 3D',
@@ -334,6 +378,7 @@ class _FullscreenAnatomyViewerState extends State<_FullscreenAnatomyViewer> {
             onPageChanged: (index) {
               setState(() {
                 _currentIndex = index;
+                _showDemoModel = false;
               });
             },
             itemBuilder: (context, index) {
@@ -469,6 +514,44 @@ class _FullscreenAnatomyViewerState extends State<_FullscreenAnatomyViewer> {
     const String sampleModelUrl = 'https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/BrainStem/glTF-Binary/BrainStem.glb';
     
     final bool isLikely3D = modelUrl.toLowerCase().endsWith('.glb') || modelUrl.toLowerCase().endsWith('.gltf');
+
+    // If it's not a 3D model and user hasn't requested the demo yet
+    if (!isLikely3D && !_showDemoModel) {
+      return Container(
+        decoration: BoxDecoration(
+          color: Colors.grey[900],
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Icon(Icons.threed_rotation, color: Colors.white, size: 48),
+              const SizedBox(height: 16),
+              const Text(
+                'No specific 3D model for this organ',
+                style: TextStyle(color: Colors.white70),
+              ),
+              const SizedBox(height: 16),
+              ElevatedButton.icon(
+                onPressed: () {
+                  setState(() {
+                    _showDemoModel = true;
+                  });
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.white,
+                  foregroundColor: Colors.black,
+                ),
+                icon: const Icon(Icons.visibility),
+                label: const Text('View Demo 3D Model'),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+
     final String urlToLoad = isLikely3D ? modelUrl : sampleModelUrl;
 
     return Container(
