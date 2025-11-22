@@ -4,7 +4,7 @@ class AppConstants {
   static const String appVersion = '1.0.0';
 
   // Mock Mode Flag - Set to true to use mock translation and avoid API costs during development
-  static const bool useMockTranslation = true;
+  static const bool useMockTranslation = false;
 
   // API Endpoints (Replace with your actual endpoints)
   static const String translationApiUrl = 'YOUR_TRANSLATION_API_URL';
