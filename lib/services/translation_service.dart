@@ -13,7 +13,7 @@ class TranslationService {
   final Dio _dio = Dio();
   final DeepLTranslationService _deeplService = DeepLTranslationService();
   final LLMTranslationService _llmService = LLMTranslationService();
-  bool _forceMockTranslation = false;
+  bool _forceMockTranslation = AppConstants.useMockTranslation;
 
   void forceMockTranslation(bool force) {
     _forceMockTranslation = force;
@@ -594,7 +594,7 @@ Text to translate: "$text"''';
       }
     }
     
-    final translatedText = '[Translated: $translatedContent]';
+    final translatedText = '[Mock] $translatedContent';
     // Use combined text to ensure we catch keywords in either language
     final medicalTerms = _mockMedicalTerms('$text $translatedText');
     final anatomyImages = _mockAnatomyImages(medicalTerms);
@@ -666,18 +666,18 @@ Text to translate: "$text"''';
     for (final term in terms) {
       final lowerTerm = term.toLowerCase();
       
+      // 3D Models (GLB/GLTF)
+      if (lowerTerm.contains('brain') || lowerTerm.contains('nerve') || 
+          lowerTerm.contains('head') || lowerTerm.contains('migraine')) {
+        // Official Khronos Sample BrainStem model
+        addImage('https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/BrainStem/glTF-Binary/BrainStem.glb');
+      }
+
       // Circulatory System
       if (lowerTerm.contains('heart') || lowerTerm.contains('cardio') || 
           lowerTerm.contains('blood') || lowerTerm.contains('artery') || 
           lowerTerm.contains('vein') || lowerTerm.contains('pressure')) {
         addImage('https://upload.wikimedia.org/wikipedia/commons/thumb/e/e5/Diagram_of_the_human_heart_%28cropped%29.svg/200px-Diagram_of_the_human_heart_%28cropped%29.svg.png');
-      } 
-      
-      // Nervous System
-      else if (lowerTerm.contains('brain') || lowerTerm.contains('nerve') || 
-               lowerTerm.contains('head') || lowerTerm.contains('migraine') ||
-               lowerTerm.contains('stroke')) {
-        addImage('https://upload.wikimedia.org/wikipedia/commons/thumb/6/62/Brain_human_normal_inferior_view_with_labels_en-2.svg/200px-Brain_human_normal_inferior_view_with_labels_en-2.svg.png');
       } 
       
       // Respiratory System

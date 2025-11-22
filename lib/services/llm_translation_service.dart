@@ -147,6 +147,12 @@ class LLMTranslationService {
   Future<String> translate(String text, String targetLanguageCode) async {
     if (text.isEmpty) return text;
 
+    // Check Mock Mode
+    if (AppConstants.useMockTranslation) {
+      final targetLang = _getLanguageName(targetLanguageCode);
+      return '[Mock: $targetLang] $text';
+    }
+
     // Check cache first
     if (_translationCache.containsKey(targetLanguageCode) &&
         _translationCache[targetLanguageCode]!.containsKey(text)) {
@@ -219,6 +225,15 @@ Translation:''';
   ) async {
     final targetLang = _getLanguageName(targetLanguageCode);
     
+    // Check Mock Mode
+    if (AppConstants.useMockTranslation) {
+      return {
+        "translatedText": "[Mock Medical: $targetLang] $text",
+        "medicalTerms": ["mock_term1", "mock_term2"],
+        "anatomyPart": "heart" // Mock anatomy part
+      };
+    }
+
     // Construct a specialized prompt based on the selected model
     String modelSystemPrompt = '';
     switch (_currentMedicalModel) {
@@ -371,6 +386,16 @@ Text to translate: "$text"
     String targetLanguageCode,
   ) async {
     if (texts.isEmpty) return {};
+
+    // Check Mock Mode
+    if (AppConstants.useMockTranslation) {
+      final results = <String, String>{};
+      final targetLang = _getLanguageName(targetLanguageCode);
+      for (final text in texts) {
+        results[text] = '[Mock Batch: $targetLang] $text';
+      }
+      return results;
+    }
 
     final results = <String, String>{};
     final uncachedTexts = <String>[];

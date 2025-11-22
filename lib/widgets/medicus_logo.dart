@@ -28,11 +28,11 @@ class MedicusLogo extends StatelessWidget {
           ),
         ),
         if (showText) ...[
-          SizedBox(height: size * 0.1),
+          const SizedBox(height: 16),
           Text(
-            'MEDICUS',
-            style: TextStyle(
-              fontSize: size * 0.2,
+            'AI-GRIS',
+            style: GoogleFonts.plusJakartaSans(
+              fontSize: size * 0.3,
               fontWeight: FontWeight.bold,
               color: AppColors.logoBlue,
               letterSpacing: 2,
