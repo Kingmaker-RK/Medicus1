@@ -3,9 +3,7 @@ import 'dart:typed_data';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:ai_gris/providers/translation_provider.dart';
 import 'package:ai_gris/services/translation_service.dart';
-import 'package:ai_gris/services/speech_service.dart';
 import 'package:ai_gris/models/translation_result.dart';
-import 'package:speech_to_text/speech_to_text.dart' as stt;
 
 // --- Custom Fakes/Spies ---
 

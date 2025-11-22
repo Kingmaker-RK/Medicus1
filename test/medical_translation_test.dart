@@ -3,7 +3,6 @@ import 'package:ai_gris/services/translation_service.dart';
 import 'package:ai_gris/services/llm_translation_service.dart';
 import 'package:http/http.dart' as http;
 import 'package:mockito/mockito.dart';
-import 'package:mockito/annotations.dart';
 
 // Generate mocks (manual for now since we can't run build_runner easily)
 class MockClient extends Mock implements http.Client {}
