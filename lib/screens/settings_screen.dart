@@ -209,7 +209,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       ),
                       ListTile(
                         leading: const Icon(Icons.medical_services),
-                        title: const AutoTranslateText('About Medicus'),
+                        title: const AutoTranslateText('About AI-Gris'),
                         subtitle: const AutoTranslateText(
                           'Breaking language barriers in healthcare',
                         ),

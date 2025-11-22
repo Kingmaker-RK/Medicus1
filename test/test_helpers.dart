@@ -3,13 +3,13 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:provider/provider.dart';
 import 'package:firebase_auth_mocks/firebase_auth_mocks.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:medicus/providers/user_provider.dart';
-import 'package:medicus/providers/translation_provider.dart';
-import 'package:medicus/providers/patient_profile_provider.dart';
-import 'package:medicus/providers/doctor_profile_provider.dart';
-import 'package:medicus/config/router.dart';
-import 'package:medicus/constants/colors.dart';
-import 'package:medicus/constants/app_constants.dart';
+import 'package:ai_gris/providers/user_provider.dart';
+import 'package:ai_gris/providers/translation_provider.dart';
+import 'package:ai_gris/providers/patient_profile_provider.dart';
+import 'package:ai_gris/providers/doctor_profile_provider.dart';
+import 'package:ai_gris/config/router.dart';
+import 'package:ai_gris/constants/colors.dart';
+import 'package:ai_gris/constants/app_constants.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 /// Helper function to setup Firebase mocks for testing
@@ -81,8 +81,8 @@ Widget createTestApp({
   );
 }
 
-/// Creates the full MedicusApp for integration testing
-Widget createMedicusAppForTest() {
+/// Creates the full AiGrisApp for integration testing
+Widget createAiGrisAppForTest() {
   return MultiProvider(
     providers: [
       ChangeNotifierProvider(create: (_) => UserProvider()),

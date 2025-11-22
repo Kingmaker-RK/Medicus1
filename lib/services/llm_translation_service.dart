@@ -533,7 +533,7 @@ Translations (numbered format):''';
   /// Pre-cache common UI strings for a language
   Future<void> precacheCommonStrings(String targetLanguageCode) async {
     final commonStrings = [
-      'Welcome to Medicus',
+      'Welcome to AI-Gris',
       'Breaking language barriers in healthcare',
       'Sign In',
       'Sign Up',
@@ -555,7 +555,7 @@ Translations (numbered format):''';
       'Notifications',
       'About',
       'App Version',
-      'About Medicus',
+      'About AI-Gris',
       'Help & Support',
       'Privacy Policy',
       'Logout',

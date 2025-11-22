@@ -1,6 +1,6 @@
 class AppConstants {
   // App Info
-  static const String appName = 'Medicus';
+  static const String appName = 'AI-Gris';
   static const String appVersion = '1.0.0';
 
   // API Endpoints (Replace with your actual endpoints)

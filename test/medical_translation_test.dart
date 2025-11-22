@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:medicus/services/translation_service.dart';
-import 'package:medicus/services/llm_translation_service.dart';
+import 'package:ai_gris/services/translation_service.dart';
+import 'package:ai_gris/services/llm_translation_service.dart';
 import 'package:http/http.dart' as http;
 import 'package:mockito/mockito.dart';
 import 'package:mockito/annotations.dart';

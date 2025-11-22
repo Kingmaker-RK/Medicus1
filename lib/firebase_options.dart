@@ -70,7 +70,7 @@ class DefaultFirebaseOptions {
     projectId: 'medicus-demo',
     authDomain: 'medicus-demo.firebaseapp.com',
     storageBucket: 'medicus-demo.appspot.com',
-    iosBundleId: 'com.medicus.app',
+    iosBundleId: 'com.aigris.app',
   );
 
   static const FirebaseOptions macos = FirebaseOptions(
@@ -80,6 +80,6 @@ class DefaultFirebaseOptions {
     projectId: 'medicus-demo',
     authDomain: 'medicus-demo.firebaseapp.com',
     storageBucket: 'medicus-demo.appspot.com',
-    iosBundleId: 'com.medicus.app',
+    iosBundleId: 'com.aigris.app',
   );
 }

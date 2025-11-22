@@ -272,7 +272,7 @@ class _TranslationScreenState extends State<TranslationScreen>
       elevation: 0,
       centerTitle: true,
       title: const Text(
-        'Medicus',
+        'AI-Gris',
         style: TextStyle(
           fontSize: 24,
           fontWeight: FontWeight.w700,
@@ -1301,9 +1301,9 @@ class _TranslationScreenState extends State<TranslationScreen>
                   Navigator.pop(context);
                   showAboutDialog(
                     context: context,
-                    applicationName: 'Medicus Translation',
+                    applicationName: 'AI-Gris Translation',
                     applicationVersion: '1.0.0',
-                    applicationLegalese: '© 2024 Medicus',
+                    applicationLegalese: '© 2024 AI-Gris',
                   );
                 },
               ),

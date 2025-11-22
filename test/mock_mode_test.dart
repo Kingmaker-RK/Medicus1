@@ -1,7 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:medicus/constants/app_constants.dart';
-import 'package:medicus/services/llm_translation_service.dart';
-import 'package:medicus/services/translation_service.dart';
+import 'package:ai_gris/constants/app_constants.dart';
+import 'package:ai_gris/services/llm_translation_service.dart';
+import 'package:ai_gris/services/translation_service.dart';
 
 void main() {
   group('Mock Mode Tests', () {

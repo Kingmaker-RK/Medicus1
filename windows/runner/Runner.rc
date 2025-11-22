@@ -89,12 +89,12 @@ BEGIN
     BEGIN
         BLOCK "040904e4"
         BEGIN
-            VALUE "CompanyName", "com.medicus" "\0"
+            VALUE "CompanyName", "com.aigris" "\0"
             VALUE "FileDescription", "AI-Gris" "\0"
             VALUE "FileVersion", VERSION_AS_STRING "\0"
-            VALUE "InternalName", "medicus" "\0"
+            VALUE "InternalName", "ai_gris" "\0"
             VALUE "LegalCopyright", "Copyright (C) 2025 com.medicus. All rights reserved." "\0"
-            VALUE "OriginalFilename", "medicus.exe" "\0"
+            VALUE "OriginalFilename", "ai_gris.exe" "\0"
             VALUE "ProductName", "AI-Gris" "\0"
             VALUE "ProductVersion", VERSION_AS_STRING "\0"
         END

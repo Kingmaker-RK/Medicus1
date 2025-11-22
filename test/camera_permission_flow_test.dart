@@ -2,16 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:image_picker_platform_interface/image_picker_platform_interface.dart';
-import 'package:medicus/screens/translation_screen.dart';
-import 'package:medicus/providers/translation_provider.dart';
-import 'package:medicus/providers/user_provider.dart';
-import 'package:medicus/providers/patient_profile_provider.dart';
-import 'package:medicus/providers/doctor_profile_provider.dart';
-import 'package:medicus/models/translation_result.dart';
-import 'package:medicus/models/user_model.dart';
-import 'package:medicus/models/patient_profile_model.dart';
-import 'package:medicus/models/doctor_profile_model.dart';
-import 'package:medicus/constants/app_constants.dart';
+import 'package:ai_gris/screens/translation_screen.dart';
+import 'package:ai_gris/providers/translation_provider.dart';
+import 'package:ai_gris/providers/user_provider.dart';
+import 'package:ai_gris/providers/patient_profile_provider.dart';
+import 'package:ai_gris/providers/doctor_profile_provider.dart';
+import 'package:ai_gris/models/translation_result.dart';
+import 'package:ai_gris/models/user_model.dart';
+import 'package:ai_gris/models/patient_profile_model.dart';
+import 'package:ai_gris/models/doctor_profile_model.dart';
+import 'package:ai_gris/constants/app_constants.dart';
 import 'package:provider/provider.dart';
 
 // Mock classes

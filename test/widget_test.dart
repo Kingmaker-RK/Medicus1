@@ -21,7 +21,7 @@ void main() {
     SharedPreferences.setMockInitialValues({});
   });
 
-  group('Medicus App Basic Tests', () {
+  group('AI-Gris App Basic Tests', () {
     testWidgets('Firebase mocks are properly initialized',
         (WidgetTester tester) async {
       // This test verifies that Firebase mocking is working

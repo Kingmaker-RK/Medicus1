@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:medicus/services/translation_service.dart';
+import 'package:ai_gris/services/translation_service.dart';
 
 void main() {
   group('Anatomy Integration Tests', () {

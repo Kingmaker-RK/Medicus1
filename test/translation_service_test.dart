@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:medicus/services/localization_service.dart';
-import 'package:medicus/constants/app_constants.dart';
+import 'package:ai_gris/services/localization_service.dart';
+import 'package:ai_gris/constants/app_constants.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();

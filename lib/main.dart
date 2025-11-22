@@ -19,11 +19,11 @@ void main() async {
     options: DefaultFirebaseOptions.currentPlatform,
   );
 
-  runApp(const MedicusApp());
+  runApp(const AiGrisApp());
 }
 
-class MedicusApp extends StatelessWidget {
-  const MedicusApp({Key? key}) : super(key: key);
+class AiGrisApp extends StatelessWidget {
+  const AiGrisApp({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {

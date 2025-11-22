@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import '../constants/colors.dart';
 
-class MedicusLogo extends StatelessWidget {
+class AiGrisLogo extends StatelessWidget {
   final double size;
   final bool showText;
 
-  const MedicusLogo({Key? key, this.size = 100, this.showText = false})
+  const AiGrisLogo({Key? key, this.size = 100, this.showText = false})
     : super(key: key);
 
   @override

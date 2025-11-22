@@ -3,7 +3,7 @@ import '../widgets/translated_widget.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import '../providers/user_provider.dart';
-import '../widgets/medicus_logo.dart';
+import '../widgets/ai_gris_logo.dart';
 import '../constants/colors.dart';
 
 class ResetPasswordScreen extends StatefulWidget {
@@ -260,7 +260,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
 
                       // Logo
                       const Center(
-                        child: MedicusLogo(size: 100, showText: true),
+                        child: AiGrisLogo(size: 100, showText: true),
                       ),
                       const SizedBox(height: 40),
 

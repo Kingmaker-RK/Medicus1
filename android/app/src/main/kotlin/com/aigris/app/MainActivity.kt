@@ -1,4 +1,4 @@
-package com.medicus.medicus
+package com.aigris.app
 
 import io.flutter.embedding.android.FlutterActivity
 

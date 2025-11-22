@@ -47,14 +47,14 @@
 	<true/>
 	<!-- Permissions -->
 	<key>NSMicrophoneUsageDescription</key>
-	<string>Medicus needs microphone access for voice translation to help communicate with your healthcare provider.</string>
+	<string>AI-Gris needs microphone access for voice translation to help communicate with your healthcare provider.</string>
 	<key>NSSpeechRecognitionUsageDescription</key>
-	<string>Medicus needs speech recognition access to translate your spoken words.</string>
+	<string>AI-Gris needs speech recognition access to translate your spoken words.</string>
 	<key>NSCameraUsageDescription</key>
-	<string>Medicus needs camera access for visual assistance and documentation.</string>
+	<string>AI-Gris needs camera access for visual assistance and documentation.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>Medicus needs location access to help find nearby healthcare facilities.</string>
+	<string>AI-Gris needs location access to help find nearby healthcare facilities.</string>
 	<key>NSLocationAlwaysUsageDescription</key>
-	<string>Medicus needs location access to help find nearby healthcare facilities.</string>
+	<string>AI-Gris needs location access to help find nearby healthcare facilities.</string>
 </dict>
 </plist>

@@ -3,12 +3,12 @@ import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../providers/user_provider.dart';
-import '../widgets/medicus_logo.dart';
+import '../widgets/ai_gris_logo.dart';
 import '../widgets/hospital_background.dart';
 import '../widgets/translated_widget.dart';
 import '../constants/colors.dart';
 import '../constants/app_constants.dart';
-import 'package:medicus/screens/language_selection_screen.dart';
+import 'package:ai_gris/screens/language_selection_screen.dart';
 import '../services/localization_service.dart';
 
 class WelcomeScreen extends StatefulWidget {
@@ -82,12 +82,12 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                   const SizedBox(height: 16),
 
                   // Logo - Reduced size and moved up
-                  const Center(child: MedicusLogo(size: 70, showText: true)),
+                  const Center(child: AiGrisLogo(size: 70, showText: true)),
                   const SizedBox(height: 12),
 
                   // Welcome text - More compact with instant translation
                   AutoTranslateText(
-                    'Welcome to Medicus',
+                    'Welcome to AI-Gris',
                     style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                       fontWeight: FontWeight.bold,
                       color: AppColors.textPrimary,

@@ -4,7 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import '../providers/user_provider.dart';
-import '../widgets/medicus_logo.dart';
+import '../widgets/ai_gris_logo.dart';
 import '../constants/colors.dart';
 import 'dart:async';
 
@@ -208,7 +208,7 @@ class _VerifyPasswordResetScreenState extends State<VerifyPasswordResetScreen> {
                     const SizedBox(height: 20),
 
                     // Logo
-                    const Center(child: MedicusLogo(size: 100, showText: true)),
+                    const Center(child: AiGrisLogo(size: 100, showText: true)),
                     const SizedBox(height: 40),
 
                     // Title

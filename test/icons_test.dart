@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:medicus/widgets/benzene_icon.dart';
-import 'package:medicus/widgets/medicus_logo.dart';
+import 'package:ai_gris/widgets/benzene_icon.dart';
+import 'package:ai_gris/widgets/ai_gris_logo.dart';
 
 void main() {
   group('Icon Widgets Tests', () {
@@ -26,21 +26,21 @@ void main() {
       );
     });
 
-    testWidgets('MedicusLogo renders correctly without text', (WidgetTester tester) async {
+    testWidgets('AiGrisLogo renders correctly without text', (WidgetTester tester) async {
       await tester.pumpWidget(
         const MaterialApp(
           home: Scaffold(
             body: Center(
-              child: MedicusLogo(size: 100, showText: false),
+              child: AiGrisLogo(size: 100, showText: false),
             ),
           ),
         ),
       );
 
-      expect(find.byType(MedicusLogo), findsOneWidget);
+      expect(find.byType(AiGrisLogo), findsOneWidget);
       expect(
         find.descendant(
-          of: find.byType(MedicusLogo),
+          of: find.byType(AiGrisLogo),
           matching: find.byType(CustomPaint),
         ),
         findsOneWidget,
@@ -48,21 +48,21 @@ void main() {
       expect(find.text('MEDICUS'), findsNothing);
     });
 
-    testWidgets('MedicusLogo renders correctly with text', (WidgetTester tester) async {
+    testWidgets('AiGrisLogo renders correctly with text', (WidgetTester tester) async {
       await tester.pumpWidget(
         const MaterialApp(
           home: Scaffold(
             body: Center(
-              child: MedicusLogo(size: 100, showText: true),
+              child: AiGrisLogo(size: 100, showText: true),
             ),
           ),
         ),
       );
 
-      expect(find.byType(MedicusLogo), findsOneWidget);
+      expect(find.byType(AiGrisLogo), findsOneWidget);
       expect(
         find.descendant(
-          of: find.byType(MedicusLogo),
+          of: find.byType(AiGrisLogo),
           matching: find.byType(CustomPaint),
         ),
         findsOneWidget,
