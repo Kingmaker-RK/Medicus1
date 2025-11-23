@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:intl/intl.dart';
 
 class FertilityTrackingScreen extends StatefulWidget {
   const FertilityTrackingScreen({super.key});
@@ -10,12 +12,16 @@ class FertilityTrackingScreen extends StatefulWidget {
 class _FertilityTrackingScreenState extends State<FertilityTrackingScreen> {
   DateTime _selectedDate = DateTime.now();
   final TextEditingController _bbtController = TextEditingController();
+  
+  // Tracking Data
+  String _selectedFlow = 'Medium';
+  String _selectedMood = 'Happy';
   String? _selectedLHResult;
   String? _selectedCervicalMucus;
+  
   final List<String> _selectedSymptoms = [];
-
   final List<String> _symptomsList = [
-    'Cramps', 'Headache', 'Bloating', 'Mood Swings', 'Fatigue', 'Acne', 'Backache'
+    'Cramps', 'Headache', 'Bloating', 'Mood Swings', 'Fatigue', 'Acne', 'Backache', 'Nausea', 'Cravings'
   ];
 
   @override
@@ -27,210 +33,288 @@ class _FertilityTrackingScreenState extends State<FertilityTrackingScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
-        title: const Text('Fertility Tracking'),
-        backgroundColor: Colors.pink.shade50,
+        title: Text('Cycle & Ovulation', style: GoogleFonts.poppins(color: Colors.black, fontWeight: FontWeight.w600)),
+        backgroundColor: Colors.white,
+        elevation: 0,
+        iconTheme: const IconThemeData(color: Colors.black),
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _buildCalendarSection(),
-            const SizedBox(height: 24),
-            _buildCyclePredictionCard(),
-            const SizedBox(height: 24),
-            _buildSectionTitle('Daily Logs'),
-            _buildBBTInput(),
-            _buildLHTestInput(),
-            _buildCervicalMucusInput(),
-            const SizedBox(height: 16),
-            _buildSymptomsSection(),
-            const SizedBox(height: 24),
-            SizedBox(
-              width: double.infinity,
-              child: ElevatedButton(
-                onPressed: _saveDailyLog,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.pink,
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                ),
-                child: const Text('Save Daily Log', style: TextStyle(color: Colors.white, fontSize: 16)),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildSectionTitle(String title) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8.0),
-      child: Text(
-        title,
-        style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.teal),
-      ),
-    );
-  }
-
-  Widget _buildCalendarSection() {
-    return Card(
-      elevation: 2,
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                const Text('Select Date', style: TextStyle(fontWeight: FontWeight.bold)),
-                TextButton(
-                  onPressed: () async {
-                    final DateTime? picked = await showDatePicker(
-                      context: context,
-                      initialDate: _selectedDate,
-                      firstDate: DateTime(2020),
-                      lastDate: DateTime(2030),
-                    );
-                    if (picked != null && picked != _selectedDate) {
-                      setState(() {
-                        _selectedDate = picked;
-                      });
-                    }
-                  },
-                  child: Text(
-                    "${_selectedDate.toLocal()}".split(' ')[0],
-                    style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+        physics: const BouncingScrollPhysics(),
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _buildDateSelector(),
+              const SizedBox(height: 24),
+              _buildCycleVisualizer(),
+              const SizedBox(height: 24),
+              Text('Daily Log', style: GoogleFonts.poppins(fontSize: 18, fontWeight: FontWeight.w600)),
+              const SizedBox(height: 16),
+              _buildFlowSelector(),
+              const SizedBox(height: 16),
+              _buildBBTCard(),
+              const SizedBox(height: 16),
+              _buildLHAndMucusSection(),
+              const SizedBox(height: 16),
+              _buildSymptomsChips(),
+              const SizedBox(height: 32),
+              SizedBox(
+                width: double.infinity,
+                height: 55,
+                child: ElevatedButton(
+                  onPressed: _saveData,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFFE91E63),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    elevation: 4,
                   ),
+                  child: Text('Save Log', style: GoogleFonts.poppins(fontSize: 16, fontWeight: FontWeight.w600, color: Colors.white)),
                 ),
-              ],
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildCyclePredictionCard() {
-    // Mock logic for prediction
-    return Card(
-      color: Colors.pink.shade50,
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          children: [
-            const Text(
-              'Cycle Prediction',
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.pink),
-            ),
-            const SizedBox(height: 8),
-            const Text('Next Period Expected: Nov 28'),
-            const SizedBox(height: 4),
-            const Text('Fertile Window: Nov 12 - Nov 16'),
-            const SizedBox(height: 8),
-            LinearProgressIndicator(
-              value: 0.7,
-              backgroundColor: Colors.white,
-              color: Colors.pink.shade300,
-            ),
-            const SizedBox(height: 4),
-            const Text('Day 21 of Cycle', style: TextStyle(fontSize: 12)),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildBBTInput() {
-    return Card(
-      margin: const EdgeInsets.symmetric(vertical: 8),
-      child: ListTile(
-        title: const Text('Basal Body Temperature (BBT)'),
-        trailing: SizedBox(
-          width: 100,
-          child: TextField(
-            controller: _bbtController,
-            keyboardType: TextInputType.number,
-            decoration: const InputDecoration(
-              suffixText: '°C',
-              border: OutlineInputBorder(),
-              contentPadding: EdgeInsets.symmetric(horizontal: 8),
-            ),
+              ),
+              const SizedBox(height: 30),
+            ],
           ),
         ),
       ),
     );
   }
 
-  Widget _buildLHTestInput() {
-    return Card(
-      margin: const EdgeInsets.symmetric(vertical: 8),
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text('LH Test Result'),
-            Row(
-              children: [
-                Expanded(
-                  child: RadioListTile<String>(
-                    title: const Text('Positive'),
-                    value: 'Positive',
-                    groupValue: _selectedLHResult,
-                    onChanged: (value) => setState(() => _selectedLHResult = value),
-                    contentPadding: EdgeInsets.zero,
-                  ),
-                ),
-                Expanded(
-                  child: RadioListTile<String>(
-                    title: const Text('Negative'),
-                    value: 'Negative',
-                    groupValue: _selectedLHResult,
-                    onChanged: (value) => setState(() => _selectedLHResult = value),
-                    contentPadding: EdgeInsets.zero,
-                  ),
-                ),
-              ],
-            ),
-          ],
-        ),
+  Widget _buildDateSelector() {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      decoration: BoxDecoration(
+        color: const Color(0xFFFCE4EC),
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          IconButton(
+            icon: const Icon(Icons.arrow_back_ios, size: 18, color: Color(0xFF880E4F)),
+            onPressed: () => setState(() => _selectedDate = _selectedDate.subtract(const Duration(days: 1))),
+          ),
+          Column(
+            children: [
+              Text(
+                DateFormat('EEEE').format(_selectedDate),
+                style: GoogleFonts.poppins(fontSize: 14, color: const Color(0xFF880E4F)),
+              ),
+              Text(
+                DateFormat('MMM d, y').format(_selectedDate),
+                style: GoogleFonts.poppins(fontSize: 18, fontWeight: FontWeight.bold, color: const Color(0xFF880E4F)),
+              ),
+            ],
+          ),
+          IconButton(
+            icon: const Icon(Icons.arrow_forward_ios, size: 18, color: Color(0xFF880E4F)),
+            onPressed: () => setState(() => _selectedDate = _selectedDate.add(const Duration(days: 1))),
+          ),
+        ],
       ),
     );
   }
 
-  Widget _buildCervicalMucusInput() {
-    return Card(
-      margin: const EdgeInsets.symmetric(vertical: 8),
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text('Cervical Mucus'),
-            DropdownButton<String>(
-              isExpanded: true,
-              value: _selectedCervicalMucus,
-              hint: const Text('Select Observation'),
-              items: ['Dry', 'Sticky', 'Creamy', 'Watery', 'Egg White']
-                  .map((e) => DropdownMenuItem(value: e, child: Text(e)))
-                  .toList(),
-              onChanged: (value) => setState(() => _selectedCervicalMucus = value),
+  Widget _buildCycleVisualizer() {
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        gradient: const LinearGradient(colors: [Color(0xFFF8BBD0), Color(0xFFF48FB1)]),
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: [
+          BoxShadow(color: Colors.pink.withOpacity(0.2), blurRadius: 10, offset: const Offset(0, 5)),
+        ],
+      ),
+      child: Column(
+        children: [
+          Text(
+            'Cycle Day 12',
+            style: GoogleFonts.poppins(fontSize: 16, color: Colors.white),
+          ),
+          const SizedBox(height: 8),
+          const SizedBox(
+            height: 100,
+            width: 100,
+            child: CircularProgressIndicator(
+              value: 0.4,
+              backgroundColor: Colors.white24,
+              valueColor: AlwaysStoppedAnimation(Colors.white),
+              strokeWidth: 8,
             ),
-          ],
-        ),
+          ),
+          const SizedBox(height: 12),
+          Text(
+            'High Fertility',
+            style: GoogleFonts.poppins(fontSize: 22, fontWeight: FontWeight.bold, color: Colors.white),
+          ),
+          Text(
+            'Ovulation in 2 days',
+            style: GoogleFonts.poppins(fontSize: 14, color: Colors.white70),
+          ),
+        ],
       ),
     );
   }
 
-  Widget _buildSymptomsSection() {
+  Widget _buildFlowSelector() {
+    final flows = ['Light', 'Medium', 'Heavy', 'Spotting'];
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _buildSectionTitle('Symptoms'),
+        Text('Menstrual Flow', style: GoogleFonts.poppins(color: Colors.grey[700])),
+        const SizedBox(height: 8),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: flows.map((flow) {
+            final isSelected = _selectedFlow == flow;
+            return GestureDetector(
+              onTap: () => setState(() => _selectedFlow = flow),
+              child: AnimatedContainer(
+                duration: const Duration(milliseconds: 200),
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                decoration: BoxDecoration(
+                  color: isSelected ? const Color(0xFFE91E63) : Colors.grey[100],
+                  borderRadius: BorderRadius.circular(20),
+                  border: isSelected ? null : Border.all(color: Colors.grey[300]!),
+                ),
+                child: Text(
+                  flow,
+                  style: GoogleFonts.poppins(
+                    color: isSelected ? Colors.white : Colors.black87,
+                    fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
+                    fontSize: 12,
+                  ),
+                ),
+              ),
+            );
+          }).toList(),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildBBTCard() {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: Colors.grey[200]!),
+      ),
+      child: Row(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(10),
+            decoration: BoxDecoration(color: Colors.orange.shade50, shape: BoxShape.circle),
+            child: const Icon(Icons.thermostat_rounded, color: Colors.orange),
+          ),
+          const SizedBox(width: 16),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text('Basal Body Temp', style: GoogleFonts.poppins(fontWeight: FontWeight.w600)),
+                Text('Track first thing in AM', style: GoogleFonts.poppins(fontSize: 12, color: Colors.grey)),
+              ],
+            ),
+          ),
+          SizedBox(
+            width: 80,
+            child: TextField(
+              controller: _bbtController,
+              keyboardType: TextInputType.number,
+              decoration: const InputDecoration(
+                hintText: '36.5',
+                suffixText: '°C',
+                border: InputBorder.none,
+              ),
+              style: GoogleFonts.poppins(fontSize: 18, fontWeight: FontWeight.w600),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildLHAndMucusSection() {
+    return Row(
+      children: [
+        Expanded(
+          child: _buildDropdownCard(
+            title: 'LH Test',
+            value: _selectedLHResult,
+            items: ['Positive', 'Negative', 'Peak'],
+            onChanged: (val) => setState(() => _selectedLHResult = val),
+            icon: Icons.science_outlined,
+            color: Colors.purple,
+          ),
+        ),
+        const SizedBox(width: 12),
+        Expanded(
+          child: _buildDropdownCard(
+            title: 'Cervical Mucus',
+            value: _selectedCervicalMucus,
+            items: ['Dry', 'Sticky', 'Creamy', 'Egg White'],
+            onChanged: (val) => setState(() => _selectedCervicalMucus = val),
+            icon: Icons.water_drop_outlined,
+            color: Colors.blue,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildDropdownCard({
+    required String title,
+    required String? value,
+    required List<String> items,
+    required Function(String?) onChanged,
+    required IconData icon,
+    required Color color,
+  }) {
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: Colors.grey[200]!),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(icon, size: 18, color: color),
+              const SizedBox(width: 8),
+              Text(title, style: GoogleFonts.poppins(fontSize: 12, fontWeight: FontWeight.w500)),
+            ],
+          ),
+          const SizedBox(height: 4),
+          DropdownButton<String>(
+            isExpanded: true,
+            value: value,
+            hint: Text('Select', style: GoogleFonts.poppins(fontSize: 12)),
+            underline: Container(),
+            icon: const Icon(Icons.keyboard_arrow_down, size: 18),
+            items: items.map((e) => DropdownMenuItem(value: e, child: Text(e, style: GoogleFonts.poppins(fontSize: 13)))).toList(),
+            onChanged: onChanged,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSymptomsChips() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text('Symptoms', style: GoogleFonts.poppins(color: Colors.grey[700])),
+        const SizedBox(height: 8),
         Wrap(
           spacing: 8.0,
+          runSpacing: 8.0,
           children: _symptomsList.map((symptom) {
             final isSelected = _selectedSymptoms.contains(symptom);
             return FilterChip(
@@ -245,7 +329,14 @@ class _FertilityTrackingScreenState extends State<FertilityTrackingScreen> {
                   }
                 });
               },
-              selectedColor: Colors.pink.shade100,
+              backgroundColor: Colors.grey[100],
+              selectedColor: const Color(0xFFF8BBD0),
+              labelStyle: GoogleFonts.poppins(
+                color: isSelected ? const Color(0xFF880E4F) : Colors.black87,
+                fontSize: 12,
+              ),
+              checkmarkColor: const Color(0xFF880E4F),
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20), side: BorderSide(color: Colors.transparent)),
             );
           }).toList(),
         ),
@@ -253,10 +344,12 @@ class _FertilityTrackingScreenState extends State<FertilityTrackingScreen> {
     );
   }
 
-  void _saveDailyLog() {
-    // Mock save functionality
+  void _saveData() {
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Daily log saved successfully!')),
+      SnackBar(
+        content: Text('Daily log saved for ${DateFormat('MMM d').format(_selectedDate)}', style: GoogleFonts.poppins()),
+        backgroundColor: Colors.green,
+      ),
     );
   }
 }
