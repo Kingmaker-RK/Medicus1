@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'llm_translation_service.dart';
+import '../utils/logger.dart';
 
 /// Localization service for instant UI translation
 class LocalizationService {
@@ -17,7 +18,7 @@ class LocalizationService {
 
   /// Set current language
   Future<void> setLanguage(String languageCode) async {
-    print(
+    logger.d(
       '🌍 LocalizationService: Setting language from $_currentLanguageCode to $languageCode',
     );
 
@@ -27,28 +28,28 @@ class LocalizationService {
 
     // Clear cache completely to force fresh translations
     if (previousLanguage != languageCode) {
-      print(
+      logger.d(
         '🧹 LocalizationService: Clearing translation cache for language change',
       );
       _llmService.clearCache();
     }
 
-    print('✅ LocalizationService: Language changed to $_currentLanguageCode');
+    logger.d('✅ LocalizationService: Language changed to $_currentLanguageCode');
 
     // Pre-cache common strings for better performance
     if (languageCode != 'en') {
       try {
-        print(
+        logger.d(
           '🔄 LocalizationService: Pre-caching common strings for $languageCode...',
         );
         await _llmService.precacheCommonStrings(languageCode);
-        print('✅ LocalizationService: Pre-caching complete for $languageCode');
+        logger.d('✅ LocalizationService: Pre-caching complete for $languageCode');
       } catch (e) {
-        print('⚠️ LocalizationService: Pre-caching failed - $e');
+        logger.w('⚠️ LocalizationService: Pre-caching failed - $e');
         // Continue even if pre-caching fails - translations will work on-demand
       }
     } else {
-      print('ℹ️ LocalizationService: English selected, skipping pre-cache');
+      logger.d('ℹ️ LocalizationService: English selected, skipping pre-cache');
     }
   }
 
@@ -58,9 +59,9 @@ class LocalizationService {
       return text;
     }
 
-    print('🔤 Translating "$text" to $_currentLanguageCode...');
+    logger.d('🔤 Translating "$text" to $_currentLanguageCode...');
     final result = await _llmService.translate(text, _currentLanguageCode);
-    print('✅ Translation result: "$result"');
+    logger.d('✅ Translation result: "$result"');
     return result;
   }
 

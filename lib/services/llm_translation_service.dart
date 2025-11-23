@@ -5,6 +5,7 @@ import 'package:google_generative_ai/google_generative_ai.dart';
 import 'package:http/http.dart' as http;
 import '../constants/app_constants.dart';
 import 'deepl_translation_service.dart';
+import '../utils/logger.dart';
 
 /// Advanced LLM-powered translation service using Llama (via OpenAI-compatible API)
 /// with fallbacks to Google Gemini Flash 2.0 and DeepL.
@@ -40,9 +41,9 @@ class LLMTranslationService {
       'Apollo',
     ].contains(modelName)) {
       _currentMedicalModel = modelName;
-      print('✅ Switched to Medical Model: $_currentMedicalModel');
+      logger.d('✅ Switched to Medical Model: $_currentMedicalModel');
     } else {
-      print('⚠️ Unknown model $modelName, keeping $_currentMedicalModel');
+      logger.w('⚠️ Unknown model $modelName, keeping $_currentMedicalModel');
     }
   }
 
@@ -52,9 +53,9 @@ class LLMTranslationService {
     if (AppConstants.llamaApiKey.isNotEmpty &&
         AppConstants.llamaApiKey != 'YOUR_LLAMA_API_KEY') {
       _isLlamaConfigured = true;
-      print('✅ LLM Translation Service initialized with Llama (${AppConstants.llamaModel})');
+      logger.d('✅ LLM Translation Service initialized with Llama (${AppConstants.llamaModel})');
     } else {
-      print('⚠️ Llama API key not configured. Will attempt fallbacks.');
+      logger.w('⚠️ Llama API key not configured. Will attempt fallbacks.');
     }
 
     // Initialize Gemini as fallback
@@ -71,7 +72,7 @@ class LLMTranslationService {
         ),
       );
       if (!_isLlamaConfigured) {
-        print('✅ LLM Translation Service initialized with Gemini Flash 2.0 (Fallback)');
+        logger.d('✅ LLM Translation Service initialized with Gemini Flash 2.0 (Fallback)');
       }
     }
 
@@ -107,11 +108,11 @@ class LLMTranslationService {
         final response = await _geminiModel!.generateContent(content);
         return response.text?.trim() ?? '';
       } catch (e) {
-        print('❌ Gemini Handwriting recognition error: $e');
+        logger.e('❌ Gemini Handwriting recognition error: $e');
       }
     }
     
-    print('⚠️ No vision model available for handwriting recognition');
+    logger.w('⚠️ No vision model available for handwriting recognition');
     return '';
   }
 
@@ -135,11 +136,11 @@ class LLMTranslationService {
         final response = await _geminiModel!.generateContent(content);
         return response.text?.trim() ?? '';
       } catch (e) {
-        print('❌ Gemini Image text extraction error: $e');
+        logger.e('❌ Gemini Image text extraction error: $e');
       }
     }
 
-    print('⚠️ No vision model available for image text extraction');
+    logger.w('⚠️ No vision model available for image text extraction');
     return '';
   }
 
@@ -170,7 +171,7 @@ class LLMTranslationService {
           return translatedText;
         }
       } catch (e) {
-        print('❌ Llama translation error: $e');
+        logger.e('❌ Llama translation error: $e');
         // Continue to fallbacks
       }
     }
@@ -188,7 +189,7 @@ class LLMTranslationService {
         _cacheTranslation(text, targetLanguageCode, translatedText);
         return translatedText;
       } catch (e) {
-        print('❌ DeepL translation error: $e');
+        logger.e('❌ DeepL translation error: $e');
       }
     }
 
@@ -210,7 +211,7 @@ Translation:''';
         _cacheTranslation(text, targetLanguageCode, translatedText);
         return translatedText;
       } catch (e) {
-        print('❌ Gemini translation error: $e');
+        logger.e('❌ Gemini translation error: $e');
       }
     }
 
@@ -298,12 +299,12 @@ Text to translate: "$text"
              try {
                return jsonDecode(content) as Map<String, dynamic>;
              } catch (e) {
-               print('⚠️ Failed to parse Llama JSON: $e');
+               logger.w('⚠️ Failed to parse Llama JSON: $e');
              }
           }
         }
       } catch (e) {
-        print('❌ Llama Medical translation error: $e');
+        logger.e('❌ Llama Medical translation error: $e');
       }
     }
 
@@ -326,10 +327,10 @@ Text to translate: "$text"
         try {
           return jsonDecode(jsonString) as Map<String, dynamic>;
         } catch (e) {
-          print('⚠️ Failed to parse Gemini JSON: $e. Raw: $text');
+          logger.w('⚠️ Failed to parse Gemini JSON: $e. Raw: $text');
         }
       } catch (e) {
-        print('❌ Gemini Medical translation error: $e');
+        logger.e('❌ Gemini Medical translation error: $e');
       }
     }
 
@@ -371,11 +372,11 @@ Text to translate: "$text"
         final content = data['choices']?[0]['message']?['content']?.toString().trim();
         return content;
       } else {
-        print('❌ Llama API Error: ${response.statusCode} - ${response.body}');
+        logger.e('❌ Llama API Error: ${response.statusCode} - ${response.body}');
         return null;
       }
     } catch (e) {
-      print('❌ Llama Exception: $e');
+      logger.e('❌ Llama Exception: $e');
       return null;
     }
   }
@@ -464,7 +465,7 @@ Translations (numbered format):''';
           translatedText = data['choices']?[0]['message']?['content']?.toString().trim();
         }
       } catch (e) {
-        print('❌ Llama batch error: $e');
+        logger.e('❌ Llama batch error: $e');
       }
     }
 
@@ -474,7 +475,7 @@ Translations (numbered format):''';
         final response = await _geminiModel!.generateContent([Content.text(prompt)]);
         translatedText = response.text?.trim();
        } catch (e) {
-         print('❌ Gemini batch error: $e');
+         logger.e('❌ Gemini batch error: $e');
        }
     }
 
@@ -575,7 +576,7 @@ Translations (numbered format):''';
     ];
 
     await translateBatch(commonStrings, targetLanguageCode);
-    print(
+    logger.d(
       '✅ Pre-cached ${commonStrings.length} common strings for ${_getLanguageName(targetLanguageCode)}',
     );
   }

@@ -1,6 +1,7 @@
 import 'package:deepl_dart/deepl_dart.dart';
 import '../models/translation_result.dart';
 import '../constants/app_constants.dart';
+import '../utils/logger.dart';
 
 /// Professional DeepL translation service
 /// Provides high-quality neural machine translation for 30+ languages
@@ -19,17 +20,17 @@ class DeepLTranslationService {
     try {
       final deeplApiKey = AppConstants.deeplApiKey;
 
-      if (deeplApiKey.isNotEmpty && deeplApiKey != 'YOUR_DEEPL_API_KEY') {
+      if (deeplApiKey.isNotEmpty && deeplApiKey != 'YOUR_DEEP_API_KEY') {
         _translator = DeepL(authKey: deeplApiKey);
         _isInitialized = true;
-        print('✅ DeepL Translation Service initialized successfully');
+        logger.d('✅ DeepL Translation Service initialized successfully');
       } else {
-        print(
+        logger.w(
           '⚠️ DeepL API key not configured. Please set DEEPL_API_KEY in app_constants.dart',
         );
       }
     } catch (e) {
-      print('❌ Failed to initialize DeepL: $e');
+      logger.e('❌ Failed to initialize DeepL: $e');
       _isInitialized = false;
     }
   }
@@ -73,7 +74,7 @@ class DeepLTranslationService {
         anatomyImages: [],
       );
     } catch (e) {
-      print('❌ DeepL translation error: $e');
+      logger.e('❌ DeepL translation error: $e');
       rethrow;
     }
   }
@@ -185,7 +186,7 @@ class DeepLTranslationService {
             .toStringAsFixed(2),
       };
     } catch (e) {
-      print('❌ Failed to get DeepL usage statistics: $e');
+      logger.e('❌ Failed to get DeepL usage statistics: $e');
       return null;
     }
   }
@@ -198,7 +199,7 @@ class DeepLTranslationService {
       final languages = await _translator!.languages.getSources();
       return languages.map((lang) => lang.languageCode).toList();
     } catch (e) {
-      print('❌ Failed to get supported languages: $e');
+      logger.e('❌ Failed to get supported languages: $e');
       return [];
     }
   }

@@ -1,5 +1,6 @@
 import 'package:flutter_tts/flutter_tts.dart';
 import 'package:speech_to_text/speech_to_text.dart' as stt;
+import '../utils/logger.dart';
 
 class SpeechService {
   static final SpeechService _instance = SpeechService._internal();
@@ -23,10 +24,10 @@ class SpeechService {
     try {
       _isInitialized = await _speechToText.initialize(
         onStatus: (status) {
-          print('Speech status: $status');
+          logger.d('Speech status: $status');
         },
         onError: (error) {
-          print('Speech error: $error');
+          logger.e('Speech error: $error');
         },
       );
 
@@ -37,7 +38,7 @@ class SpeechService {
 
       return _isInitialized;
     } catch (e) {
-      print('Error initializing speech services: $e');
+      logger.e('Error initializing speech services: $e');
       return false;
     }
   }
@@ -99,14 +100,14 @@ class SpeechService {
         await _flutterTts.setLanguage(code);
         await _flutterTts.speak(text);
       } else {
-        print('TTS language not available: $languageCode (normalized: $code)');
+        logger.w('TTS language not available: $languageCode (normalized: $code)');
         // Fallback: Try English as a last resort for specific system messages, 
         // but for translation output, it's better to notify the user.
         // For now, we throw so the UI can handle it.
         throw Exception('Voice output not available for this language ($languageCode)');
       }
     } catch (e) {
-      print('Error speaking text: $e');
+      logger.e('Error speaking text: $e');
       rethrow; // Allow provider to handle the error
     }
   }

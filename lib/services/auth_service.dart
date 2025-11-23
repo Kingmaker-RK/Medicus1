@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'dart:math';
+import '../utils/logger.dart';
 
 class AuthService {
   final FirebaseAuth _auth;
@@ -48,10 +49,10 @@ class AuthService {
   Future<void> _sendVerificationEmail(String email, String code) async {
     // TODO: Integrate with email service (SendGrid, AWS SES, etc.)
     // For now, print to console for testing
-    print('========================================');
-    print('EMAIL VERIFICATION CODE FOR: $email');
-    print('CODE: $code');
-    print('========================================');
+    logger.d('========================================');
+    logger.d('EMAIL VERIFICATION CODE FOR: $email');
+    logger.d('CODE: $code');
+    logger.d('========================================');
 
     // Simulate email sending delay
     await Future.delayed(const Duration(seconds: 1));
@@ -124,10 +125,10 @@ class AuthService {
   // Send password reset email (simulated)
   Future<void> _sendPasswordResetEmail(String email, String code) async {
     // TODO: Integrate with email service
-    print('========================================');
-    print('PASSWORD RESET CODE FOR: $email');
-    print('CODE: $code');
-    print('========================================');
+    logger.d('========================================');
+    logger.d('PASSWORD RESET CODE FOR: $email');
+    logger.d('CODE: $code');
+    logger.d('========================================');
 
     await Future.delayed(const Duration(seconds: 1));
   }

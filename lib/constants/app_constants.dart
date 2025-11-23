@@ -1,4 +1,4 @@
-import 'package:myapp/config/api_config.dart';
+import '../config/api_config.dart';
 
 class AppConstants {
   // App Info

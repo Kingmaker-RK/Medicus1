@@ -8,6 +8,7 @@ import '../models/upload_record_model.dart';
 import 'package:intl/intl.dart';
 import 'package:printing/printing.dart';
 import 'dart:io';
+import '../utils/logger.dart';
 
 class ERezeptScreen extends StatefulWidget {
   const ERezeptScreen({Key? key}) : super(key: key);
@@ -244,7 +245,7 @@ class _ERezeptScreenState extends State<ERezeptScreen> {
       try {
         await _service.saveUploadRecord(record);
       } catch (e) {
-        print('Error saving record: $e'); // Log it but allow flow to continue if possible? 
+        logger.e('Error saving record: $e'); // Log it but allow flow to continue if possible? 
         // Or throw. Let's throw to be safe, but distinguishing it.
         throw Exception('Storage Error: $e');
       }

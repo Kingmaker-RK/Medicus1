@@ -27,7 +27,7 @@ class TranslationService {
       _llmService.initialize();
       return await _llmService.recognizeHandwriting(imageBytes);
     } catch (e) {
-      print('Error recognizing handwriting: $e');
+      logger.e('Error recognizing handwriting: $e');
       return '';
     }
   }
@@ -38,7 +38,7 @@ class TranslationService {
       _llmService.initialize();
       return await _llmService.extractTextFromImage(imageBytes);
     } catch (e) {
-      print('Error extracting text from image: $e');
+      logger.e('Error extracting text from image: $e');
       return '';
     }
   }
@@ -57,7 +57,7 @@ class TranslationService {
       // 1. Try Advanced LLM (Llama/Gemini/GPT-5.1/Claude 3.x) - Priority #1
       // This service now handles Llama -> DeepL -> Gemini fallback internally
       // Architecture supports: Llama, GPT-5.1, DeepL, NLLB-200, SeamlessM4T, Claude 3.x
-      print('🔄 Attempting translation with Advanced LLM Service (Llama/Gemini/GPT/Claude)...');
+      logger.d('🔄 Attempting translation with Advanced LLM Service (Llama/Gemini/GPT/Claude)...');
       
       try {
         _llmService.initialize();
@@ -93,7 +93,7 @@ class TranslationService {
                anatomyImages = await getAnatomyImages(medicalTerms);
              }
 
-             print('✅ Medical Translation completed using Advanced LLM Service');
+             logger.d('✅ Medical Translation completed using Advanced LLM Service');
              return TranslationResult(
                originalText: text,
                translatedText: translatedText,
@@ -103,7 +103,7 @@ class TranslationService {
                anatomyImages: anatomyImages,
              );
            } else {
-             print('⚠️ Advanced LLM returned original text. Proceeding to fallbacks...');
+             logger.w('⚠️ Advanced LLM returned original text. Proceeding to fallbacks...');
            }
         }
         
@@ -116,7 +116,7 @@ class TranslationService {
            final medicalTerms = _mockMedicalTerms('$text $llmTranslation');
            final anatomyImages = await getAnatomyImages(medicalTerms);
 
-           print('✅ Translation completed using Advanced LLM Service');
+           logger.d('✅ Translation completed using Advanced LLM Service');
            return TranslationResult(
              originalText: text,
              translatedText: llmTranslation,
@@ -127,7 +127,7 @@ class TranslationService {
            );
         }
       } catch (e) {
-        print('⚠️ Advanced LLM translation failed: $e');
+        logger.e('⚠️ Advanced LLM translation failed: $e');
       }
 
       // 2. Try DeepL API (Direct fallback if LLM service completely fails)
@@ -138,10 +138,10 @@ class TranslationService {
             sourceLanguage: sourceLanguage,
             targetLanguage: targetLanguage,
           );
-          print('✅ Translation completed using DeepL (Direct)');
+          logger.d('✅ Translation completed using DeepL (Direct)');
           return deeplResult;
         } catch (e) {
-          print('⚠️ DeepL translation failed: $e');
+          logger.e('⚠️ DeepL translation failed: $e');
         }
       }
 
@@ -160,7 +160,7 @@ class TranslationService {
           final medicalTerms = _mockMedicalTerms('$text $googleResult');
           final anatomyImages = await getAnatomyImages(medicalTerms);
 
-          print('✅ Translation completed using Google Translate');
+          logger.d('✅ Translation completed using Google Translate');
           return TranslationResult(
             originalText: text,
             translatedText: googleResult,
@@ -170,7 +170,7 @@ class TranslationService {
             anatomyImages: anatomyImages,
           );
         } catch (e) {
-          print('⚠️ Google Translate failed: $e');
+          logger.e('⚠️ Google Translate failed: $e');
         }
       }
 
@@ -185,7 +185,7 @@ class TranslationService {
         final medicalTerms = _mockMedicalTerms('$text $libreResult');
         final anatomyImages = await getAnatomyImages(medicalTerms);
 
-        print('✅ Translation completed using LibreTranslate');
+        logger.d('✅ Translation completed using LibreTranslate');
         return TranslationResult(
           originalText: text,
           translatedText: libreResult,
@@ -195,7 +195,7 @@ class TranslationService {
           anatomyImages: anatomyImages,
         );
       } catch (e) {
-        print('⚠️ LibreTranslate failed: $e');
+        logger.e('⚠️ LibreTranslate failed: $e');
       }
 
       // 5. Try MyMemory API (Free, no API key needed)
@@ -209,7 +209,7 @@ class TranslationService {
         final medicalTerms = _mockMedicalTerms('$text $myMemoryResult');
         final anatomyImages = await getAnatomyImages(medicalTerms);
 
-        print('✅ Translation completed using MyMemory');
+        logger.d('✅ Translation completed using MyMemory');
         return TranslationResult(
           originalText: text,
           translatedText: myMemoryResult,
@@ -219,7 +219,7 @@ class TranslationService {
           anatomyImages: anatomyImages,
         );
       } catch (e) {
-        print('⚠️ MyMemory translation failed: $e');
+        logger.e('⚠️ MyMemory translation failed: $e');
       }
 
       // 6. Try OpenAI GPT-4 (if configured)
@@ -234,17 +234,17 @@ class TranslationService {
           );
           return openAIResult;
         } catch (e) {
-          print('OpenAI translation failed: $e');
+          logger.e('OpenAI translation failed: $e');
         }
       }
 
       // 7. Fallback to mock translation for testing
-      print(
+      logger.w(
         '⚠️ All translation APIs failed or not configured, using mock translation',
       );
       return _mockTranslation(text, sourceLanguage, targetLanguage);
     } catch (e) {
-      print('Error translating with GPT-4: $e');
+      logger.e('Error translating with GPT-4: $e');
 
       // Fallback: Return a mock translation for testing
       return _mockTranslation(text, sourceLanguage, targetLanguage);
@@ -285,7 +285,7 @@ class TranslationService {
 
       throw Exception('Translation failed: Invalid response');
     } catch (e) {
-      print('Google Translate API error: $e');
+      logger.e('Google Translate API error: $e');
       rethrow;
     }
   }
@@ -325,7 +325,7 @@ class TranslationService {
 
       throw Exception('LibreTranslate failed: Invalid response');
     } catch (e) {
-      print('LibreTranslate API error: $e');
+      logger.e('LibreTranslate API error: $e');
       rethrow;
     }
   }
@@ -362,7 +362,7 @@ class TranslationService {
 
       throw Exception('MyMemory translation failed: Invalid response');
     } catch (e) {
-      print('MyMemory API error: $e');
+      logger.e('MyMemory API error: $e');
       rethrow;
     }
   }
@@ -436,7 +436,7 @@ Text to translate: "$text"''';
           );
         }
       } catch (e) {
-        print('Could not parse JSON from GPT-4 response: $e');
+        logger.w('Could not parse JSON from GPT-4 response: $e');
       }
 
       // If JSON parsing fails, use the raw content as translation
@@ -449,7 +449,7 @@ Text to translate: "$text"''';
         anatomyImages: [],
       );
     } catch (e) {
-      print('OpenAI API error: $e');
+      logger.e('OpenAI API error: $e');
       rethrow;
     }
   }
@@ -521,7 +521,7 @@ Text to translate: "$text"''';
   // Helper to extract JSON string value
   String _extractJsonValue(String json, String key) {
     try {
-      final pattern = RegExp('"$key"\\s*:\\s*"([^"]*)"');
+      final pattern = RegExp('"$key"\\s*:\s*"([^"]*)"');
       final match = pattern.firstMatch(json);
       return match?.group(1) ?? '';
     } catch (e) {
@@ -532,7 +532,7 @@ Text to translate: "$text"''';
   // Helper to extract JSON array
   List<String> _extractJsonArray(String json, String key) {
     try {
-      final pattern = RegExp('"$key"\\s*:\\s*\\[([^\\]]*)\\]');
+      final pattern = RegExp('"$key"\\s*:\s*\[([^\]]*)\]');
       final match = pattern.firstMatch(json);
       if (match != null) {
         final arrayContent = match.group(1) ?? '';
@@ -558,7 +558,7 @@ Text to translate: "$text"''';
 
       return List<String>.from(response.data['terms'] ?? []);
     } catch (e) {
-      print('Error extracting medical terms: $e');
+      logger.e('Error extracting medical terms: $e');
       return _mockMedicalTerms(text);
     }
   }
@@ -573,7 +573,7 @@ Text to translate: "$text"''';
 
       return List<String>.from(response.data['images'] ?? []);
     } catch (e) {
-      print('Error fetching anatomy images: $e');
+      logger.e('Error fetching anatomy images: $e');
       return _mockAnatomyImages(medicalTerms);
     }
   }

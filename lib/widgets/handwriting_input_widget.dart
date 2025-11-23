@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import '../constants/colors.dart';
 import 'translated_widget.dart';
+import '../utils/logger.dart';
 
 class HandwritingInputWidget extends StatefulWidget {
   final Function(Uint8List) onHandwritingCaptured;
@@ -23,7 +24,7 @@ class _HandwritingInputWidgetState extends State<HandwritingInputWidget> {
   final GlobalKey _globalKey = GlobalKey();
 
   void _startStroke(Offset point) {
-    print('DEBUG: Start Stroke at $point');
+    logger.d('DEBUG: Start Stroke at $point');
     setState(() {
       _currentStroke = [point];
       _strokes.add(_currentStroke);
@@ -61,7 +62,7 @@ class _HandwritingInputWidgetState extends State<HandwritingInputWidget> {
         widget.onHandwritingCaptured(byteData.buffer.asUint8List());
       }
     } catch (e) {
-      print('Error capturing handwriting: $e');
+      logger.e('Error capturing handwriting: $e');
     }
   }
 

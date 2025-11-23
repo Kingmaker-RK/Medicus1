@@ -71,6 +71,14 @@ class MockUserProvider extends ChangeNotifier implements UserProvider {
   Future<void> verifyEmail({required String email, required String code}) async {}
   @override
   Future<void> resendVerificationCode(String email) async {}
+  @override
+  Future<void> incrementServiceUsage(String serviceRoute) async {}
+  @override
+  Map<String, int> get serviceUsageCounts => {};
+  @override
+  bool get sortServicesByUsage => false;
+  @override
+  Future<void> toggleServiceSorting() async {}
 }
 
 class MockTranslationProvider extends ChangeNotifier implements TranslationProvider {
@@ -184,7 +192,7 @@ class MockTranslationProvider extends ChangeNotifier implements TranslationProvi
 
   // Stubs
   @override
-  Future<void> initialize({String? userLanguage}) async {}
+  Future<void> initialize({String? userLanguage, bool isGuest = false}) async {}
   @override
   void updateSourceLanguageFromUser(String l) {}
   @override
@@ -195,6 +203,10 @@ class MockTranslationProvider extends ChangeNotifier implements TranslationProvi
   Future<String> extractTextFromImage(Uint8List bytes) async => "OCR Text";
   @override
   Future<void> stopSpeaking() async {}
+  @override
+  void setConversationMode(bool enabled) {}
+  @override
+  void updateGuestStatus(bool isGuest) {}
 }
 
 class MockPatientProfileProvider extends ChangeNotifier implements PatientProfileProvider {
