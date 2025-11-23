@@ -35,4 +35,13 @@ class AppRoutes {
   static const String fitphysic = 'fitphysic';
   static const String pulmonology = '/pulmonology';
   static const String podiatry = '/podiatry';
+  
+  // Fertility Child Care Routes
+  static const String fertilityChildCare = '/fertility-child-care';
+  static const String fertilityTracking = '/fertility-tracking';
+  static const String pregnancyPlanning = '/pregnancy-planning';
+  static const String medicalData = '/medical-data';
+  static const String pregnancyTracking = '/pregnancy-tracking';
+  static const String newbornChildCare = '/newborn-child-care';
+  static const String mothersHealth = '/mothers-health';
 }

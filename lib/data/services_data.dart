@@ -116,4 +116,11 @@ final List<ServiceModel> services = [
     color: Colors.indigoAccent,
     route: AppRoutes.podiatry,
   ),
+  ServiceModel(
+    title: 'Fertility & Child Care',
+    description: 'Comprehensive fertility, pregnancy, and child care tracking with AI support.',
+    icon: LucideIcons.heartPulse,
+    color: Colors.pinkAccent,
+    route: AppRoutes.fertilityChildCare,
+  ),
 ];

@@ -35,6 +35,13 @@ import '../screens/hiv_support_organizations_screen.dart';
 import '../screens/hiv_history_screen.dart';
 import '../screens/pulmonology_screen.dart';
 import '../screens/podiatry_screen.dart';
+import '../screens/fertility/fertility_home_screen.dart';
+import '../screens/fertility/fertility_tracking_screen.dart';
+import '../screens/fertility/pregnancy_planning_screen.dart';
+import '../screens/fertility/medical_data_screen.dart';
+import '../screens/fertility/pregnancy_tracking_screen.dart';
+import '../screens/fertility/newborn_child_care_screen.dart';
+import '../screens/fertility/mothers_health_screen.dart';
 
 class AppRouter {
   static final GoRouter router = GoRouter(
@@ -224,6 +231,41 @@ class AppRouter {
         path: AppRoutes.podiatry,
         name: AppRoutes.podiatry,
         builder: (context, state) => const PodiatryScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.fertilityChildCare,
+        name: AppRoutes.fertilityChildCare,
+        builder: (context, state) => const FertilityHomeScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.fertilityTracking,
+        name: AppRoutes.fertilityTracking,
+        builder: (context, state) => const FertilityTrackingScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.pregnancyPlanning,
+        name: AppRoutes.pregnancyPlanning,
+        builder: (context, state) => const PregnancyPlanningScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.medicalData,
+        name: AppRoutes.medicalData,
+        builder: (context, state) => const MedicalDataScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.pregnancyTracking,
+        name: AppRoutes.pregnancyTracking,
+        builder: (context, state) => const PregnancyTrackingScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.newbornChildCare,
+        name: AppRoutes.newbornChildCare,
+        builder: (context, state) => const NewbornChildCareScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.mothersHealth,
+        name: AppRoutes.mothersHealth,
+        builder: (context, state) => const MothersHealthScreen(),
       ),
     ],
   );
