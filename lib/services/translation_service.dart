@@ -4,6 +4,7 @@ import '../models/translation_result.dart';
 import '../constants/app_constants.dart';
 import 'deepl_translation_service.dart';
 import 'llm_translation_service.dart';
+import '../utils/logger.dart';
 
 class TranslationService {
   static final TranslationService _instance = TranslationService._internal();

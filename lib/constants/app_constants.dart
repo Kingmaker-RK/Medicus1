@@ -1,3 +1,5 @@
+import 'package:myapp/config/api_config.dart';
+
 class AppConstants {
   // App Info
   static const String appName = 'AI-Gris';
@@ -14,13 +16,13 @@ class AppConstants {
   // OpenAI API Configuration for Advanced LLM Translation
   // IMPORTANT: Replace with your actual OpenAI API key
   // Get your API key from: https://platform.openai.com/api-keys
-  static const String openaiApiKey = 'YOUR_OPENAI_API_KEY';
+  static const String openaiApiKey = ApiConfig.openaiApiKey;
 
   // Google Translate API Configuration
   // IMPORTANT: Replace with your actual Google Cloud API key
   // Get your API key from: https://console.cloud.google.com/apis/credentials
   // Enable Cloud Translation API: https://console.cloud.google.com/apis/library/translate.googleapis.com
-  static const String googleTranslateApiKey = 'YOUR_GOOGLE_TRANSLATE_API_KEY';
+  static const String googleTranslateApiKey = ApiConfig.googleTranslateApiKey;
   static const String googleTranslateApiUrl =
       'https://translation.googleapis.com/language/translate/v2';
 
@@ -28,19 +30,19 @@ class AppConstants {
   // IMPORTANT: Replace with your actual Google AI Studio API key
   // Get your API key from: https://aistudio.google.com/app/apikey
   // This provides state-of-the-art translation with cultural context and medical accuracy
-  static const String geminiApiKey = 'YOUR_GEMINI_API_KEY';
+  static const String geminiApiKey = ApiConfig.geminiApiKey;
 
   // DeepL API Configuration for Professional Translation
   // IMPORTANT: Replace with your actual DeepL API key
   // Get your API key from: https://www.deepl.com/pro-api
   // DeepL provides high-quality neural machine translation for 30+ languages
   // PLEASE REPLACE THIS WITH YOUR ACTUAL DEEPL API KEY
-  static const String deeplApiKey = 'YOUR_DEEPL_API_KEY_HERE';
+  static const String deeplApiKey = ApiConfig.deeplApiKey;
 
   // Llama API Configuration (e.g., via Groq, Together AI, or Local Ollama)
   // IMPORTANT: Replace with your actual API key and URL
   // Standard OpenAI-compatible endpoint format
-  static const String llamaApiKey = 'YOUR_LLAMA_API_KEY'; 
+  static const String llamaApiKey = ApiConfig.llamaApiKey; 
   static const String llamaApiUrl = 'https://api.groq.com/openai/v1/chat/completions'; // Default to Groq for speed
   static const String llamaModel = 'llama-3.1-70b-versatile'; // Default model
 

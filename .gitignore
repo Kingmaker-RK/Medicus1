@@ -62,3 +62,4 @@ app.*.map.json
 .env.local
 .env.*.local
 android/key.properties
+lib/config/api_config.dart
