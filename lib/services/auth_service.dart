@@ -2,7 +2,9 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'dart:math';
 
 class AuthService {
-  final FirebaseAuth _auth = FirebaseAuth.instance;
+  final FirebaseAuth _auth;
+
+  AuthService({FirebaseAuth? auth}) : _auth = auth ?? FirebaseAuth.instance;
 
   // Store verification codes temporarily (in production, use backend)
   static final Map<String, String> _verificationCodes = {};

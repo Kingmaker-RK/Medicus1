@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../models/user_model.dart';
@@ -6,17 +7,24 @@ import '../services/auth_service.dart';
 import '../services/localization_service.dart';
 
 class UserProvider with ChangeNotifier {
-  final AuthService _authService = AuthService();
+  final AuthService _authService;
   final LocalizationService _localizationService = LocalizationService();
+
+  UserProvider({AuthService? authService})
+      : _authService = authService ?? AuthService();
 
   UserModel? _currentUser;
   String _selectedLanguage = 'en';
   bool _isLoading = false;
+  bool _sortServicesByUsage = false;
+  Map<String, int> _serviceUsageCounts = {};
 
   UserModel? get currentUser => _currentUser;
   String get selectedLanguage => _selectedLanguage;
   bool get isLoading => _isLoading;
   bool get isLoggedIn => _currentUser != null;
+  bool get sortServicesByUsage => _sortServicesByUsage;
+  Map<String, int> get serviceUsageCounts => _serviceUsageCounts;
 
   // Initialize user from storage
   Future<void> initialize() async {
@@ -51,6 +59,20 @@ class UserProvider with ChangeNotifier {
       final savedLanguage = prefs.getString(AppConstants.keyLanguage);
       if (savedLanguage != null) {
         _selectedLanguage = savedLanguage;
+      }
+
+      // Load service sorting preference
+      _sortServicesByUsage = prefs.getBool(AppConstants.keySortServicesByUsage) ?? false;
+
+      // Load service usage counts
+      final usageCountsString = prefs.getString(AppConstants.keyServiceUsageCounts);
+      if (usageCountsString != null) {
+        try {
+          final decoded = jsonDecode(usageCountsString) as Map<String, dynamic>;
+          _serviceUsageCounts = decoded.map((key, value) => MapEntry(key, value as int));
+        } catch (e) {
+          print('Error loading service usage counts: $e');
+        }
       }
 
       // Set initial language in localization service
@@ -342,5 +364,26 @@ class UserProvider with ChangeNotifier {
       _currentUser = _currentUser!.copyWith(role: role);
       notifyListeners();
     }
+  }
+
+  // Toggle service sorting preference
+  Future<void> toggleServiceSorting() async {
+    _sortServicesByUsage = !_sortServicesByUsage;
+    notifyListeners();
+
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool(AppConstants.keySortServicesByUsage, _sortServicesByUsage);
+  }
+
+  // Increment usage count for a service
+  Future<void> incrementServiceUsage(String serviceRoute) async {
+    _serviceUsageCounts[serviceRoute] = (_serviceUsageCounts[serviceRoute] ?? 0) + 1;
+    notifyListeners();
+
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(
+      AppConstants.keyServiceUsageCounts,
+      jsonEncode(_serviceUsageCounts),
+    );
   }
 }

@@ -252,6 +252,8 @@ class AppConstants {
   static const String keyUserId = 'user_id';
   static const String keyProfileCompleted = 'profile_completed';
   static const String keyIsSignUp = 'is_sign_up';
+  static const String keySortServicesByUsage = 'sort_services_by_usage';
+  static const String keyServiceUsageCounts = 'service_usage_counts';
 
   // Animation Duration
   static const Duration animationDuration = Duration(milliseconds: 300);

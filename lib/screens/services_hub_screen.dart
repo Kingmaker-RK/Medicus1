@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucide_icons/lucide_icons.dart';
+import 'package:provider/provider.dart';
 import '../constants/app_routes.dart';
 import '../constants/colors.dart';
 import '../data/services_data.dart';
 import '../models/service_model.dart';
+import '../providers/user_provider.dart';
 import '../widgets/app_bottom_navigation_bar.dart';
 
 class ServicesHubScreen extends StatelessWidget {
@@ -12,33 +14,70 @@ class ServicesHubScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColors.background,
-      appBar: AppBar(
-        backgroundColor: AppColors.primary,
-        foregroundColor: Colors.white,
-        elevation: 0,
-        title: const Text(
-          'Medical Services',
-          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-        ),
-        centerTitle: true,
-      ),
-      body: ListView.builder(
-        padding: const EdgeInsets.all(16),
-        itemCount: services.length,
-        itemBuilder: (context, index) {
-          final service = services[index];
-          return Padding(
-            padding: const EdgeInsets.only(bottom: 12),
-            child: _buildServiceCard(
-              context: context,
-              service: service,
+    return Consumer<UserProvider>(
+      builder: (context, userProvider, child) {
+        // Create a modifiable copy of the services list
+        final sortedServices = List<ServiceModel>.from(services);
+
+        // Sort the list
+        sortedServices.sort((a, b) {
+          // If "Most Used" is enabled, sort by usage count first
+          if (userProvider.sortServicesByUsage) {
+            final usageA = userProvider.serviceUsageCounts[a.route] ?? 0;
+            final usageB = userProvider.serviceUsageCounts[b.route] ?? 0;
+            // Sort by usage count descending
+            if (usageA != usageB) {
+              return usageB.compareTo(usageA);
+            }
+          }
+          // Secondary sort (or primary if "Most Used" is disabled): Alphabetical
+          return a.title.compareTo(b.title);
+        });
+
+        return Scaffold(
+          backgroundColor: AppColors.background,
+          appBar: AppBar(
+            backgroundColor: AppColors.primary,
+            foregroundColor: Colors.white,
+            elevation: 0,
+            title: const Text(
+              'Medical Services',
+              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
-          );
-        },
-      ),
-      bottomNavigationBar: const AppBottomNavigationBar(currentIndex: 4),
+            centerTitle: true,
+            actions: [
+              IconButton(
+                icon: Icon(
+                  userProvider.sortServicesByUsage
+                      ? LucideIcons.trendingUp
+                      : Icons.sort_by_alpha,
+                ),
+                tooltip: userProvider.sortServicesByUsage
+                    ? 'Sort Alphabetically'
+                    : 'Sort by Most Used',
+                onPressed: () {
+                  userProvider.toggleServiceSorting();
+                },
+              ),
+            ],
+          ),
+          body: ListView.builder(
+            padding: const EdgeInsets.all(16),
+            itemCount: sortedServices.length,
+            itemBuilder: (context, index) {
+              final service = sortedServices[index];
+              return Padding(
+                padding: const EdgeInsets.only(bottom: 12),
+                child: _buildServiceCard(
+                  context: context,
+                  service: service,
+                ),
+              );
+            },
+          ),
+          bottomNavigationBar: const AppBottomNavigationBar(currentIndex: 4),
+        );
+      },
     );
   }
 
@@ -47,7 +86,10 @@ class ServicesHubScreen extends StatelessWidget {
     required ServiceModel service,
   }) {
     return InkWell(
-      onTap: () => context.goNamed(service.route),
+      onTap: () {
+        context.read<UserProvider>().incrementServiceUsage(service.route);
+        context.goNamed(service.route);
+      },
       borderRadius: BorderRadius.circular(16),
       child: Container(
         padding: const EdgeInsets.all(16),
