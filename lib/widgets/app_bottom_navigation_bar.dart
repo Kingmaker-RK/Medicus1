@@ -31,7 +31,7 @@ class AppBottomNavigationBar extends StatelessWidget {
             children: [
               _buildNavItem(
                 context: context,
-                icon: LucideIcons.home,
+                icon: LucideIcons.mic,
                 label: 'Home',
                 index: 0,
                 isSelected: currentIndex == 0,
