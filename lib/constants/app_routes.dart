@@ -34,4 +34,5 @@ class AppRoutes {
   static const String orthopedic = 'orthopedic';
   static const String fitphysic = 'fitphysic';
   static const String pulmonology = '/pulmonology';
+  static const String podiatry = '/podiatry';
 }

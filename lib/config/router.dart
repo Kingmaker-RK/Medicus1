@@ -34,6 +34,7 @@ import '../screens/hiv_prevention_programs_screen.dart';
 import '../screens/hiv_support_organizations_screen.dart';
 import '../screens/hiv_history_screen.dart';
 import '../screens/pulmonology_screen.dart';
+import '../screens/podiatry_screen.dart';
 
 class AppRouter {
   static final GoRouter router = GoRouter(
@@ -218,6 +219,11 @@ class AppRouter {
         path: AppRoutes.pulmonology,
         name: AppRoutes.pulmonology,
         builder: (context, state) => const PulmonologyScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.podiatry,
+        name: AppRoutes.podiatry,
+        builder: (context, state) => const PodiatryScreen(),
       ),
     ],
   );
