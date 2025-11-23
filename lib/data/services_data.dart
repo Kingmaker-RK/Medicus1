@@ -102,4 +102,11 @@ final List<ServiceModel> services = [
     color: Colors.redAccent,
     route: AppRoutes.hivPrevention,
   ),
+  ServiceModel(
+    title: 'Pulmonology',
+    description: 'Find lung specialists and clinics. Upload and manage your reports.',
+    icon: LucideIcons.wind,
+    color: Colors.lightBlue,
+    route: AppRoutes.pulmonology,
+  ),
 ];

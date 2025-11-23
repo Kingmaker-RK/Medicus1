@@ -33,6 +33,7 @@ import '../screens/hiv_clinics_screen.dart';
 import '../screens/hiv_prevention_programs_screen.dart';
 import '../screens/hiv_support_organizations_screen.dart';
 import '../screens/hiv_history_screen.dart';
+import '../screens/pulmonology_screen.dart';
 
 class AppRouter {
   static final GoRouter router = GoRouter(
@@ -213,8 +214,11 @@ class AppRouter {
         name: AppRoutes.hivHistory,
         builder: (context, state) => const HIVHistoryScreen(),
       ),
+      GoRoute(
+        path: AppRoutes.pulmonology,
+        name: AppRoutes.pulmonology,
+        builder: (context, state) => const PulmonologyScreen(),
+      ),
     ],
-    errorBuilder: (context, state) =>
-        Scaffold(body: Center(child: Text('Page not found: ${state.uri}'))),
   );
 }

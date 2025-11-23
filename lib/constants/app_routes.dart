@@ -33,4 +33,5 @@ class AppRoutes {
   static const String babyTracker = 'baby-tracker';
   static const String orthopedic = 'orthopedic';
   static const String fitphysic = 'fitphysic';
+  static const String pulmonology = '/pulmonology';
 }
