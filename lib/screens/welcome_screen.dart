@@ -64,27 +64,23 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
     return Scaffold(
       body: HospitalBackground(
         opacity: 0.15,
-        child: SafeArea(
-          child: SingleChildScrollView(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 24.0,
-                vertical: 16.0,
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  // Language selector at top right
-                  Row(
-                    children: [
-                      const Spacer(),
-                      _buildLanguageSelector(userProvider),
-                    ],
+        child: Stack(
+          children: [
+            SafeArea(
+              child: SingleChildScrollView(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 24.0,
+                    vertical: 16.0,
                   ),
-                  const SizedBox(height: 16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      // Space for the language selector
+                      const SizedBox(height: 48),
 
-                  // Logo - Reduced size and moved up
-                  const Center(child: AiGrisLogo(size: 70, showText: true)),
+                      // Logo - Reduced size and moved up
+                      const Center(child: AiGrisLogo(size: 70, showText: true)),
                   const SizedBox(height: 12),
 
                   // Welcome text
@@ -451,40 +447,67 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                       style: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
                     ),
                   ),
+                ],
+              ),
+            ),
+          ),
+          ),
+          _buildLanguageSelector(userProvider),
+        ],
+      ),
+    ),
+  );
+}
 
+  Widget _buildLanguageSelector(UserProvider userProvider) {
+    return Positioned(
+      top: 0,
+      right: 0,
+      child: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: InkWell(
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const LanguageSelectionScreen(),
+                ),
+              );
+            },
+            borderRadius: BorderRadius.circular(8),
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+              decoration: BoxDecoration(
+                color: Colors.white.withOpacity(0.8),
+                borderRadius: BorderRadius.circular(20),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.05),
+                    blurRadius: 4,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(Icons.language, color: AppColors.primary, size: 20),
+                  const SizedBox(width: 4),
+                  Text(
+                    userProvider.selectedLanguage.toUpperCase(),
+                    style: TextStyle(
+                      color: AppColors.primary,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 14,
+                    ),
+                  ),
                 ],
               ),
             ),
           ),
         ),
       ),
-    );
-  }
-
-  Widget _buildLanguageSelector(UserProvider userProvider) {
-    return IconButton(
-      icon: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(Icons.language, color: AppColors.primary),
-          const SizedBox(width: 4),
-          Text(
-            userProvider.selectedLanguage.toUpperCase(),
-            style: TextStyle(
-              color: AppColors.primary,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-        ],
-      ),
-      onPressed: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => const LanguageSelectionScreen(),
-          ),
-        );
-      },
     );
   }
 
