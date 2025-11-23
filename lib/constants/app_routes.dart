@@ -16,7 +16,11 @@ class AppRoutes {
   static const String eRezept = 'e-rezept';
   static const String pregnancyTracker = 'pregnancy-tracker';
   static const String bloodDonation = 'blood-donation';
-  static const String dentist = 'dentist';
+  static const String dentist = '/dentist';
+  static const String physiotherapy = '/physiotherapy';
+  static const String chiropractic = '/chiropractic';
+
+  // Appointment routes
   static const String dermo = 'dermo';
   static const String babyTracker = 'baby-tracker';
   static const String orthopedic = 'orthopedic';

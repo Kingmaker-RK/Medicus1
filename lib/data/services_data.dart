@@ -60,4 +60,18 @@ final List<ServiceModel> services = [
     color: Colors.green,
     route: AppRoutes.fitphysic,
   ),
+  ServiceModel(
+    title: 'Physiotherapy',
+    description: 'Find physiotherapy centers for rehabilitation and physical therapy.',
+    icon: LucideIcons.activity,
+    color: Colors.indigo,
+    route: AppRoutes.physiotherapy,
+  ),
+  ServiceModel(
+    title: 'Chiropractic',
+    description: 'Find chiropractors for spinal adjustments and pain relief.',
+    icon: LucideIcons.alignCenter,
+    color: Colors.deepOrange,
+    route: AppRoutes.chiropractic,
+  ),
 ];

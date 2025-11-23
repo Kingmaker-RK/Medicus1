@@ -23,6 +23,8 @@ import '../screens/dermo_screen.dart';
 import '../screens/baby_tracker_screen.dart';
 import '../screens/orthopedic_screen.dart';
 import '../screens/fitphysic_screen.dart';
+import '../screens/physiotherapy_screen.dart';
+import '../screens/chiropractic_screen.dart';
 
 class AppRouter {
   static final GoRouter router = GoRouter(
@@ -152,6 +154,16 @@ class AppRouter {
         path: '/${AppRoutes.fitphysic}',
         name: AppRoutes.fitphysic,
         builder: (context, state) => const FitPhysicScreen(),
+      ),
+      GoRoute(
+        path: '/${AppRoutes.physiotherapy}',
+        name: AppRoutes.physiotherapy,
+        builder: (context, state) => const PhysiotherapyScreen(),
+      ),
+      GoRoute(
+        path: '/${AppRoutes.chiropractic}',
+        name: AppRoutes.chiropractic,
+        builder: (context, state) => const ChiropracticScreen(),
       ),
     ],
     errorBuilder: (context, state) =>
