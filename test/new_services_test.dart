@@ -202,5 +202,7 @@ void main() {
     expect(find.text('HIV/STI Prevention'), findsOneWidget);
     expect(find.text('Key Prevention Methods'), findsOneWidget);
     expect(find.text('Educational Resources'), findsOneWidget);
+    expect(find.text('International HIV & STI Prevention Organizations'), findsOneWidget);
+    expect(find.text('UNAIDS – Joint United Nations Programme on HIV/AIDS'), findsOneWidget);
   });
 }

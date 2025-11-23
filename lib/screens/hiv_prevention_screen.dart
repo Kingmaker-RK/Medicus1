@@ -53,6 +53,8 @@ class HIVPreventionScreen extends StatelessWidget {
             ),
             const SizedBox(height: 20),
             _buildResourceSection(context),
+            const SizedBox(height: 20),
+            _buildGlobalOrganizationsSection(),
           ],
         ),
       ),
@@ -182,6 +184,217 @@ class HIVPreventionScreen extends StatelessWidget {
           ),
         ],
       ),
+    );
+  }
+
+  Widget _buildGlobalOrganizationsSection() {
+    final List<Map<String, dynamic>> globalData = [
+      {
+        'category': 'International HIV & STI Prevention Organizations',
+        'items': [
+          {
+            'name': 'UNAIDS – Joint United Nations Programme on HIV/AIDS',
+            'details': [
+              'The main global organization coordinating the HIV response.',
+              'Works in 100+ countries.',
+              'Focuses on prevention, testing access, treatment, and ending stigma.',
+            ]
+          },
+          {
+            'name': 'WHO – World Health Organization (HIV, Hepatitis & STI Programmes)',
+            'details': [
+              'Sets global guidelines for HIV and STI prevention.',
+              'Supports countries with surveillance, treatment programs, PrEP guidelines, etc.',
+            ]
+          },
+          {
+            'name': 'UNFPA – United Nations Population Fund',
+            'details': [
+              'Works globally on sexual health, condom distribution, and STI/HIV prevention.',
+              'Strong focus on youth and vulnerable populations.',
+            ]
+          },
+          {
+            'name': 'Global Fund to Fight AIDS, Tuberculosis and Malaria',
+            'details': [
+              'One of the largest funding bodies supporting HIV and STI programs internationally.',
+              'Finances prevention, testing, and treatment programs in low- and middle-income countries.',
+            ]
+          },
+        ]
+      },
+      {
+        'category': 'International Civil-Society & Nonprofits',
+        'items': [
+          {
+            'name': 'International Planned Parenthood Federation (IPPF)',
+            'details': [
+              'Provides sexual health services in 140+ countries.',
+              'STI screening, HIV testing, PrEP counseling.',
+            ]
+          },
+          {
+            'name': 'AIDS Healthcare Foundation (AHF)',
+            'details': [
+              'The world’s largest nonprofit HIV medical provider.',
+              'Clinics in 45+ countries.',
+              'Offers free or low-cost HIV testing and STI treatment.',
+            ]
+          },
+          {
+            'name': 'Médecins Sans Frontières (MSF)',
+            'details': [
+              'Provides HIV testing, STI treatment, ARV medication, and prevention programs in crisis regions.',
+            ]
+          },
+          {
+            'name': 'International AIDS Society (IAS)',
+            'details': [
+              'Largest association of HIV health professionals.',
+              'Hosts the International AIDS Conference.',
+            ]
+          },
+          {
+            'name': 'Population Services International (PSI)',
+            'details': [
+              'Global health NGO focusing on HIV/STI prevention, PrEP access, condoms, and sexual health services.',
+            ]
+          },
+          {
+            'name': 'Elizabeth Glaser Pediatric AIDS Foundation (EGPAF)',
+            'details': [
+              'Works to eliminate HIV transmission in children.',
+              'Supports testing and maternal health programs worldwide.',
+            ]
+          },
+        ]
+      },
+      {
+        'category': 'Global Networks & Coalitions',
+        'items': [
+          {
+            'name': 'AVAC (Global Advocacy for HIV Prevention)',
+            'details': [
+              'Advocates for global access to PrEP, PEP, and new prevention technologies.',
+            ]
+          },
+          {
+            'name': 'ICW – International Community of Women Living with HIV',
+            'details': [
+              'Global network supporting HIV-positive women with sexual health and STI prevention resources.',
+            ]
+          },
+          {
+            'name': 'GNP+ (Global Network of People Living with HIV)',
+            'details': [
+              'Worldwide community of people living with HIV.',
+              'Provides prevention advocacy and community programs.',
+            ]
+          },
+          {
+            'name': 'IUSTI – International Union Against Sexually Transmitted Infections',
+            'details': [
+              'Medical and professional network focusing on STI prevention, guidelines, training, and research.',
+            ]
+          },
+        ]
+      },
+      {
+        'category': 'Global STI-Specific Centers/Networks',
+        'items': [
+          {
+            'name': 'ASHA – American Sexual Health Association',
+            'details': [
+              'Provides education and prevention resources on HIV, HPV, chlamydia, gonorrhea, etc.',
+            ]
+          },
+          {
+            'name': 'WHO Collaborating Centres for STIs',
+            'details': [
+              'Research and training centers worldwide dedicated to STI surveillance and prevention.',
+            ]
+          },
+        ]
+      }
+    ];
+
+    return Column(
+      children: globalData.map((section) {
+        return Container(
+          margin: const EdgeInsets.only(bottom: 20),
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(16),
+            boxShadow: [
+              BoxShadow(
+                color: AppColors.shadowLight,
+                blurRadius: 8,
+                offset: const Offset(0, 2),
+              ),
+            ],
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  const Icon(Icons.public, color: AppColors.primary, size: 28),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: AutoTranslateText(
+                      section['category'] as String,
+                      style: const TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.textPrimary,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 16),
+              ...(section['items'] as List<Map<String, dynamic>>).map((org) {
+                return Padding(
+                  padding: const EdgeInsets.only(bottom: 16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      AutoTranslateText(
+                        org['name'] as String,
+                        style: const TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          color: AppColors.primary,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      ...(org['details'] as List<String>).map((detail) => Padding(
+                        padding: const EdgeInsets.only(left: 8, top: 2),
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Text('• ', style: TextStyle(color: AppColors.textSecondary)),
+                            Expanded(
+                              child: AutoTranslateText(
+                                detail,
+                                style: const TextStyle(
+                                  fontSize: 14,
+                                  color: AppColors.textSecondary,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      )).toList(),
+                    ],
+                  ),
+                );
+              }).toList(),
+            ],
+          ),
+        );
+      }).toList(),
     );
   }
 
