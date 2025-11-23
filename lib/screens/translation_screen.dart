@@ -572,7 +572,6 @@ class _TranslationScreenState extends State<TranslationScreen>
       decoration: BoxDecoration(
         color: AppColors.inputBackground,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: AppColors.borderLight),
       ),
       child: DropdownButton<String>(
         value: value,
