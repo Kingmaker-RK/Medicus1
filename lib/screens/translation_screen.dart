@@ -474,7 +474,7 @@ class _TranslationScreenState extends State<TranslationScreen>
                         child: Icon(
                           Icons.swap_horiz_rounded,
                           color: AppColors.accent,
-                          size: 18.2,
+                          size: 27.3,
                         ),
                       ),
                     ),
@@ -503,8 +503,8 @@ class _TranslationScreenState extends State<TranslationScreen>
             children: [
               // Conversation Mode
               Container(
-                width: 38,
-                height: 38,
+                width: 47.5,
+                height: 47.5,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
                   color: _isConversationMode ? AppColors.accent : Colors.grey[50],
@@ -527,7 +527,7 @@ class _TranslationScreenState extends State<TranslationScreen>
                   icon: Icon(
                     Icons.record_voice_over_rounded,
                     color: _isConversationMode ? Colors.white : AppColors.accent,
-                    size: 17,
+                    size: 21.25,
                   ),
                   tooltip: 'Conversation Mode',
                 ),
@@ -542,8 +542,8 @@ class _TranslationScreenState extends State<TranslationScreen>
 
               // Camera
               Container(
-                width: 38,
-                height: 38,
+                width: 47.5,
+                height: 47.5,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
                   color: Colors.grey[50],
@@ -552,7 +552,7 @@ class _TranslationScreenState extends State<TranslationScreen>
                 child: IconButton(
                   onPressed: () => _pickAndExtractImage(source: ImageSource.camera),
                   icon: Icon(Icons.camera_alt_rounded, color: AppColors.accent),
-                  iconSize: 18,
+                  iconSize: 22.5,
                   tooltip: 'Take Photo',
                 ),
               ),
@@ -568,7 +568,7 @@ class _TranslationScreenState extends State<TranslationScreen>
     required ValueChanged<String?> onChanged,
   }) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 0),
       decoration: BoxDecoration(
         color: AppColors.inputBackground,
         borderRadius: BorderRadius.circular(12),
@@ -576,6 +576,7 @@ class _TranslationScreenState extends State<TranslationScreen>
       ),
       child: DropdownButton<String>(
         value: value,
+        isDense: true,
         isExpanded: true,
         underline: const SizedBox(),
         icon: Icon(
@@ -1126,8 +1127,8 @@ class _TranslationScreenState extends State<TranslationScreen>
             await translationProvider.stopListening();
           },
           child: Container(
-            width: 43,
-            height: 43,
+            width: 53.75,
+            height: 53.75,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
               color: translationProvider.isListening
@@ -1150,7 +1151,7 @@ class _TranslationScreenState extends State<TranslationScreen>
                   translationProvider.isListening
                       ? Icons.mic_rounded
                       : Icons.mic_none_rounded,
-                  size: 18,
+                  size: 22.5,
                   color: Colors.white,
                 ),
                 if (translationProvider.isListening)

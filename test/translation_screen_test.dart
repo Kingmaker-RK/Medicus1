@@ -472,28 +472,43 @@ void main() {
       final conversationIconFinder = find.byIcon(Icons.record_voice_over_rounded);
       expect(conversationIconFinder, findsOneWidget);
       final conversationIcon = tester.widget<Icon>(conversationIconFinder);
-      expect(conversationIcon.size, 17);
+      expect(conversationIcon.size, 21.25);
       final conversationContainer = tester.widget<Container>(find.ancestor(of: conversationIconFinder, matching: find.byType(Container)).first);
-      expect(conversationContainer.constraints!.maxWidth, 38);
-      expect(conversationContainer.constraints!.maxHeight, 38);
+      expect(conversationContainer.constraints!.maxWidth, 47.5);
+      expect(conversationContainer.constraints!.maxHeight, 47.5);
 
       // Microphone Icon
       final micIconFinder = find.byIcon(Icons.mic_none_rounded);
       expect(micIconFinder, findsOneWidget);
       final micIcon = tester.widget<Icon>(micIconFinder);
-      expect(micIcon.size, 18);
+      expect(micIcon.size, 22.5);
       final micContainer = tester.widget<Container>(find.ancestor(of: micIconFinder, matching: find.byType(Container)).first);
-      expect(micContainer.constraints!.maxWidth, 43);
-      expect(micContainer.constraints!.maxHeight, 43);
+      expect(micContainer.constraints!.maxWidth, 53.75);
+      expect(micContainer.constraints!.maxHeight, 53.75);
 
       // Camera Icon
       final cameraButtonFinder = find.widgetWithIcon(IconButton, Icons.camera_alt_rounded);
       expect(cameraButtonFinder, findsOneWidget);
       final cameraButton = tester.widget<IconButton>(cameraButtonFinder);
-      expect(cameraButton.iconSize, 18);
+      // Note: For IconButton, iconSize might not be directly exposed if it's default, 
+      // but we set it explicitly in the widget code to 22.5.
+      // However, IconButton stores it in `iconSize`.
+      // The implementation uses `iconSize: 22.5` in the IconButton constructor.
+      // Wait, in my implementation:
+      // child: IconButton(..., iconSize: 22.5, ...)
+      // So retrieving it via tester.widget<IconButton> is correct.
+      // But for Conversation Mode, I used `icon: Icon(..., size: 21.25)` inside IconButton. 
+      // The IconButton wrapper doesn't necessarily have iconSize set.
+      // In my implementation: 
+      // Conversation: IconButton(icon: Icon(size: 21.25)...)
+      // Camera: IconButton(iconSize: 22.5...)
+      
+      // So for Camera:
+      expect(cameraButton.iconSize, 22.5);
+      
       final cameraContainer = tester.widget<Container>(find.ancestor(of: cameraButtonFinder, matching: find.byType(Container)).first);
-      expect(cameraContainer.constraints!.maxWidth, 38);
-      expect(cameraContainer.constraints!.maxHeight, 38);
+      expect(cameraContainer.constraints!.maxWidth, 47.5);
+      expect(cameraContainer.constraints!.maxHeight, 47.5);
     });
   });
 }
