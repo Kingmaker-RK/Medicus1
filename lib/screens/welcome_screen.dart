@@ -2,15 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import '../l10n/app_localizations.dart';
 import '../providers/user_provider.dart';
 import '../widgets/ai_gris_logo.dart';
 import '../widgets/hospital_background.dart';
-import '../widgets/translated_widget.dart';
 import '../constants/colors.dart';
 import '../constants/app_constants.dart';
 import '../constants/app_routes.dart';
 import 'package:ai_gris/screens/language_selection_screen.dart';
-import '../services/localization_service.dart';
 
 class WelcomeScreen extends StatefulWidget {
   const WelcomeScreen({Key? key}) : super(key: key);
@@ -60,6 +59,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
   @override
   Widget build(BuildContext context) {
     final userProvider = Provider.of<UserProvider>(context);
+    final l10n = AppLocalizations.of(context)!;
 
     return Scaffold(
       body: HospitalBackground(
@@ -87,9 +87,9 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                   const Center(child: AiGrisLogo(size: 70, showText: true)),
                   const SizedBox(height: 12),
 
-                  // Welcome text - More compact with instant translation
-                  AutoTranslateText(
-                    'Welcome to AI-Gris',
+                  // Welcome text
+                  Text(
+                    l10n.welcomeTitle,
                     style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                       fontWeight: FontWeight.bold,
                       color: AppColors.textPrimary,
@@ -97,8 +97,8 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                     textAlign: TextAlign.center,
                   ),
                   const SizedBox(height: 4),
-                  AutoTranslateText(
-                    'Breaking language barriers in healthcare',
+                  Text(
+                    l10n.welcomeSubtitle,
                     style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                       color: AppColors.textSecondary,
                     ),
@@ -107,92 +107,104 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                   const SizedBox(height: 20),
 
                   // Role selection
-                  _buildRoleSelector(),
+                  _buildRoleSelector(l10n),
                   const SizedBox(height: 16),
 
-                  // Sign in / Sign up toggle with translation
-                  LanguageBuilder(
-                    builder: (context, _) => Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        TextButton(
-                          onPressed: () {
-                            setState(() {
-                              _isSignIn = true;
-                            });
-                          },
-                          child: AutoTranslateText(
-                            'Sign In',
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: _isSignIn
-                                  ? FontWeight.bold
-                                  : FontWeight.normal,
-                              color: _isSignIn
-                                  ? AppColors.primary
-                                  : AppColors.textSecondary,
-                            ),
+                  // Sign in / Sign up toggle
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      TextButton(
+                        onPressed: () {
+                          setState(() {
+                            _isSignIn = true;
+                          });
+                        },
+                        child: Text(
+                          l10n.signIn,
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: _isSignIn
+                                ? FontWeight.bold
+                                : FontWeight.normal,
+                            color: _isSignIn
+                                ? AppColors.primary
+                                : AppColors.textSecondary,
                           ),
                         ),
-                        const SizedBox(width: 16),
-                        Text(
-                          '|',
-                          style: TextStyle(color: AppColors.textSecondary),
-                        ),
-                        const SizedBox(width: 16),
-                        TextButton(
-                          onPressed: () {
-                            setState(() {
-                              _isSignIn = false;
-                            });
-                          },
-                          child: AutoTranslateText(
-                            'Sign Up',
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: !_isSignIn
-                                  ? FontWeight.bold
-                                  : FontWeight.normal,
-                              color: !_isSignIn
-                                  ? AppColors.primary
-                                  : AppColors.textSecondary,
-                            ),
+                      ),
+                      const SizedBox(width: 16),
+                      Text(
+                        '|',
+                        style: TextStyle(color: AppColors.textSecondary),
+                      ),
+                      const SizedBox(width: 16),
+                      TextButton(
+                        onPressed: () {
+                          setState(() {
+                            _isSignIn = false;
+                          });
+                        },
+                        child: Text(
+                          l10n.signUp,
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: !_isSignIn
+                                ? FontWeight.bold
+                                : FontWeight.normal,
+                            color: !_isSignIn
+                                ? AppColors.primary
+                                : AppColors.textSecondary,
                           ),
                         ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
                   const SizedBox(height: 16),
 
-                  // Email field with translation
-                  TranslatedInputDecoration(
-                  labelText: 'Email',
-                  controller: _emailController,
-                  prefixIcon: const Icon(Icons.email),
-                  keyboardType: TextInputType.emailAddress,
-                ),
+                  // Email field
+                  TextField(
+                    controller: _emailController,
+                    keyboardType: TextInputType.emailAddress,
+                    decoration: InputDecoration(
+                      labelText: l10n.emailLabel,
+                      prefixIcon: const Icon(Icons.email),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      filled: true,
+                      fillColor: Colors.white,
+                    ),
+                  ),
                   const SizedBox(height: 12),
 
-                  // Password field with translation
-                  TranslatedInputDecoration(
-                  labelText: 'Password',
-                  controller: _passwordController,
-                  obscureText: _obscurePassword,
-                  prefixIcon: const Icon(Icons.lock),
-                  suffixIcon: IconButton(
-                    icon: Icon(
-                      _obscurePassword
-                          ? Icons.visibility_off
-                          : Icons.visibility,
-                      color: AppColors.textSecondary,
+                  // Password field
+                  TextField(
+                    controller: _passwordController,
+                    obscureText: _obscurePassword,
+                    decoration: InputDecoration(
+                      labelText: l10n.passwordLabel,
+                      prefixIcon: const Icon(Icons.lock),
+                      suffixIcon: IconButton(
+                        icon: Icon(
+                          _obscurePassword
+                              ? Icons.visibility_off
+                              : Icons.visibility,
+                          color: AppColors.textSecondary,
+                        ),
+                        onPressed: () {
+                          setState(() {
+                            _obscurePassword = !_obscurePassword;
+                          });
+                        },
+                      ),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      filled: true,
+                      fillColor: Colors.white,
                     ),
-                    onPressed: () {
-                      setState(() {
-                        _obscurePassword = !_obscurePassword;
-                      });
-                    },
                   ),
-                ),
                   const SizedBox(height: 12),
 
                   // Remember Me + Forgot Password Row
@@ -201,60 +213,56 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        // Remember Me Checkbox with translation
-                        LanguageBuilder(
-                          builder: (context, _) => Row(
-                            children: [
-                              SizedBox(
-                                height: 20,
-                                width: 20,
-                                child: Checkbox(
-                                  value: _rememberMe,
-                                  onChanged: (value) {
-                                    setState(() {
-                                      _rememberMe = value ?? false;
-                                    });
-                                  },
-                                  activeColor: AppColors.primary,
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(4),
-                                  ),
-                                  materialTapTargetSize:
-                                      MaterialTapTargetSize.shrinkWrap,
+                        // Remember Me Checkbox
+                        Row(
+                          children: [
+                            SizedBox(
+                              height: 20,
+                              width: 20,
+                              child: Checkbox(
+                                value: _rememberMe,
+                                onChanged: (value) {
+                                  setState(() {
+                                    _rememberMe = value ?? false;
+                                  });
+                                },
+                                activeColor: AppColors.primary,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(4),
                                 ),
+                                materialTapTargetSize:
+                                    MaterialTapTargetSize.shrinkWrap,
                               ),
-                              const SizedBox(width: 8),
-                              AutoTranslateText(
-                                'Remember me',
-                                style: TextStyle(
-                                  fontSize: 14,
-                                  color: AppColors.textSecondary,
-                                  fontWeight: FontWeight.normal,
-                                ),
+                            ),
+                            const SizedBox(width: 8),
+                            Text(
+                              l10n.rememberMe,
+                              style: TextStyle(
+                                fontSize: 14,
+                                color: AppColors.textSecondary,
+                                fontWeight: FontWeight.normal,
                               ),
-                            ],
-                          ),
+                            ),
+                          ],
                         ),
 
-                        // Forgot Password Link (conditionally shown) with translation
+                        // Forgot Password Link (conditionally shown)
                         if (_showForgotPassword)
-                          LanguageBuilder(
-                            builder: (context, _) => TextButton(
-                              onPressed: () {
-                                context.go('/forgot-password');
-                              },
-                              style: TextButton.styleFrom(
-                                padding: EdgeInsets.zero,
-                                minimumSize: const Size(0, 0),
-                                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                              ),
-                              child: AutoTranslateText(
-                                'Forgot Password?',
-                                style: TextStyle(
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w500,
-                                  color: AppColors.primary,
-                                ),
+                          TextButton(
+                            onPressed: () {
+                              context.go('/forgot-password');
+                            },
+                            style: TextButton.styleFrom(
+                              padding: EdgeInsets.zero,
+                              minimumSize: const Size(0, 0),
+                              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                            ),
+                            child: Text(
+                              l10n.forgotPassword,
+                              style: TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w500,
+                                color: AppColors.primary,
                               ),
                             ),
                           ),
@@ -284,9 +292,9 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                               onTap: () {
                                 context.push('/${AppRoutes.privacyPolicy}');
                               },
-                              child: const AutoTranslateText(
-                                'I agree to the Terms & Conditions and Privacy Policy',
-                                style: TextStyle(
+                              child: Text(
+                                l10n.agreeToTerms,
+                                style: const TextStyle(
                                   fontSize: 12,
                                   color: AppColors.primary,
                                   decoration: TextDecoration.underline,
@@ -305,9 +313,9 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                         : () async {
                             if (!_isSignIn && !_agreedToTerms) {
                               ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                  content: AutoTranslateText(
-                                    'Please agree to the Terms & Conditions to continue.',
+                                SnackBar(
+                                  content: Text(
+                                    l10n.pleaseAgreeToTerms,
                                   ),
                                   backgroundColor: Colors.red,
                                 ),
@@ -354,10 +362,10 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                               });
                               ScaffoldMessenger.of(context).showSnackBar(
                                 SnackBar(
-                                  content: AutoTranslateText(
+                                  content: Text(
                                     _isSignIn
-                                        ? 'Login failed. Please check your credentials.'
-                                        : 'Sign up failed. Please try again.',
+                                        ? l10n.loginFailed
+                                        : l10n.signUpFailed,
                                   ),
                                   backgroundColor: Colors.red,
                                 ),
@@ -381,8 +389,8 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                               strokeWidth: 2,
                             ),
                           )
-                        : AutoTranslateText(
-                            _isSignIn ? 'Sign In' : 'Sign Up',
+                        : Text(
+                            _isSignIn ? l10n.signIn : l10n.signUp,
                             style: const TextStyle(
                               fontSize: 15,
                               fontWeight: FontWeight.bold,
@@ -391,34 +399,30 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                   ),
                   const SizedBox(height: 12),
 
-                  // Continue as guest button with translation
+                  // Continue as guest button
                   OutlinedButton(
                     onPressed: () async {
                       final agreed = await showDialog<bool>(
                         context: context,
                         builder: (context) => AlertDialog(
-                          title: const AutoTranslateText('Terms & Conditions'),
+                          title: Text(l10n.termsAndConditions),
                           content: Column(
                             mainAxisSize: MainAxisSize.min,
                             children: [
-                              const AutoTranslateText(
-                                'By continuing as a guest, you agree to our Terms & Conditions and Privacy Policy.',
-                              ),
+                              Text(l10n.guestTermsMessage),
                               const SizedBox(height: 12),
                               TextButton(
                                 onPressed: () {
-                                  // Close dialog before navigating? Or navigate and keep dialog?
-                                  // Better to just push and let them come back.
                                   context.push('/${AppRoutes.privacyPolicy}');
                                 },
-                                child: const AutoTranslateText('View Policy'),
+                                child: Text(l10n.viewPolicy),
                               ),
                             ],
                           ),
                           actions: [
                             TextButton(
                               onPressed: () => Navigator.pop(context, false),
-                              child: const AutoTranslateText('Cancel'),
+                              child: Text(l10n.cancel),
                             ),
                             ElevatedButton(
                               onPressed: () => Navigator.pop(context, true),
@@ -426,7 +430,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                                 backgroundColor: AppColors.primary,
                                 foregroundColor: Colors.white,
                               ),
-                              child: const AutoTranslateText('I Agree'),
+                              child: Text(l10n.iAgree),
                             ),
                           ],
                         ),
@@ -442,9 +446,9 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                       side: BorderSide(color: AppColors.primary),
                       foregroundColor: AppColors.primary,
                     ),
-                    child: const AutoTranslateText(
-                      'Continue as Guest',
-                      style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
+                    child: Text(
+                      l10n.continueAsGuest,
+                      style: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
                     ),
                   ),
 
@@ -484,7 +488,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
     );
   }
 
-  Widget _buildRoleSelector() {
+  Widget _buildRoleSelector(AppLocalizations l10n) {
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
@@ -502,7 +506,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
           Expanded(
             child: _buildRoleOption(
               role: AppConstants.rolePatient,
-              label: 'Patient',
+              label: l10n.rolePatient,
               icon: Icons.person,
               color: AppColors.patientColor,
             ),
@@ -510,7 +514,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
           Expanded(
             child: _buildRoleOption(
               role: AppConstants.roleDoctor,
-              label: 'Doctor',
+              label: l10n.roleDoctor,
               icon: Icons.local_hospital,
               color: AppColors.doctorColor,
             ),
@@ -553,7 +557,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
               color: isSelected ? color : AppColors.textSecondary,
             ),
             const SizedBox(height: 6),
-            AutoTranslateText(
+            Text(
               label,
               style: TextStyle(
                 fontSize: 15,

@@ -11,6 +11,9 @@ import 'package:go_router/go_router.dart';
 import 'package:mockito/mockito.dart';
 import 'test_helpers.dart';
 
+import 'package:ai_gris/l10n/app_localizations.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+
 // Create a MockUserProvider to control auth state and avoid real network calls
 class MockUserProvider extends ChangeNotifier implements UserProvider {
   bool _isLoading = false;
@@ -62,6 +65,9 @@ class MockUserProvider extends ChangeNotifier implements UserProvider {
   
   @override
   Future<void> logout() async {}
+
+  @override
+  Future<void> initialize() async {}
   
   // Add other required overrides with dummy implementations if needed
   @override
@@ -87,6 +93,13 @@ Widget createTestAppWithRouter(UserProvider userProvider) {
     ],
     child: MaterialApp.router(
       routerConfig: router,
+      localizationsDelegates: const [
+        AppLocalizations.delegate,
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
+      supportedLocales: AppLocalizations.supportedLocales,
     ),
   );
 }

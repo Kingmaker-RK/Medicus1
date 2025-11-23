@@ -116,6 +116,9 @@ flutter:
   # the material Icons class.
   uses-material-design: true
 
+  # Enable generation of localization files
+  generate: true
+
   # To add assets to your application, add an assets section, like this:
   assets:
     - assets/images/
