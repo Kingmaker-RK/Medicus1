@@ -7,6 +7,7 @@ import '../widgets/translated_widget.dart';
 import '../constants/colors.dart';
 import '../constants/app_constants.dart';
 import '../constants/app_routes.dart';
+import 'language_selection_screen.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({Key? key}) : super(key: key);
@@ -125,7 +126,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         ),
                         trailing: const Icon(Icons.arrow_forward_ios, size: 16),
                         onTap: () {
-                          _showLanguageDialog(userProvider);
+                          // Navigate to the standardized LanguageSelectionScreen
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const LanguageSelectionScreen(),
+                            ),
+                          );
                         },
                       ),
                     ],
@@ -307,50 +314,5 @@ class _SettingsScreenState extends State<SettingsScreen> {
       orElse: () => {'name': 'Unknown', 'nativeName': 'Unknown'},
     );
     return '${lang['nativeName']} (${lang['name']})';
-  }
-
-  void _showLanguageDialog(UserProvider userProvider) {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const AutoTranslateText('Select Language'),
-        content: SizedBox(
-          width: double.maxFinite,
-          child: ListView.builder(
-            shrinkWrap: true,
-            itemCount: AppConstants.supportedLanguages.length,
-            itemBuilder: (context, index) {
-              final lang = AppConstants.supportedLanguages[index];
-              final isSelected = lang['code'] == userProvider.selectedLanguage;
-
-              return ListTile(
-                title: AutoTranslateText(lang['nativeName'] ?? ''),
-                subtitle: AutoTranslateText(lang['name'] ?? ''),
-                trailing: isSelected
-                    ? Icon(Icons.check, color: AppColors.primary)
-                    : null,
-                selected: isSelected,
-                onTap: () async {
-                  // Close dialog first to ensure proper context
-                  Navigator.pop(context);
-
-                  // Then change language with a slight delay to ensure dialog is closed
-                  await Future.delayed(const Duration(milliseconds: 100));
-                  await userProvider.changeLanguage(lang['code']!);
-                },
-              );
-            },
-          ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () {
-              Navigator.pop(context);
-            },
-            child: const AutoTranslateText('Cancel'),
-          ),
-        ],
-      ),
-    );
   }
 }

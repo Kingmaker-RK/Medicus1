@@ -74,11 +74,11 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  // Language selector at top left
+                  // Language selector at top right
                   Row(
                     children: [
-                      _buildLanguageSelector(userProvider),
                       const Spacer(),
+                      _buildLanguageSelector(userProvider),
                     ],
                   ),
                   const SizedBox(height: 16),

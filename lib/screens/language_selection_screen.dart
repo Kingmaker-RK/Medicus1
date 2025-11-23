@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../widgets/translated_widget.dart';
 import 'package:provider/provider.dart';
 import '../constants/app_constants.dart';
+import '../constants/colors.dart';
 import '../providers/user_provider.dart';
 
 class LanguageSelectionScreen extends StatefulWidget {
@@ -28,6 +29,7 @@ class _LanguageSelectionScreenState extends State<LanguageSelectionScreen> {
     setState(() {
       _filteredLanguages = AppConstants.supportedLanguages.where((language) {
         return language['name']!.toLowerCase().contains(query) ||
+            language['nativeName']!.toLowerCase().contains(query) ||
             language['code']!.toLowerCase().contains(query);
       }).toList();
     });
@@ -68,9 +70,12 @@ class _LanguageSelectionScreenState extends State<LanguageSelectionScreen> {
               itemCount: _filteredLanguages.length,
               itemBuilder: (context, index) {
                 final language = _filteredLanguages[index];
+                final isSelected = language['code'] == userProvider.selectedLanguage;
+                
                 return ListTile(
-                  title: Text(language['name']!),
-                  subtitle: Text(language['code']!),
+                  title: Text(language['nativeName'] ?? language['name']!),
+                  subtitle: Text(language['name']!),
+                  trailing: isSelected ? Icon(Icons.check, color: AppColors.primary) : null,
                   onTap: () {
                     userProvider.changeLanguage(language['code']!);
                     Navigator.pop(context);
