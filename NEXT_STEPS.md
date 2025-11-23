@@ -8,7 +8,7 @@ Your AI-Gris medical translation app has been successfully created! Here's what 
    - Welcome/Authentication screen
    - Main translation interface
    - Settings screen with permissions management
-   - Custom AI-Gris logo with caduceus symbol
+   
 
 2. **Core Features Implemented**
    - Speech-to-text service integration
