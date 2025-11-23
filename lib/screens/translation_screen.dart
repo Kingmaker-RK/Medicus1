@@ -474,7 +474,7 @@ class _TranslationScreenState extends State<TranslationScreen>
                         child: Icon(
                           Icons.swap_horiz_rounded,
                           color: AppColors.accent,
-                          size: 13,
+                          size: 18.2,
                         ),
                       ),
                     ),
