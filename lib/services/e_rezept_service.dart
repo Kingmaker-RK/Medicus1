@@ -109,9 +109,22 @@ class ERezeptService {
       ),
     );
 
-    final output = await getApplicationDocumentsDirectory();
+    Directory output;
+    try {
+      output = await getApplicationDocumentsDirectory();
+    } catch (e) {
+      // Fallback to system temp if documents directory is unavailable (e.g. strict Linux sandbox or Web)
+      output = await getTemporaryDirectory();
+    }
+
     final file = File('${output.path}/prescription_${DateTime.now().millisecondsSinceEpoch}.pdf');
-    await file.writeAsBytes(await pdf.save());
+    
+    try {
+      await file.writeAsBytes(await pdf.save());
+    } catch (e) {
+      throw Exception('Failed to save PDF file: $e');
+    }
+    
     return file;
   }
 

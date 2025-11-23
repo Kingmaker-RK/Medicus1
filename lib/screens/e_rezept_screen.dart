@@ -219,10 +219,16 @@ class _ERezeptScreenState extends State<ERezeptScreen> {
     setState(() => _isLoading = true);
     try {
       // 1. Generate PDF
-      final pdfFile = await _service.generateAndSavePdf(
-        _prescriptionImagePath!,
-        insuranceCardPath: _insuranceCardImagePath,
-      );
+      File pdfFile;
+      try {
+        pdfFile = await _service.generateAndSavePdf(
+          _prescriptionImagePath!,
+          insuranceCardPath: _insuranceCardImagePath,
+        );
+      } catch (e) {
+        // Check for specific error types if needed
+        throw Exception('PDF Generation Error: $e');
+      }
 
       // 2. Create Record
       final record = UploadRecord(
@@ -235,7 +241,13 @@ class _ERezeptScreenState extends State<ERezeptScreen> {
       );
 
       // 3. Save Record
-      await _service.saveUploadRecord(record);
+      try {
+        await _service.saveUploadRecord(record);
+      } catch (e) {
+        print('Error saving record: $e'); // Log it but allow flow to continue if possible? 
+        // Or throw. Let's throw to be safe, but distinguishing it.
+        throw Exception('Storage Error: $e');
+      }
 
       // 4. Refresh List
       await _loadHistory();
@@ -256,7 +268,7 @@ class _ERezeptScreenState extends State<ERezeptScreen> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error processing order: $e'), backgroundColor: AppColors.error),
+          SnackBar(content: Text('$e'), backgroundColor: AppColors.error),
         );
       }
     } finally {
