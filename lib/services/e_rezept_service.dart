@@ -51,15 +51,33 @@ class ERezeptService {
 
   Future<File> generateAndSavePdf(String imagePath, {String? insuranceCardPath}) async {
     final pdf = pw.Document();
-    final image = pw.MemoryImage(
-      File(imagePath).readAsBytesSync(),
-    );
+    
+    final imageFile = File(imagePath);
+    if (!imageFile.existsSync() || await imageFile.length() == 0) {
+      throw Exception('Prescription image file is missing or empty');
+    }
+
+    pw.MemoryImage image;
+    try {
+      image = pw.MemoryImage(
+        await imageFile.readAsBytes(),
+      );
+    } catch (e) {
+      throw Exception('Invalid prescription image format');
+    }
 
     pw.MemoryImage? insuranceImage;
     if (insuranceCardPath != null) {
-      insuranceImage = pw.MemoryImage(
-        File(insuranceCardPath).readAsBytesSync(),
-      );
+      final insuranceFile = File(insuranceCardPath);
+      if (insuranceFile.existsSync() && await insuranceFile.length() > 0) {
+        try {
+          insuranceImage = pw.MemoryImage(
+            await insuranceFile.readAsBytes(),
+          );
+        } catch (e) {
+           throw Exception('Invalid insurance card image format');
+        }
+      }
     }
 
     pdf.addPage(
