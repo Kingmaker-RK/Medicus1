@@ -6,6 +6,7 @@ import '../services/permission_service.dart';
 import '../widgets/translated_widget.dart';
 import '../constants/colors.dart';
 import '../constants/app_constants.dart';
+import '../constants/app_routes.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({Key? key}) : super(key: key);
@@ -227,7 +228,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         title: const AutoTranslateText('Privacy Policy'),
                         trailing: const Icon(Icons.arrow_forward_ios, size: 16),
                         onTap: () {
-                          // TODO: Implement privacy policy screen
+                          context.push('/${AppRoutes.privacyPolicy}');
                         },
                       ),
                     ],

@@ -44,4 +44,5 @@ class AppRoutes {
   static const String pregnancyTracking = '/pregnancy-tracking';
   static const String newbornChildCare = '/newborn-child-care';
   static const String mothersHealth = '/mothers-health';
+  static const String privacyPolicy = 'privacy-policy';
 }

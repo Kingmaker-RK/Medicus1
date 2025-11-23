@@ -8,6 +8,7 @@ import '../widgets/hospital_background.dart';
 import '../widgets/translated_widget.dart';
 import '../constants/colors.dart';
 import '../constants/app_constants.dart';
+import '../constants/app_routes.dart';
 import 'package:ai_gris/screens/language_selection_screen.dart';
 import '../services/localization_service.dart';
 
@@ -27,6 +28,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
   int _loginAttempts = 0;
   bool _showForgotPassword = false;
   bool _obscurePassword = true;
+  bool _agreedToTerms = false;
 
   @override
   void initState() {
@@ -262,11 +264,56 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
 
                   const SizedBox(height: 16),
 
+                  // Terms and Conditions Checkbox (Only for Sign Up)
+                  if (!_isSignIn)
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 16.0),
+                      child: Row(
+                        children: [
+                          Checkbox(
+                            value: _agreedToTerms,
+                            onChanged: (value) {
+                              setState(() {
+                                _agreedToTerms = value ?? false;
+                              });
+                            },
+                            activeColor: AppColors.primary,
+                          ),
+                          Expanded(
+                            child: GestureDetector(
+                              onTap: () {
+                                context.push('/${AppRoutes.privacyPolicy}');
+                              },
+                              child: const AutoTranslateText(
+                                'I agree to the Terms & Conditions and Privacy Policy',
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  color: AppColors.primary,
+                                  decoration: TextDecoration.underline,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+
                   // Sign in / Sign up button
                   ElevatedButton(
                     onPressed: userProvider.isLoading
                         ? null
                         : () async {
+                            if (!_isSignIn && !_agreedToTerms) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: AutoTranslateText(
+                                    'Please agree to the Terms & Conditions to continue.',
+                                  ),
+                                  backgroundColor: Colors.red,
+                                ),
+                              );
+                              return;
+                            }
                             try {
                               if (_isSignIn) {
                                 // Existing user - Sign In
@@ -347,9 +394,49 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                   // Continue as guest button with translation
                   OutlinedButton(
                     onPressed: () async {
-                      await userProvider.continueAsGuest(_selectedRole);
-                      if (!mounted) return;
-                      context.go('/translation');
+                      final agreed = await showDialog<bool>(
+                        context: context,
+                        builder: (context) => AlertDialog(
+                          title: const AutoTranslateText('Terms & Conditions'),
+                          content: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              const AutoTranslateText(
+                                'By continuing as a guest, you agree to our Terms & Conditions and Privacy Policy.',
+                              ),
+                              const SizedBox(height: 12),
+                              TextButton(
+                                onPressed: () {
+                                  // Close dialog before navigating? Or navigate and keep dialog?
+                                  // Better to just push and let them come back.
+                                  context.push('/${AppRoutes.privacyPolicy}');
+                                },
+                                child: const AutoTranslateText('View Policy'),
+                              ),
+                            ],
+                          ),
+                          actions: [
+                            TextButton(
+                              onPressed: () => Navigator.pop(context, false),
+                              child: const AutoTranslateText('Cancel'),
+                            ),
+                            ElevatedButton(
+                              onPressed: () => Navigator.pop(context, true),
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: AppColors.primary,
+                                foregroundColor: Colors.white,
+                              ),
+                              child: const AutoTranslateText('I Agree'),
+                            ),
+                          ],
+                        ),
+                      );
+
+                      if (agreed == true) {
+                        await userProvider.continueAsGuest(_selectedRole);
+                        if (!mounted) return;
+                        context.go('/translation');
+                      }
                     },
                     style: OutlinedButton.styleFrom(
                       side: BorderSide(color: AppColors.primary),

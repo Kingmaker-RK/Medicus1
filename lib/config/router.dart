@@ -42,6 +42,7 @@ import '../screens/fertility/medical_data_screen.dart';
 import '../screens/fertility/pregnancy_tracking_screen.dart';
 import '../screens/fertility/newborn_child_care_screen.dart';
 import '../screens/fertility/mothers_health_screen.dart';
+import '../screens/legal_policy_screen.dart';
 
 class AppRouter {
   static final GoRouter router = GoRouter(
@@ -56,6 +57,11 @@ class AppRouter {
         path: '/',
         name: AppRoutes.welcome,
         builder: (context, state) => const WelcomeScreen(),
+      ),
+      GoRoute(
+        path: '/${AppRoutes.privacyPolicy}',
+        name: AppRoutes.privacyPolicy,
+        builder: (context, state) => const LegalPolicyScreen(),
       ),
       GoRoute(
         path: '/${AppRoutes.translation}',
