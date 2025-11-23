@@ -41,7 +41,7 @@ void main() {
       expect(
         find.descendant(
           of: find.byType(AiGrisLogo),
-          matching: find.byType(CustomPaint),
+          matching: find.byType(Image),
         ),
         findsOneWidget,
       );
@@ -63,7 +63,7 @@ void main() {
       expect(
         find.descendant(
           of: find.byType(AiGrisLogo),
-          matching: find.byType(CustomPaint),
+          matching: find.byType(Image),
         ),
         findsOneWidget,
       );
