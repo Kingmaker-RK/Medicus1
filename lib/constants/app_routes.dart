@@ -19,6 +19,10 @@ class AppRoutes {
   static const String dentist = '/dentist';
   static const String physiotherapy = '/physiotherapy';
   static const String chiropractic = '/chiropractic';
+  static const String ent = '/ent';
+  static const String eyeCare = '/eye-care';
+  static const String addictionRecovery = '/addiction-recovery';
+  static const String hivPrevention = '/hiv-prevention';
 
   // Appointment routes
   static const String dermo = 'dermo';

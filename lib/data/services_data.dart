@@ -74,4 +74,32 @@ final List<ServiceModel> services = [
     color: Colors.deepOrange,
     route: AppRoutes.chiropractic,
   ),
+  ServiceModel(
+    title: 'ENT Specialist',
+    description: 'Ear, Nose, and Throat specialists. Find doctors and upload reports.',
+    icon: LucideIcons.ear,
+    color: Colors.cyan,
+    route: AppRoutes.ent,
+  ),
+  ServiceModel(
+    title: 'Eye Care',
+    description: 'Find ophthalmologists and eye clinics. Manage your vision health.',
+    icon: LucideIcons.eye,
+    color: Colors.blueGrey,
+    route: AppRoutes.eyeCare,
+  ),
+  ServiceModel(
+    title: 'Addiction Recovery',
+    description: 'Find support and recovery centers for various addictions.',
+    icon: LucideIcons.heartHandshake,
+    color: Colors.greenAccent,
+    route: AppRoutes.addictionRecovery,
+  ),
+  ServiceModel(
+    title: 'HIV/STI Prevention',
+    description: 'Learn about prevention, get resources, and find help.',
+    icon: LucideIcons.shieldAlert,
+    color: Colors.redAccent,
+    route: AppRoutes.hivPrevention,
+  ),
 ];

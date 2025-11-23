@@ -25,6 +25,10 @@ import '../screens/orthopedic_screen.dart';
 import '../screens/fitphysic_screen.dart';
 import '../screens/physiotherapy_screen.dart';
 import '../screens/chiropractic_screen.dart';
+import '../screens/ent_screen.dart';
+import '../screens/eye_care_screen.dart';
+import '../screens/addiction_recovery_screen.dart';
+import '../screens/hiv_prevention_screen.dart';
 
 class AppRouter {
   static final GoRouter router = GoRouter(
@@ -164,6 +168,26 @@ class AppRouter {
         path: '/${AppRoutes.chiropractic}',
         name: AppRoutes.chiropractic,
         builder: (context, state) => const ChiropracticScreen(),
+      ),
+      GoRoute(
+        path: '/${AppRoutes.ent}',
+        name: AppRoutes.ent,
+        builder: (context, state) => const ENTScreen(),
+      ),
+      GoRoute(
+        path: '/${AppRoutes.eyeCare}',
+        name: AppRoutes.eyeCare,
+        builder: (context, state) => const EyeCareScreen(),
+      ),
+      GoRoute(
+        path: '/${AppRoutes.addictionRecovery}',
+        name: AppRoutes.addictionRecovery,
+        builder: (context, state) => const AddictionRecoveryScreen(),
+      ),
+      GoRoute(
+        path: '/${AppRoutes.hivPrevention}',
+        name: AppRoutes.hivPrevention,
+        builder: (context, state) => const HIVPreventionScreen(),
       ),
     ],
     errorBuilder: (context, state) =>
