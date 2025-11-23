@@ -23,6 +23,7 @@ class _HandwritingInputWidgetState extends State<HandwritingInputWidget> {
   final GlobalKey _globalKey = GlobalKey();
 
   void _startStroke(Offset point) {
+    print('DEBUG: Start Stroke at $point');
     setState(() {
       _currentStroke = [point];
       _strokes.add(_currentStroke);
