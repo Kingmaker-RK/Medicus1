@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../models/dental_record_model.dart';
 import '../constants/colors.dart';
 import '../widgets/translated_widget.dart';
+import '../widgets/upload_selector.dart';
 import 'package:intl/intl.dart';
 
 class DentistHistoryScreen extends StatefulWidget {
@@ -15,8 +16,10 @@ class _DentistHistoryScreenState extends State<DentistHistoryScreen> {
   // Mock data source
   final List<DentalRecord> _records = [];
 
-  void _uploadReport() {
-    // Simulate file upload
+  Future<void> _uploadReport() async {
+    final filePath = await UploadSelector.pick(context);
+    if (filePath == null) return;
+
     setState(() {
       final now = DateTime.now();
       _records.insert(
@@ -25,16 +28,18 @@ class _DentistHistoryScreenState extends State<DentistHistoryScreen> {
           id: now.millisecondsSinceEpoch.toString(),
           fileName: 'Doctor_Visit_Report_${DateFormat('MM_dd').format(now)}',
           timestamp: now,
-          filePath: '/mock/path/to/report_${now.millisecondsSinceEpoch}.pdf',
+          filePath: filePath,
         ),
       );
     });
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: AutoTranslateText('Report uploaded successfully'),
-        backgroundColor: AppColors.success,
-      ),
-    );
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: AutoTranslateText('Report uploaded successfully'),
+          backgroundColor: AppColors.success,
+        ),
+      );
+    }
   }
 
   void _renameRecord(DentalRecord record, String newName) {

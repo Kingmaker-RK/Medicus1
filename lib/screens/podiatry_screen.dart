@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 import '../constants/colors.dart';
 import '../models/podiatry_record_model.dart';
 import '../widgets/translated_widget.dart';
+import '../widgets/upload_selector.dart';
 
 class PodiatryScreen extends StatefulWidget {
   const PodiatryScreen({Key? key}) : super(key: key);
@@ -152,7 +153,10 @@ class _PodiatryScreenState extends State<PodiatryScreen> with SingleTickerProvid
   }
 
   // Report Methods
-  void _uploadReport() {
+  Future<void> _uploadReport() async {
+    final filePath = await UploadSelector.pick(context);
+    if (filePath == null) return;
+
     setState(() {
       final now = DateTime.now();
       _records.insert(
@@ -161,16 +165,18 @@ class _PodiatryScreenState extends State<PodiatryScreen> with SingleTickerProvid
           id: now.millisecondsSinceEpoch.toString(),
           fileName: 'Foot_Report_${DateFormat('MM_dd').format(now)}',
           timestamp: now,
-          filePath: '/mock/path/foot_report_${now.millisecondsSinceEpoch}.pdf',
+          filePath: filePath,
         ),
       );
     });
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: AutoTranslateText('Report uploaded successfully'),
-        backgroundColor: AppColors.success,
-      ),
-    );
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: AutoTranslateText('Report uploaded successfully'),
+          backgroundColor: AppColors.success,
+        ),
+      );
+    }
   }
 
   void _renameRecord(PodiatryRecord record, String newName) {

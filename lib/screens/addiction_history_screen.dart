@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../models/addiction_record_model.dart';
 import '../constants/colors.dart';
 import '../widgets/translated_widget.dart';
+import '../widgets/upload_selector.dart';
 import 'package:intl/intl.dart';
 
 class AddictionHistoryScreen extends StatefulWidget {
@@ -14,7 +15,10 @@ class AddictionHistoryScreen extends StatefulWidget {
 class _AddictionHistoryScreenState extends State<AddictionHistoryScreen> {
   final List<AddictionRecord> _records = [];
 
-  void _uploadReport() {
+  Future<void> _uploadReport() async {
+    final filePath = await UploadSelector.pick(context);
+    if (filePath == null) return;
+
     setState(() {
       final now = DateTime.now();
       _records.insert(
@@ -23,16 +27,18 @@ class _AddictionHistoryScreenState extends State<AddictionHistoryScreen> {
           id: now.millisecondsSinceEpoch.toString(),
           fileName: 'Recovery_Progress_Report_${DateFormat('MM_dd').format(now)}',
           timestamp: now,
-          filePath: '/mock/path/to/report_${now.millisecondsSinceEpoch}.pdf',
+          filePath: filePath,
         ),
       );
     });
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: AutoTranslateText('Report uploaded successfully'),
-        backgroundColor: AppColors.success,
-      ),
-    );
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: AutoTranslateText('Report uploaded successfully'),
+          backgroundColor: AppColors.success,
+        ),
+      );
+    }
   }
 
   void _renameRecord(AddictionRecord record, String newName) {

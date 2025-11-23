@@ -7,6 +7,7 @@ import 'package:ai_gris/screens/hiv_prevention_programs_screen.dart';
 import 'package:ai_gris/screens/hiv_support_organizations_screen.dart';
 import 'package:ai_gris/screens/hiv_history_screen.dart';
 import 'package:ai_gris/providers/user_provider.dart';
+import 'package:image_picker_platform_interface/image_picker_platform_interface.dart';
 import 'test_helpers.dart';
 
 class MockUserProvider extends Mock implements UserProvider {
@@ -23,12 +24,35 @@ class MockUserProvider extends Mock implements UserProvider {
   void removeListener(VoidCallback? listener) {}
 }
 
+class MockImagePicker extends ImagePickerPlatform {
+  @override
+  Future<PickedFile?> pickImage({
+    required ImageSource source,
+    double? maxWidth,
+    double? maxHeight,
+    int? imageQuality,
+    CameraDevice preferredCameraDevice = CameraDevice.rear,
+  }) async {
+    return PickedFile('/test/path/hiv_report.jpg');
+  }
+
+  @override
+  Future<XFile?> getImageFromSource({
+    required ImageSource source,
+    ImagePickerOptions? options,
+  }) async {
+    return XFile('/test/path/hiv_report.jpg');
+  }
+}
+
 void main() {
   late MockUserProvider mockUserProvider;
 
   setUp(() {
     mockUserProvider = MockUserProvider();
+    ImagePickerPlatform.instance = MockImagePicker();
   });
+
 
   group('HIV Prevention Feature Tests', () {
     testWidgets('HIV Prevention Screen renders main navigation grid', (WidgetTester tester) async {
@@ -105,6 +129,10 @@ void main() {
 
       // Test Upload
       await tester.tap(find.text('Upload Report'));
+      await tester.pumpAndSettle(); // Wait for BottomSheet
+
+      // Tap "Take Picture"
+      await tester.tap(find.text('Take Picture'));
       await tester.pumpAndSettle();
 
       expect(find.text('No records found'), findsNothing);

@@ -4,6 +4,7 @@ import 'package:mockito/mockito.dart';
 import 'package:ai_gris/screens/podiatry_screen.dart';
 import 'package:ai_gris/providers/user_provider.dart';
 import 'package:lucide_icons/lucide_icons.dart';
+import 'package:image_picker_platform_interface/image_picker_platform_interface.dart';
 import 'test_helpers.dart';
 
 class MockUserProvider extends Mock implements UserProvider {
@@ -20,12 +21,35 @@ class MockUserProvider extends Mock implements UserProvider {
   void removeListener(VoidCallback? listener) {}
 }
 
+class MockImagePicker extends ImagePickerPlatform {
+  @override
+  Future<PickedFile?> pickImage({
+    required ImageSource source,
+    double? maxWidth,
+    double? maxHeight,
+    int? imageQuality,
+    CameraDevice preferredCameraDevice = CameraDevice.rear,
+  }) async {
+    return PickedFile('/test/path/foot_report.jpg');
+  }
+
+  @override
+  Future<XFile?> getImageFromSource({
+    required ImageSource source,
+    ImagePickerOptions? options,
+  }) async {
+    return XFile('/test/path/foot_report.jpg');
+  }
+}
+
 void main() {
   late MockUserProvider mockUserProvider;
 
   setUp(() {
     mockUserProvider = MockUserProvider();
+    ImagePickerPlatform.instance = MockImagePicker();
   });
+
 
   group('Podiatry Screen Tests', () {
     testWidgets('Podiatry Screen renders tabs and default view', (WidgetTester tester) async {
@@ -94,6 +118,11 @@ void main() {
 
       // Upload Report
       await tester.tap(find.text('Upload First Report'));
+      await tester.pumpAndSettle(); // Wait for BottomSheet
+
+      // Tap "Take Picture"
+      expect(find.text('Take Picture'), findsOneWidget);
+      await tester.tap(find.text('Take Picture'));
       await tester.pumpAndSettle();
 
       expect(find.text('No reports uploaded yet'), findsNothing);

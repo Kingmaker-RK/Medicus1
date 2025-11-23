@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 import '../constants/colors.dart';
 import '../models/pulmonology_record_model.dart';
 import '../widgets/translated_widget.dart';
+import '../widgets/upload_selector.dart';
 
 class PulmonologyScreen extends StatefulWidget {
   const PulmonologyScreen({Key? key}) : super(key: key);
@@ -152,7 +153,10 @@ class _PulmonologyScreenState extends State<PulmonologyScreen> with SingleTicker
   }
 
   // Report Methods
-  void _uploadReport() {
+  Future<void> _uploadReport() async {
+    final filePath = await UploadSelector.pick(context);
+    if (filePath == null) return;
+
     setState(() {
       final now = DateTime.now();
       _records.insert(
@@ -161,16 +165,18 @@ class _PulmonologyScreenState extends State<PulmonologyScreen> with SingleTicker
           id: now.millisecondsSinceEpoch.toString(),
           fileName: 'Lung_Report_${DateFormat('MM_dd').format(now)}',
           timestamp: now,
-          filePath: '/mock/path/lung_report_${now.millisecondsSinceEpoch}.pdf',
+          filePath: filePath,
         ),
       );
     });
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: AutoTranslateText('Report uploaded successfully'),
-        backgroundColor: AppColors.success,
-      ),
-    );
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: AutoTranslateText('Report uploaded successfully'),
+          backgroundColor: AppColors.success,
+        ),
+      );
+    }
   }
 
   void _renameRecord(PulmonologyRecord record, String newName) {
