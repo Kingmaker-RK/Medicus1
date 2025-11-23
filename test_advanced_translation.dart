@@ -7,7 +7,7 @@ import 'lib/constants/app_constants.dart';
 /// Tests integration with Llama, GPT-5.1, DeepL, NLLB-200, SeamlessM4T, Claude 3.x architecture.
 void main() async {
   print('═══════════════════════════════════════════════════════');
-  print('🧪 MEDICUS ADVANCED TRANSLATION MODEL TEST');
+  print('🧪 AI-GRIS ADVANCED TRANSLATION MODEL TEST');
   print('═══════════════════════════════════════════════════════\n');
 
   final translationService = TranslationService();

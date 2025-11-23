@@ -45,7 +45,7 @@ void main() {
         ),
         findsOneWidget,
       );
-      expect(find.text('MEDICUS'), findsNothing);
+      expect(find.text('AI-GRIS'), findsNothing);
     });
 
     testWidgets('AiGrisLogo renders correctly with text', (WidgetTester tester) async {
@@ -67,7 +67,7 @@ void main() {
         ),
         findsOneWidget,
       );
-      expect(find.text('MEDICUS'), findsOneWidget);
+      expect(find.text('AI-GRIS'), findsOneWidget);
     });
   });
 }

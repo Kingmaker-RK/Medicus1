@@ -93,7 +93,7 @@ BEGIN
             VALUE "FileDescription", "AI-Gris" "\0"
             VALUE "FileVersion", VERSION_AS_STRING "\0"
             VALUE "InternalName", "ai_gris" "\0"
-            VALUE "LegalCopyright", "Copyright (C) 2025 com.medicus. All rights reserved." "\0"
+            VALUE "LegalCopyright", "Copyright (C) 2025 com.aigris. All rights reserved." "\0"
             VALUE "OriginalFilename", "ai_gris.exe" "\0"
             VALUE "ProductName", "AI-Gris" "\0"
             VALUE "ProductVersion", VERSION_AS_STRING "\0"

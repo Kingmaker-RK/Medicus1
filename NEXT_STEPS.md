@@ -1,6 +1,6 @@
-# Medicus - Next Steps
+# AI-Gris - Next Steps
 
-Your Medicus medical translation app has been successfully created! Here's what you need to do next to make it fully functional.
+Your AI-Gris medical translation app has been successfully created! Here's what you need to do next to make it fully functional.
 
 ## ✅ What's Been Completed
 
@@ -8,7 +8,7 @@ Your Medicus medical translation app has been successfully created! Here's what 
    - Welcome/Authentication screen
    - Main translation interface
    - Settings screen with permissions management
-   - Custom Medicus logo with caduceus symbol
+   - Custom AI-Gris logo with caduceus symbol
 
 2. **Core Features Implemented**
    - Speech-to-text service integration

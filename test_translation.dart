@@ -8,7 +8,7 @@ import 'lib/constants/app_constants.dart';
 /// Run with: dart test_translation.dart
 void main() async {
   print('═══════════════════════════════════════════════════════');
-  print('🧪 MEDICUS TRANSLATION SERVICE TEST');
+  print('🧪 AI-GRIS TRANSLATION SERVICE TEST');
   print('═══════════════════════════════════════════════════════\n');
 
   // Initialize services
@@ -67,7 +67,7 @@ void main() async {
   print('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n');
 
   final testStrings = [
-    'Welcome to Medicus',
+    'Welcome to AI-Gris',
     'Breaking language barriers in healthcare',
     'Sign In',
     'Email',
@@ -125,7 +125,7 @@ void main() async {
   if (hasValidKey) {
     print('Testing cache hit/miss:');
 
-    final testText = 'Welcome to Medicus';
+    final testText = 'Welcome to AI-Gris';
     final targetLang = 'es';
 
     // First call (cache miss)

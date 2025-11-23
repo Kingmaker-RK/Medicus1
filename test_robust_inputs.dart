@@ -8,7 +8,7 @@ import 'lib/constants/app_constants.dart';
 
 void main() async {
   print('═══════════════════════════════════════════════════════');
-  print('🛡️  MEDICUS ROBUSTNESS & INPUT TEST');
+  print('🛡️  AI-GRIS ROBUSTNESS & INPUT TEST');
   print('═══════════════════════════════════════════════════════\n');
 
   final llmService = LLMTranslationService();

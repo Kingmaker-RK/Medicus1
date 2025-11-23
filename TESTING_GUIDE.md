@@ -1,6 +1,6 @@
 # Testing Guide
 
-This document outlines the testing procedures for the Medicus application, with a focus on the newly refactored Services Hub.
+This document outlines the testing procedures for the AI-Gris application, with a focus on the newly refactored Services Hub.
 
 ## Services Hub Testing
 

@@ -45,8 +45,8 @@ The translation service has been tested and is **functionally working** but curr
 - **Result:** Returns original text unchanged when API key is not configured
 - **Example:**
   ```
-  Input:  "Welcome to Medicus"
-  Output: "Welcome to Medicus" (unchanged)
+  Input:  "Welcome to AI-Gris"
+  Output: "Welcome to AI-Gris" (unchanged)
   ```
 - **Note:** This is correct behavior - protecting users from errors by gracefully degrading
 
@@ -116,7 +116,7 @@ The translation service has been tested and is **functionally working** but curr
 3. **LocalizationService notified** → Broadcasts language change
 4. **AutoTranslateText widgets rebuild** → Request translations
 5. **LLMTranslationService called** → API key found ✅
-6. **Gemini API request** → Translates "Welcome to Medicus" → "Bienvenido a Medicus"
+6. **Gemini API request** → Translates "Welcome to AI-Gris" → "Bienvenido a AI-Gris"
 7. **Cache stores result** → For instant retrieval next time
 8. **UI displays** → Translated Spanish text ✨
 
@@ -184,8 +184,8 @@ flutter run
 ✅ LLM Translation Service initialized with Gemini Flash 2.0
 🎯 UserProvider: Changing language from 'en' to 'es'
 🌍 LocalizationService: Language changed to Spanish (es)
-🔤 Translating: "Welcome to Medicus" to es
-✅ Translation: "Bienvenido a Medicus"
+🔤 Translating: "Welcome to AI-Gris" to es
+✅ Translation: "Bienvenido a AI-Gris"
 ```
 
 ---

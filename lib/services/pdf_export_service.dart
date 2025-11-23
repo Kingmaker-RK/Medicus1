@@ -61,7 +61,7 @@ class PdfExportService {
 
     await Printing.layoutPdf(
       onLayout: (PdfPageFormat format) async => pdf.save(),
-      name: 'medicus_translation_history.pdf',
+      name: 'ai_gris_translation_history.pdf',
     );
   }
 

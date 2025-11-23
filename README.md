@@ -1,6 +1,6 @@
-# Medicus - Medical Translation App
+# AI-Gris - Medical Translation App
 
-Medicus is a comprehensive medical translation application designed to break language barriers in healthcare communication between patients and doctors who speak different languages.
+AI-Gris is a comprehensive medical translation application designed to break language barriers in healthcare communication between patients and doctors who speak different languages.
 
 ## Features
 

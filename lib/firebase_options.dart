@@ -48,9 +48,9 @@ class DefaultFirebaseOptions {
     apiKey: 'AIzaSyDemoKey_WebPlatform_NotReal',
     appId: '1:123456789:web:abcdef123456',
     messagingSenderId: '123456789',
-    projectId: 'medicus-demo',
-    authDomain: 'medicus-demo.firebaseapp.com',
-    storageBucket: 'medicus-demo.appspot.com',
+    projectId: 'ai-gris-demo',
+    authDomain: 'ai-gris-demo.firebaseapp.com',
+    storageBucket: 'ai-gris-demo.appspot.com',
     measurementId: 'G-MEASUREMENT',
   );
 
@@ -58,18 +58,18 @@ class DefaultFirebaseOptions {
     apiKey: 'AIzaSyDemoKey_AndroidPlatform_NotReal',
     appId: '1:123456789:android:abcdef123456',
     messagingSenderId: '123456789',
-    projectId: 'medicus-demo',
-    authDomain: 'medicus-demo.firebaseapp.com',
-    storageBucket: 'medicus-demo.appspot.com',
+    projectId: 'ai-gris-demo',
+    authDomain: 'ai-gris-demo.firebaseapp.com',
+    storageBucket: 'ai-gris-demo.appspot.com',
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
     apiKey: 'AIzaSyDemoKey_iOSPlatform_NotReal',
     appId: '1:123456789:ios:abcdef123456',
     messagingSenderId: '123456789',
-    projectId: 'medicus-demo',
-    authDomain: 'medicus-demo.firebaseapp.com',
-    storageBucket: 'medicus-demo.appspot.com',
+    projectId: 'ai-gris-demo',
+    authDomain: 'ai-gris-demo.firebaseapp.com',
+    storageBucket: 'ai-gris-demo.appspot.com',
     iosBundleId: 'com.aigris.app',
   );
 
@@ -77,9 +77,9 @@ class DefaultFirebaseOptions {
     apiKey: 'AIzaSyDemoKey_macOSPlatform_NotReal',
     appId: '1:123456789:macos:abcdef123456',
     messagingSenderId: '123456789',
-    projectId: 'medicus-demo',
-    authDomain: 'medicus-demo.firebaseapp.com',
-    storageBucket: 'medicus-demo.appspot.com',
+    projectId: 'ai-gris-demo',
+    authDomain: 'ai-gris-demo.firebaseapp.com',
+    storageBucket: 'ai-gris-demo.appspot.com',
     iosBundleId: 'com.aigris.app',
   );
 }
