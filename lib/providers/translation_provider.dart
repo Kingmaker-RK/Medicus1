@@ -25,6 +25,14 @@ class TranslationProvider with ChangeNotifier {
   String _targetLanguage = 'es';
   String? _lastError;
 
+  // Guest Mode Limits
+  bool _isGuest = false;
+  bool _isInConversationMode = false;
+  int _guestTranslationCount = 0;
+  int _guestConversationCount = 0;
+  static const int MAX_GUEST_TRANSLATIONS = 5;
+  static const int MAX_GUEST_CONVERSATIONS = 10;
+
   List<TranslationResult> get translationHistory => _translationHistory;
   TranslationResult? get currentTranslation => _currentTranslation;
   bool get isTranslating => _isTranslating;
@@ -36,8 +44,49 @@ class TranslationProvider with ChangeNotifier {
   String get targetLanguage => _targetLanguage;
   String? get lastError => _lastError;
 
+  void updateGuestStatus(bool isGuest) {
+    _isGuest = isGuest;
+    notifyListeners();
+  }
+
+  void setConversationMode(bool enabled) {
+    _isInConversationMode = enabled;
+    notifyListeners();
+  }
+
+  bool _checkGuestLimit() {
+    if (!_isGuest) return true;
+
+    if (_isInConversationMode) {
+      if (_guestConversationCount >= MAX_GUEST_CONVERSATIONS) {
+        _lastError = 'Guest limit reached: Max $MAX_GUEST_CONVERSATIONS conversation exchanges. Please sign up to continue.';
+        notifyListeners();
+        return false;
+      }
+    } else {
+      if (_guestTranslationCount >= MAX_GUEST_TRANSLATIONS) {
+        _lastError = 'Guest limit reached: Max $MAX_GUEST_TRANSLATIONS translations. Please sign up to continue.';
+        notifyListeners();
+        return false;
+      }
+    }
+    return true;
+  }
+
+  void _incrementGuestUsage() {
+    if (!_isGuest) return;
+
+    if (_isInConversationMode) {
+      _guestConversationCount++;
+    } else {
+      _guestTranslationCount++;
+    }
+  }
+
   // Extract text from image
   Future<String> extractTextFromImage(Uint8List imageBytes) async {
+    if (!_checkGuestLimit()) return '';
+
     _isRecognizingHandwriting = true; // Reusing state for UI loading indicators
     _lastError = null;
     notifyListeners();
@@ -47,6 +96,7 @@ class TranslationProvider with ChangeNotifier {
       
       if (text.isNotEmpty) {
         _currentInput = text;
+        _incrementGuestUsage();
       }
       
       return text;
@@ -62,6 +112,8 @@ class TranslationProvider with ChangeNotifier {
 
   // Recognize handwriting
   Future<String> recognizeHandwriting(Uint8List imageBytes) async {
+    if (!_checkGuestLimit()) return '';
+
     _isRecognizingHandwriting = true;
     _lastError = null;
     notifyListeners();
@@ -71,6 +123,7 @@ class TranslationProvider with ChangeNotifier {
       
       if (text.isNotEmpty) {
         _currentInput = text;
+        _incrementGuestUsage();
       }
       
       return text;
@@ -85,8 +138,9 @@ class TranslationProvider with ChangeNotifier {
   }
 
   // Initialize speech service with user's selected language
-  Future<void> initialize({String? userLanguage}) async {
+  Future<void> initialize({String? userLanguage, bool isGuest = false}) async {
     await _speechService.initialize();
+    _isGuest = isGuest;
 
     // If user has selected a language, set it as the source language
     if (userLanguage != null && userLanguage.isNotEmpty) {
@@ -108,6 +162,8 @@ class TranslationProvider with ChangeNotifier {
   Future<void> translateText(String text, {bool autoSpeak = false}) async {
     if (text.trim().isEmpty) return;
 
+    if (!_checkGuestLimit()) return;
+
     _isTranslating = true;
     _currentInput = text;
     _lastError = null;
@@ -122,6 +178,7 @@ class TranslationProvider with ChangeNotifier {
 
       _currentTranslation = result;
       _translationHistory.insert(0, result);
+      _incrementGuestUsage();
 
       // Optionally speak the translated text
       if (autoSpeak) {

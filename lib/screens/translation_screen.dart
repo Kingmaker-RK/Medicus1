@@ -50,6 +50,7 @@ class _TranslationScreenState extends State<TranslationScreen>
       // Initialize with the user's selected language
       translationProvider.initialize(
         userLanguage: userProvider.selectedLanguage,
+        isGuest: userProvider.currentUser?.isGuest ?? false,
       );
       _previousUserLanguage = userProvider.selectedLanguage;
     });
@@ -74,6 +75,11 @@ class _TranslationScreenState extends State<TranslationScreen>
       );
       _previousUserLanguage = userProvider.selectedLanguage;
     }
+
+    // Ensure guest status is up to date
+    translationProvider.updateGuestStatus(
+      userProvider.currentUser?.isGuest ?? false,
+    );
   }
 
   @override
@@ -511,6 +517,7 @@ class _TranslationScreenState extends State<TranslationScreen>
                     setState(() {
                       _isConversationMode = !_isConversationMode;
                     });
+                    translationProvider.setConversationMode(_isConversationMode);
                     if (_isConversationMode) {
                       await translationProvider.startListening();
                     } else {

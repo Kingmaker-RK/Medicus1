@@ -226,6 +226,12 @@ class FakeTranslationProvider extends ChangeNotifier implements TranslationProvi
   }
 
   @override
+  void updateGuestStatus(bool isGuest) {}
+
+  @override
+  void setConversationMode(bool enabled) {}
+
+  @override
   void updateInput(String text) {
     _currentInput = text;
     notifyListeners();
@@ -269,7 +275,7 @@ class FakeTranslationProvider extends ChangeNotifier implements TranslationProvi
   }
 
   @override
-  Future<void> initialize({String? userLanguage}) async {}
+  Future<void> initialize({String? userLanguage, bool isGuest = false}) async {}
 
   @override
   void updateSourceLanguageFromUser(String userLanguageCode) {
