@@ -29,6 +29,10 @@ import '../screens/ent_screen.dart';
 import '../screens/eye_care_screen.dart';
 import '../screens/addiction_recovery_screen.dart';
 import '../screens/hiv_prevention_screen.dart';
+import '../screens/hiv_clinics_screen.dart';
+import '../screens/hiv_prevention_programs_screen.dart';
+import '../screens/hiv_support_organizations_screen.dart';
+import '../screens/hiv_history_screen.dart';
 
 class AppRouter {
   static final GoRouter router = GoRouter(
@@ -188,6 +192,26 @@ class AppRouter {
         path: '/${AppRoutes.hivPrevention}',
         name: AppRoutes.hivPrevention,
         builder: (context, state) => const HIVPreventionScreen(),
+      ),
+      GoRoute(
+        path: '/${AppRoutes.hivClinics}',
+        name: AppRoutes.hivClinics,
+        builder: (context, state) => const HIVClinicsScreen(),
+      ),
+      GoRoute(
+        path: '/${AppRoutes.hivPreventionPrograms}',
+        name: AppRoutes.hivPreventionPrograms,
+        builder: (context, state) => const HIVPreventionProgramsScreen(),
+      ),
+      GoRoute(
+        path: '/${AppRoutes.hivSupportOrganizations}',
+        name: AppRoutes.hivSupportOrganizations,
+        builder: (context, state) => const HIVSupportOrganizationsScreen(),
+      ),
+      GoRoute(
+        path: '/${AppRoutes.hivHistory}',
+        name: AppRoutes.hivHistory,
+        builder: (context, state) => const HIVHistoryScreen(),
       ),
     ],
     errorBuilder: (context, state) =>

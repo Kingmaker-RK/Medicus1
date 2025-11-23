@@ -3,6 +3,9 @@ import '../widgets/translated_widget.dart';
 import '../constants/colors.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import 'package:go_router/go_router.dart';
+import '../constants/app_routes.dart';
+
 class HIVPreventionScreen extends StatelessWidget {
   const HIVPreventionScreen({Key? key}) : super(key: key);
 
@@ -29,6 +32,8 @@ class HIVPreventionScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            _buildServicesGrid(context),
+            const SizedBox(height: 20),
             _buildSection(
               title: 'Key Prevention Methods',
               icon: Icons.shield_rounded,
@@ -58,6 +63,77 @@ class HIVPreventionScreen extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+
+  Widget _buildServicesGrid(BuildContext context) {
+    final services = [
+      {
+        'title': 'Clinics Near You',
+        'icon': Icons.local_hospital_rounded,
+        'color': Colors.redAccent,
+        'route': AppRoutes.hivClinics,
+      },
+      {
+        'title': 'Prevention Programs',
+        'icon': Icons.health_and_safety_rounded,
+        'color': Colors.blueAccent,
+        'route': AppRoutes.hivPreventionPrograms,
+      },
+      {
+        'title': 'Support Organizations',
+        'icon': Icons.volunteer_activism_rounded,
+        'color': Colors.orangeAccent,
+        'route': AppRoutes.hivSupportOrganizations,
+      },
+      {
+        'title': 'My Reports',
+        'icon': Icons.folder_shared_rounded,
+        'color': Colors.teal,
+        'route': AppRoutes.hivHistory,
+      },
+    ];
+
+    return GridView.builder(
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 2,
+        crossAxisSpacing: 16,
+        mainAxisSpacing: 16,
+        childAspectRatio: 1.5,
+      ),
+      itemCount: services.length,
+      itemBuilder: (context, index) {
+        final service = services[index];
+        return Card(
+          elevation: 2,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+          child: InkWell(
+            onTap: () => context.pushNamed(service['route'] as String),
+            borderRadius: BorderRadius.circular(16),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: (service['color'] as Color).withValues(alpha: 0.1),
+                    shape: BoxShape.circle,
+                  ),
+                  child: Icon(service['icon'] as IconData, size: 32, color: service['color'] as Color),
+                ),
+                const SizedBox(height: 8),
+                AutoTranslateText(
+                  service['title'] as String,
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
     );
   }
 

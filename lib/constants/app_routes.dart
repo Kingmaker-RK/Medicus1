@@ -23,6 +23,10 @@ class AppRoutes {
   static const String eyeCare = '/eye-care';
   static const String addictionRecovery = '/addiction-recovery';
   static const String hivPrevention = '/hiv-prevention';
+  static const String hivClinics = '/hiv-clinics';
+  static const String hivPreventionPrograms = '/hiv-prevention-programs';
+  static const String hivSupportOrganizations = '/hiv-support-organizations';
+  static const String hivHistory = '/hiv-history';
 
   // Appointment routes
   static const String dermo = 'dermo';
