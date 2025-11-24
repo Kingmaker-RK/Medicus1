@@ -36,11 +36,15 @@ class AiGrisApp extends StatelessWidget {
         ChangeNotifierProvider(
           create: (_) => TranslationProvider()..initialize(),
         ),
-        ChangeNotifierProvider(
+        ChangeNotifierProxyProvider<UserProvider, PatientProfileProvider>(
           create: (_) => PatientProfileProvider()..initialize(),
+          update: (_, userProvider, patientProvider) =>
+              patientProvider!..updateUser(userProvider.currentUser?.id),
         ),
-        ChangeNotifierProvider(
+        ChangeNotifierProxyProvider<UserProvider, DoctorProfileProvider>(
           create: (_) => DoctorProfileProvider()..initialize(),
+          update: (_, userProvider, doctorProvider) =>
+              doctorProvider!..updateUser(userProvider.currentUser?.id),
         ),
         ChangeNotifierProvider(
           create: (_) => HealthProvider(),

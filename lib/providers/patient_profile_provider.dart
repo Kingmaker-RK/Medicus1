@@ -1,34 +1,54 @@
 import 'package:flutter/foundation.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'dart:convert';
 import '../models/patient_profile_model.dart';
+import '../services/database_service.dart';
 
 class PatientProfileProvider with ChangeNotifier {
+  final DatabaseService _databaseService;
+  
   PatientProfileModel _profile = PatientProfileModel();
   bool _isLoading = false;
+  String? _userId;
+
+  PatientProfileProvider({DatabaseService? databaseService})
+      : _databaseService = databaseService ?? DatabaseService();
 
   PatientProfileModel get profile => _profile;
   bool get isLoading => _isLoading;
 
-  // Initialize profile from storage
+  // Update provider with current user ID
+  Future<void> updateUser(String? userId) async {
+    if (_userId == userId) return;
+
+    _userId = userId;
+    
+    if (_userId != null) {
+      await _loadProfile();
+    } else {
+      _profile = PatientProfileModel();
+      notifyListeners();
+    }
+  }
+
+  // Initialize profile - Deprecated, use updateUser
   Future<void> initialize() async {
+    // No-op: Initialization is handled by updateUser via ProxyProvider
+  }
+
+  Future<void> _loadProfile() async {
+    if (_userId == null) return;
+
     _isLoading = true;
     notifyListeners();
 
     try {
-      final prefs = await SharedPreferences.getInstance();
-      final profileJson = prefs.getString('user_profile');
-
-      if (profileJson != null) {
-        _profile = PatientProfileModel.fromJson(
-          json.decode(profileJson) as Map<String, dynamic>,
-        );
+      final profile = await _databaseService.getPatientProfile(_userId!);
+      if (profile != null) {
+        _profile = profile;
       } else {
-        // Initialize with empty profile (no demo data)
         _profile = PatientProfileModel();
       }
     } catch (e) {
-      print('Error initializing profile: $e');
+      print('Error loading patient profile: $e');
       _profile = PatientProfileModel();
     } finally {
       _isLoading = false;
@@ -36,11 +56,12 @@ class PatientProfileProvider with ChangeNotifier {
     }
   }
 
-  // Save profile to storage
+  // Save profile to database
   Future<void> _saveProfile() async {
+    if (_userId == null) return;
+
     try {
-      final prefs = await SharedPreferences.getInstance();
-      await prefs.setString('user_profile', json.encode(_profile.toJson()));
+      await _databaseService.savePatientProfile(_userId!, _profile);
     } catch (e) {
       print('Error saving profile: $e');
     }

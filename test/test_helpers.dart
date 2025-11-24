@@ -70,19 +70,22 @@ Widget createTestApp({
   PatientProfileProvider? userProfileProvider,
   DoctorProfileProvider? doctorProfileProvider,
 }) {
+  final firestore = FakeFirebaseFirestore();
+  final mockDbService = DatabaseService(firestore: firestore);
+
   return MultiProvider(
     providers: [
       ChangeNotifierProvider<UserProvider>(
-        create: (_) => userProvider ?? createMockUserProvider(),
+        create: (_) => userProvider ?? createMockUserProvider(firestore: firestore),
       ),
       ChangeNotifierProvider<TranslationProvider>(
         create: (_) => translationProvider ?? TranslationProvider(),
       ),
       ChangeNotifierProvider<PatientProfileProvider>(
-        create: (_) => userProfileProvider ?? PatientProfileProvider(),
+        create: (_) => userProfileProvider ?? PatientProfileProvider(databaseService: mockDbService),
       ),
       ChangeNotifierProvider<DoctorProfileProvider>(
-        create: (_) => doctorProfileProvider ?? DoctorProfileProvider(),
+        create: (_) => doctorProfileProvider ?? DoctorProfileProvider(databaseService: mockDbService),
       ),
     ],
     child: MaterialApp(
@@ -102,12 +105,15 @@ Widget createTestApp({
 
 /// Creates the full AiGrisApp for integration testing
 Widget createAiGrisAppForTest() {
+  final firestore = FakeFirebaseFirestore();
+  final mockDbService = DatabaseService(firestore: firestore);
+
   return MultiProvider(
     providers: [
-      ChangeNotifierProvider(create: (_) => createMockUserProvider()),
+      ChangeNotifierProvider(create: (_) => createMockUserProvider(firestore: firestore)),
       ChangeNotifierProvider(create: (_) => TranslationProvider()),
-      ChangeNotifierProvider(create: (_) => PatientProfileProvider()),
-      ChangeNotifierProvider(create: (_) => DoctorProfileProvider()),
+      ChangeNotifierProvider(create: (_) => PatientProfileProvider(databaseService: mockDbService)),
+      ChangeNotifierProvider(create: (_) => DoctorProfileProvider(databaseService: mockDbService)),
     ],
     child: MaterialApp.router(
       title: AppConstants.appName,

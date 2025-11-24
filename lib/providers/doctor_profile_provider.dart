@@ -1,28 +1,50 @@
 import 'package:flutter/foundation.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'dart:convert';
 import '../models/doctor_profile_model.dart';
+import '../services/database_service.dart';
 
 class DoctorProfileProvider with ChangeNotifier {
+  final DatabaseService _databaseService;
+
   DoctorProfileModel _profile = DoctorProfileModel();
   bool _isLoading = false;
+  String? _userId;
+
+  DoctorProfileProvider({DatabaseService? databaseService})
+      : _databaseService = databaseService ?? DatabaseService();
 
   DoctorProfileModel get profile => _profile;
   bool get isLoading => _isLoading;
 
-  // Initialize profile
+  // Update provider with current user ID
+  Future<void> updateUser(String? userId) async {
+    if (_userId == userId) return;
+
+    _userId = userId;
+
+    if (_userId != null) {
+      await _loadProfile();
+    } else {
+      _profile = DoctorProfileModel();
+      notifyListeners();
+    }
+  }
+
+  // Initialize profile - Deprecated, use updateUser
   Future<void> initialize() async {
+    // No-op: Initialization is handled by updateUser via ProxyProvider
+  }
+
+  Future<void> _loadProfile() async {
+    if (_userId == null) return;
+    
     _isLoading = true;
     notifyListeners();
 
     try {
-      final prefs = await SharedPreferences.getInstance();
-      final profileJson = prefs.getString('doctor_profile');
-
-      if (profileJson != null) {
-        _profile = DoctorProfileModel.fromJson(
-          json.decode(profileJson) as Map<String, dynamic>,
-        );
+      final profile = await _databaseService.getDoctorProfile(_userId!);
+      
+      if (profile != null) {
+        _profile = profile;
       } else {
         _profile = DoctorProfileModel();
       }
@@ -37,9 +59,10 @@ class DoctorProfileProvider with ChangeNotifier {
 
   // Save profile helper
   Future<void> _saveProfile() async {
+    if (_userId == null) return;
+
     try {
-      final prefs = await SharedPreferences.getInstance();
-      await prefs.setString('doctor_profile', json.encode(_profile.toJson()));
+      await _databaseService.saveDoctorProfile(_userId!, _profile);
     } catch (e) {
       print('Error saving doctor profile: $e');
     }
@@ -90,8 +113,8 @@ class DoctorProfileProvider with ChangeNotifier {
   // Clear profile data
   Future<void> clearProfile() async {
     _profile = DoctorProfileModel();
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.remove('doctor_profile');
+    // No need to remove from prefs, just memory reset.
+    // To delete from DB would be a different method if needed.
     notifyListeners();
   }
 }
