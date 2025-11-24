@@ -59,13 +59,13 @@ class TranslationProvider with ChangeNotifier {
 
     if (_isInConversationMode) {
       if (_guestConversationCount >= MAX_GUEST_CONVERSATIONS) {
-        _lastError = 'Guest limit reached: Max $MAX_GUEST_CONVERSATIONS conversation exchanges. Please sign up to continue.';
+        _lastError = 'Guest limit reached: Max $MAX_GUEST_CONVERSATIONS conversation exchanges. Please register to continue.';
         notifyListeners();
         return false;
       }
     } else {
       if (_guestTranslationCount >= MAX_GUEST_TRANSLATIONS) {
-        _lastError = 'Guest limit reached: Max $MAX_GUEST_TRANSLATIONS translations. Please sign up to continue.';
+        _lastError = 'Guest limit reached: Max $MAX_GUEST_TRANSLATIONS translations. Please register to continue.';
         notifyListeners();
         return false;
       }

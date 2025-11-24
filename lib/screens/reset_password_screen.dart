@@ -94,7 +94,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
               ],
             ),
             content: const Text(
-              'Your password has been reset successfully. You can now sign in with your new password.',
+              'Your password has been reset successfully. You can now login with your new password.',
             ),
             actions: [
               ElevatedButton(
@@ -109,7 +109,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                     borderRadius: BorderRadius.circular(12),
                   ),
                 ),
-                child: const AutoTranslateText('Go to Sign In'),
+                child: const AutoTranslateText('Go to Login'),
               ),
             ],
           ),

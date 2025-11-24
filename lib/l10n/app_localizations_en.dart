@@ -15,10 +15,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get welcomeSubtitle => 'Breaking language barriers in healthcare';
 
   @override
-  String get signIn => 'Sign In';
+  String get signIn => 'Login';
 
   @override
-  String get signUp => 'Sign Up';
+  String get signUp => 'Register';
 
   @override
   String get emailLabel => 'Email';
@@ -44,7 +44,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get loginFailed => 'Login failed. Please check your credentials.';
 
   @override
-  String get signUpFailed => 'Sign up failed. Please try again.';
+  String get signUpFailed => 'Register failed. Please try again.';
 
   @override
   String get continueAsGuest => 'Continue as Guest';

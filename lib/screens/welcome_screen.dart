@@ -268,46 +268,45 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
 
                   const SizedBox(height: 16),
 
-                  // Terms and Conditions Checkbox (Only for Sign Up)
-                  if (!_isSignIn)
-                    Padding(
-                      padding: const EdgeInsets.only(bottom: 16.0),
-                      child: Row(
-                        children: [
-                          Checkbox(
-                            value: _agreedToTerms,
-                            onChanged: (value) {
-                              setState(() {
-                                _agreedToTerms = value ?? false;
-                              });
+                  // Terms and Conditions Checkbox (Required for both Login and Register)
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 16.0),
+                    child: Row(
+                      children: [
+                        Checkbox(
+                          value: _agreedToTerms,
+                          onChanged: (value) {
+                            setState(() {
+                              _agreedToTerms = value ?? false;
+                            });
+                          },
+                          activeColor: AppColors.primary,
+                        ),
+                        Expanded(
+                          child: GestureDetector(
+                            onTap: () {
+                              context.push('/${AppRoutes.privacyPolicy}');
                             },
-                            activeColor: AppColors.primary,
-                          ),
-                          Expanded(
-                            child: GestureDetector(
-                              onTap: () {
-                                context.push('/${AppRoutes.privacyPolicy}');
-                              },
-                              child: Text(
-                                l10n.agreeToTerms,
-                                style: const TextStyle(
-                                  fontSize: 12,
-                                  color: AppColors.primary,
-                                  decoration: TextDecoration.underline,
-                                ),
+                            child: Text(
+                              l10n.agreeToTerms,
+                              style: const TextStyle(
+                                fontSize: 12,
+                                color: AppColors.primary,
+                                decoration: TextDecoration.underline,
                               ),
                             ),
                           ),
-                        ],
-                      ),
+                        ),
+                      ],
                     ),
+                  ),
 
                   // Sign in / Sign up button
                   ElevatedButton(
                     onPressed: userProvider.isLoading
                         ? null
                         : () async {
-                            if (!_isSignIn && !_agreedToTerms) {
+                            if (!_agreedToTerms) {
                               ScaffoldMessenger.of(context).showSnackBar(
                                 SnackBar(
                                   content: Text(

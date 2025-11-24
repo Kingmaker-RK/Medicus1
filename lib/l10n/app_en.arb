@@ -8,11 +8,11 @@
   "@welcomeSubtitle": {
     "description": "The subtitle below the welcome title"
   },
-  "signIn": "Sign In",
+  "signIn": "Login",
   "@signIn": {
     "description": "Button text for signing in"
   },
-  "signUp": "Sign Up",
+  "signUp": "Register",
   "@signUp": {
     "description": "Button text for signing up"
   },
@@ -44,7 +44,7 @@
   "@loginFailed": {
     "description": "Error message for failed login"
   },
-  "signUpFailed": "Sign up failed. Please try again.",
+  "signUpFailed": "Register failed. Please try again.",
   "@signUpFailed": {
     "description": "Error message for failed sign up"
   },

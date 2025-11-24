@@ -109,13 +109,13 @@ abstract class AppLocalizations {
   /// Button text for signing in
   ///
   /// In en, this message translates to:
-  /// **'Sign In'**
+  /// **'Login'**
   String get signIn;
 
   /// Button text for signing up
   ///
   /// In en, this message translates to:
-  /// **'Sign Up'**
+  /// **'Register'**
   String get signUp;
 
   /// Label for email input field
@@ -163,7 +163,7 @@ abstract class AppLocalizations {
   /// Error message for failed sign up
   ///
   /// In en, this message translates to:
-  /// **'Sign up failed. Please try again.'**
+  /// **'Register failed. Please try again.'**
   String get signUpFailed;
 
   /// Button text to continue as a guest

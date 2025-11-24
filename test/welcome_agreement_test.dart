@@ -109,18 +109,17 @@ void main() {
     setupFirebaseMocks();
   });
 
-  testWidgets('WelcomeScreen enforces agreement for Sign Up', (WidgetTester tester) async {
+  testWidgets('WelcomeScreen enforces agreement for Register (Sign Up)', (WidgetTester tester) async {
     final mockUserProvider = MockUserProvider();
     
     await tester.pumpWidget(createTestAppWithRouter(mockUserProvider));
     await tester.pumpAndSettle();
 
-    // Switch to Sign Up mode
-    await tester.tap(find.text('Sign Up'));
+    // Switch to Register mode
+    await tester.tap(find.text('Register'));
     await tester.pump();
 
     // Verify Checkbox is visible
-    // We have two checkboxes (Remember Me and Terms). Identify Terms checkbox by its row content.
     final termsCheckboxFinder = find.descendant(
       of: find.ancestor(
         of: find.textContaining('I agree'),
@@ -130,11 +129,10 @@ void main() {
     );
     expect(termsCheckboxFinder, findsOneWidget);
 
-    // Try to click Sign Up without checking box
-    // Note: The button text changes based on mode
-    final signUpButton = find.widgetWithText(ElevatedButton, 'Sign Up');
-    await tester.ensureVisible(signUpButton);
-    await tester.tap(signUpButton);
+    // Try to click Register without checking box
+    final registerButton = find.widgetWithText(ElevatedButton, 'Register');
+    await tester.ensureVisible(registerButton);
+    await tester.tap(registerButton);
     await tester.pump();
 
     // Verify Error SnackBar
@@ -144,14 +142,60 @@ void main() {
     await tester.tap(termsCheckboxFinder);
     await tester.pump();
 
+    // Fill in required fields to proceed
+    await tester.enterText(find.byType(TextField).at(0), 'test@example.com');
+    await tester.enterText(find.byType(TextField).at(1), 'password123');
+
     // Try again
-    await tester.tap(signUpButton);
+    await tester.tap(registerButton);
     // Pump long enough for the mock delay
     await tester.pump(const Duration(milliseconds: 200)); 
     await tester.pumpAndSettle();
     
     // Should navigate to verify email
     expect(find.text('Verify Email'), findsOneWidget);
+  });
+
+  testWidgets('WelcomeScreen enforces agreement for Login (Sign In)', (WidgetTester tester) async {
+    final mockUserProvider = MockUserProvider();
+    
+    await tester.pumpWidget(createTestAppWithRouter(mockUserProvider));
+    await tester.pumpAndSettle();
+
+    // Default mode is Login. Verify Checkbox is visible.
+    final termsCheckboxFinder = find.descendant(
+      of: find.ancestor(
+        of: find.textContaining('I agree'),
+        matching: find.byType(Row),
+      ),
+      matching: find.byType(Checkbox),
+    );
+    expect(termsCheckboxFinder, findsOneWidget);
+
+    // Try to click Login without checking box
+    final loginButton = find.widgetWithText(ElevatedButton, 'Login');
+    await tester.ensureVisible(loginButton);
+    await tester.tap(loginButton);
+    await tester.pump();
+
+    // Verify Error SnackBar
+    expect(find.text('Please agree to the Terms & Conditions to continue.'), findsOneWidget);
+
+    // Check the box
+    await tester.tap(termsCheckboxFinder);
+    await tester.pump();
+
+    // Fill in required fields to proceed
+    await tester.enterText(find.byType(TextField).at(0), 'test@example.com');
+    await tester.enterText(find.byType(TextField).at(1), 'password123');
+
+    // Try again
+    await tester.tap(loginButton);
+    await tester.pump(const Duration(milliseconds: 200)); 
+    await tester.pumpAndSettle();
+    
+    // Should navigate to Translation Screen (default for Patient)
+    expect(find.text('Translation Screen'), findsOneWidget);
   });
 
   testWidgets('WelcomeScreen enforces agreement for Guest', (WidgetTester tester) async {

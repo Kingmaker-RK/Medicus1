@@ -536,8 +536,8 @@ Translations (numbered format):''';
     final commonStrings = [
       'Welcome to AI-Gris',
       'Breaking language barriers in healthcare',
-      'Sign In',
-      'Sign Up',
+      'Login',
+      'Register',
       'Email',
       'Password',
       'Remember me',

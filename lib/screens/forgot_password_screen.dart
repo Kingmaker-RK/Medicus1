@@ -181,14 +181,14 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                       ),
                       const SizedBox(height: 16),
 
-                      // Back to sign in
+                      // Back to login
                       Center(
                         child: TextButton(
                           onPressed: () {
                             context.go('/');
                           },
                           child: Text(
-                            'Back to Sign In',
+                            'Back to Login',
                             style: TextStyle(
                               fontSize: 14,
                               color: AppColors.primary,
