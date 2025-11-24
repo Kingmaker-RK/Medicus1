@@ -9,6 +9,7 @@ import 'providers/user_provider.dart';
 import 'providers/translation_provider.dart';
 import 'providers/patient_profile_provider.dart';
 import 'providers/doctor_profile_provider.dart';
+import 'providers/report_generation_provider.dart';
 import 'providers/health_provider.dart';
 import 'constants/colors.dart';
 import 'constants/app_constants.dart';
@@ -48,6 +49,9 @@ class AiGrisApp extends StatelessWidget {
         ),
         ChangeNotifierProvider(
           create: (_) => HealthProvider(),
+        ),
+        ChangeNotifierProvider(
+          create: (_) => ReportGenerationProvider(),
         ),
       ],
       child: Consumer<UserProvider>(

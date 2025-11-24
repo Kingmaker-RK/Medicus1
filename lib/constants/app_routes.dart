@@ -4,6 +4,8 @@ class AppRoutes {
   static const String settings = 'settings';
   static const String profile = 'profile';
   static const String doctorProfile = 'doctor-profile';
+  static const String doctorHome = 'doctor-home';
+  static const String reportGeneration = 'report-generation';
   static const String completeProfile = 'complete-profile';
   static const String forgotPassword = 'forgot-password';
   static const String verifyEmail = 'verify-email';

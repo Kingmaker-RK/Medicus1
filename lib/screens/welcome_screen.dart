@@ -330,7 +330,12 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                                 if (!mounted) return;
                                 if (userProvider.isLoggedIn) {
                                   // Sign In: Skip profile completion, go directly to app
-                                  context.go('/translation');
+                                  if (userProvider.currentUser?.role ==
+                                      AppConstants.roleDoctor) {
+                                    context.go('/doctor-home');
+                                  } else {
+                                    context.go('/translation');
+                                  }
                                 }
                               } else {
                                 // New user - Sign Up
@@ -435,7 +440,12 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                       if (agreed == true) {
                         await userProvider.continueAsGuest(_selectedRole);
                         if (!mounted) return;
-                        context.go('/translation');
+                        if (userProvider.currentUser?.role ==
+                            AppConstants.roleDoctor) {
+                          context.go('/doctor-home');
+                        } else {
+                          context.go('/translation');
+                        }
                       }
                     },
                     style: OutlinedButton.styleFrom(

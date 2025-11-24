@@ -6,6 +6,8 @@ import '../screens/translation_screen.dart';
 import '../screens/settings_screen.dart';
 import '../screens/patient_profile_screen.dart';
 import '../screens/doctor_profile_screen.dart';
+import '../screens/doctor_home_screen.dart';
+import '../screens/report_generation_screen.dart';
 import '../screens/profile_completion_screen.dart';
 import '../screens/forgot_password_screen.dart';
 import '../screens/email_verification_screen.dart';
@@ -82,6 +84,16 @@ class AppRouter {
         path: '/${AppRoutes.doctorProfile}',
         name: AppRoutes.doctorProfile,
         builder: (context, state) => const DoctorProfileScreen(),
+      ),
+      GoRoute(
+        path: '/${AppRoutes.doctorHome}',
+        name: AppRoutes.doctorHome,
+        builder: (context, state) => const DoctorHomeScreen(),
+      ),
+      GoRoute(
+        path: '/${AppRoutes.reportGeneration}',
+        name: AppRoutes.reportGeneration,
+        builder: (context, state) => const ReportGenerationScreen(),
       ),
       GoRoute(
         path: '/${AppRoutes.completeProfile}',

@@ -1,5 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../models/user_model.dart';
+import '../models/patient_profile_model.dart';
+import '../models/doctor_profile_model.dart';
 import '../utils/logger.dart';
 
 class DatabaseService {
