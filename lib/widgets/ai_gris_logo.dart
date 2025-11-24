@@ -26,6 +26,7 @@ class AiGrisLogo extends StatelessWidget {
             child: Image.asset(
               'assets/images/aigris_hq.png',
               fit: BoxFit.contain,
+              filterQuality: FilterQuality.high,
             ),
           ),
         ),
