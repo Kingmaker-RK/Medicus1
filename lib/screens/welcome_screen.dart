@@ -156,249 +156,268 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                       ),
                     ],
                   ),
-                  const SizedBox(height: 16),
-
-                  // Email field
-                  TextField(
-                    controller: _emailController,
-                    keyboardType: TextInputType.emailAddress,
-                    decoration: InputDecoration(
-                      labelText: l10n.emailLabel,
-                      prefixIcon: const Icon(Icons.email),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      filled: true,
-                      fillColor: Colors.white,
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-
-                  // Password field
-                  TextField(
-                    controller: _passwordController,
-                    obscureText: _obscurePassword,
-                    decoration: InputDecoration(
-                      labelText: l10n.passwordLabel,
-                      prefixIcon: const Icon(Icons.lock),
-                      suffixIcon: IconButton(
-                        icon: Icon(
-                          _obscurePassword
-                              ? Icons.visibility_off
-                              : Icons.visibility,
-                          color: AppColors.textSecondary,
-                        ),
-                        onPressed: () {
-                          setState(() {
-                            _obscurePassword = !_obscurePassword;
-                          });
-                        },
-                      ),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      filled: true,
-                      fillColor: Colors.white,
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-
-                  // Remember Me + Forgot Password Row
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 4),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        // Remember Me Checkbox
-                        Row(
-                          children: [
-                            SizedBox(
-                              height: 20,
-                              width: 20,
-                              child: Checkbox(
-                                value: _rememberMe,
-                                onChanged: (value) {
-                                  setState(() {
-                                    _rememberMe = value ?? false;
-                                  });
-                                },
-                                activeColor: AppColors.primary,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(4),
-                                ),
-                                materialTapTargetSize:
-                                    MaterialTapTargetSize.shrinkWrap,
-                              ),
-                            ),
-                            const SizedBox(width: 8),
-                            Text(
-                              l10n.rememberMe,
-                              style: TextStyle(
-                                fontSize: 14,
-                                color: AppColors.textSecondary,
-                                fontWeight: FontWeight.normal,
-                              ),
-                            ),
-                          ],
-                        ),
-
-                        // Forgot Password Link (conditionally shown)
-                        if (_showForgotPassword)
-                          TextButton(
-                            onPressed: () {
-                              context.go('/forgot-password');
-                            },
-                            style: TextButton.styleFrom(
-                              padding: EdgeInsets.zero,
-                              minimumSize: const Size(0, 0),
-                              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                            ),
-                            child: Text(
-                              l10n.forgotPassword,
-                              style: TextStyle(
-                                fontSize: 14,
-                                fontWeight: FontWeight.w500,
-                                color: AppColors.primary,
-                              ),
-                            ),
-                          ),
-                      ],
-                    ),
-                  ),
-
-                  const SizedBox(height: 16),
-
-                  // Terms and Conditions Checkbox (Required for both Login and Register)
-                  Padding(
-                    padding: const EdgeInsets.only(bottom: 16.0),
-                    child: Row(
-                      children: [
-                        Checkbox(
-                          value: _agreedToTerms,
-                          onChanged: (value) {
-                            setState(() {
-                              _agreedToTerms = value ?? false;
-                            });
-                          },
-                          activeColor: AppColors.primary,
-                        ),
-                        Expanded(
-                          child: GestureDetector(
-                            onTap: () {
-                              context.push('/${AppRoutes.privacyPolicy}');
-                            },
-                            child: Text(
-                              l10n.agreeToTerms,
-                              style: const TextStyle(
-                                fontSize: 12,
-                                color: AppColors.primary,
-                                decoration: TextDecoration.underline,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-
-                  // Sign in / Sign up button
-                  ElevatedButton(
-                    onPressed: userProvider.isLoading
-                        ? null
-                        : () async {
-                            if (!_agreedToTerms) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(
-                                  content: Text(
-                                    l10n.pleaseAgreeToTerms,
-                                  ),
-                                  backgroundColor: Colors.red,
-                                ),
-                              );
-                              return;
-                            }
-                            try {
-                              if (_isSignIn) {
-                                // Existing user - Sign In
-                                await userProvider.login(
-                                  email: _emailController.text,
-                                  password: _passwordController.text,
-                                  role: _selectedRole,
-                                  rememberMe: _rememberMe,
-                                );
-                                if (!mounted) return;
-                                if (userProvider.isLoggedIn) {
-                                  // Sign In: Skip profile completion, go directly to app
-                                  if (userProvider.currentUser?.role ==
-                                      AppConstants.roleDoctor) {
-                                    context.go('/doctor-home');
-                                  } else {
-                                    context.go('/translation');
-                                  }
-                                }
-                              } else {
-                                // New user - Sign Up
-                                await userProvider.signUp(
-                                  email: _emailController.text.trim(),
-                                  password: _passwordController.text,
-                                  role: _selectedRole,
-                                  rememberMe: _rememberMe,
-                                );
-                                if (!mounted) return;
-                                if (userProvider.isLoggedIn) {
-                                  // Sign Up: Navigate to email verification
-                                  context.go(
-                                    '/verify-email?email=${Uri.encodeComponent(_emailController.text.trim())}',
-                                  );
-                                }
-                              }
-                            } catch (e) {
-                              if (!mounted) return;
-                              setState(() {
-                                _loginAttempts++;
-                                if (_loginAttempts >= 1) {
-                                  _showForgotPassword = true;
-                                }
-                              });
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(
-                                  content: Text(
-                                    _isSignIn
-                                        ? l10n.loginFailed
-                                        : l10n.signUpFailed,
-                                  ),
-                                  backgroundColor: Colors.red,
-                                ),
-                              );
-                            }
-                          },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.primary,
-                      foregroundColor: Colors.white,
-                      padding: const EdgeInsets.symmetric(vertical: 14),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                    ),
-                    child: userProvider.isLoading
-                        ? const SizedBox(
-                            height: 20,
-                            width: 20,
-                            child: CircularProgressIndicator(
-                              color: Colors.white,
-                              strokeWidth: 2,
-                            ),
-                          )
-                        : Text(
-                            _isSignIn ? l10n.signIn : l10n.signUp,
-                            style: const TextStyle(
-                              fontSize: 15,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                  ),
-                  const SizedBox(height: 12),
-
+                                    const SizedBox(height: 16),
+                  
+                                    if (_isSignIn) ...[
+                                      // Email field
+                                      TextField(
+                                        controller: _emailController,
+                                        keyboardType: TextInputType.emailAddress,
+                                        decoration: InputDecoration(
+                                          labelText: l10n.emailLabel,
+                                          prefixIcon: const Icon(Icons.email),
+                                          border: OutlineInputBorder(
+                                            borderRadius: BorderRadius.circular(12),
+                                          ),
+                                          filled: true,
+                                          fillColor: Colors.white,
+                                        ),
+                                      ),
+                                      const SizedBox(height: 12),
+                  
+                                      // Password field
+                                      TextField(
+                                        controller: _passwordController,
+                                        obscureText: _obscurePassword,
+                                        decoration: InputDecoration(
+                                          labelText: l10n.passwordLabel,
+                                          prefixIcon: const Icon(Icons.lock),
+                                          suffixIcon: IconButton(
+                                            icon: Icon(
+                                              _obscurePassword
+                                                  ? Icons.visibility_off
+                                                  : Icons.visibility,
+                                              color: AppColors.textSecondary,
+                                            ),
+                                            onPressed: () {
+                                              setState(() {
+                                                _obscurePassword = !_obscurePassword;
+                                              });
+                                            },
+                                          ),
+                                          border: OutlineInputBorder(
+                                            borderRadius: BorderRadius.circular(12),
+                                          ),
+                                          filled: true,
+                                          fillColor: Colors.white,
+                                        ),
+                                      ),
+                                      const SizedBox(height: 12),
+                  
+                                      // Remember Me + Forgot Password Row
+                                      Padding(
+                                        padding: const EdgeInsets.symmetric(horizontal: 4),
+                                        child: Row(
+                                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                          children: [
+                                            // Remember Me Checkbox
+                                            Row(
+                                              children: [
+                                                SizedBox(
+                                                  height: 20,
+                                                  width: 20,
+                                                  child: Checkbox(
+                                                    value: _rememberMe,
+                                                    onChanged: (value) {
+                                                      setState(() {
+                                                        _rememberMe = value ?? false;
+                                                      });
+                                                    },
+                                                    activeColor: AppColors.primary,
+                                                    shape: RoundedRectangleBorder(
+                                                      borderRadius: BorderRadius.circular(4),
+                                                    ),
+                                                    materialTapTargetSize:
+                                                        MaterialTapTargetSize.shrinkWrap,
+                                                  ),
+                                                ),
+                                                const SizedBox(width: 8),
+                                                Text(
+                                                  l10n.rememberMe,
+                                                  style: TextStyle(
+                                                    fontSize: 14,
+                                                    color: AppColors.textSecondary,
+                                                    fontWeight: FontWeight.normal,
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                  
+                                            // Forgot Password Link (conditionally shown)
+                                            if (_showForgotPassword)
+                                              TextButton(
+                                                onPressed: () {
+                                                  context.go('/forgot-password');
+                                                },
+                                                style: TextButton.styleFrom(
+                                                  padding: EdgeInsets.zero,
+                                                  minimumSize: const Size(0, 0),
+                                                  tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                                                ),
+                                                child: Text(
+                                                  l10n.forgotPassword,
+                                                  style: TextStyle(
+                                                    fontSize: 14,
+                                                    fontWeight: FontWeight.w500,
+                                                    color: AppColors.primary,
+                                                  ),
+                                                ),
+                                              ),
+                                          ],
+                                        ),
+                                      ),
+                  
+                                      const SizedBox(height: 16),
+                  
+                                      // Terms and Conditions Checkbox (Required for Login)
+                                      Padding(
+                                        padding: const EdgeInsets.only(bottom: 16.0),
+                                        child: Row(
+                                          children: [
+                                            Checkbox(
+                                              value: _agreedToTerms,
+                                              onChanged: (value) {
+                                                setState(() {
+                                                  _agreedToTerms = value ?? false;
+                                                });
+                                              },
+                                              activeColor: AppColors.primary,
+                                            ),
+                                            Expanded(
+                                              child: GestureDetector(
+                                                onTap: () {
+                                                  context.push('/${AppRoutes.privacyPolicy}');
+                                                },
+                                                child: Text(
+                                                  l10n.agreeToTerms,
+                                                  style: const TextStyle(
+                                                    fontSize: 12,
+                                                    color: AppColors.primary,
+                                                    decoration: TextDecoration.underline,
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ] else ...[
+                                      // Register Mode - Call to Action
+                                      Container(
+                                        padding: const EdgeInsets.all(20),
+                                        decoration: BoxDecoration(
+                                          color: Colors.white.withOpacity(0.9),
+                                          borderRadius: BorderRadius.circular(12),
+                                          border: Border.all(color: AppColors.primary.withOpacity(0.3)),
+                                        ),
+                                        child: Column(
+                                          children: [
+                                            Icon(Icons.person_add, size: 48, color: AppColors.primary),
+                                            const SizedBox(height: 16),
+                                            Text(
+                                              "Create your account",
+                                              style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                                                    fontWeight: FontWeight.bold,
+                                                    color: AppColors.textPrimary,
+                                                  ),
+                                            ),
+                                            const SizedBox(height: 8),
+                                            Text(
+                                              "Join us to access personalized healthcare services.",
+                                              textAlign: TextAlign.center,
+                                              style: TextStyle(color: AppColors.textSecondary),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                      const SizedBox(height: 32),
+                                    ],
+                  
+                                    // Sign in / Sign up button
+                                    ElevatedButton(
+                                      onPressed: userProvider.isLoading
+                                          ? null
+                                          : () async {
+                                              if (_isSignIn) {
+                                                // SIGN IN FLOW
+                                                if (!_agreedToTerms) {
+                                                  ScaffoldMessenger.of(context).showSnackBar(
+                                                    SnackBar(
+                                                      content: Text(
+                                                        l10n.pleaseAgreeToTerms,
+                                                      ),
+                                                      backgroundColor: Colors.red,
+                                                    ),
+                                                  );
+                                                  return;
+                                                }
+                                                try {
+                                                  // Existing user - Sign In
+                                                  await userProvider.login(
+                                                    email: _emailController.text,
+                                                    password: _passwordController.text,
+                                                    role: _selectedRole,
+                                                    rememberMe: _rememberMe,
+                                                  );
+                                                  if (!mounted) return;
+                                                  if (userProvider.isLoggedIn) {
+                                                    // Sign In: Skip profile completion, go directly to app
+                                                    if (userProvider.currentUser?.role ==
+                                                        AppConstants.roleDoctor) {
+                                                      context.go('/doctor-home');
+                                                    } else {
+                                                      context.go('/translation');
+                                                    }
+                                                  }
+                                                } catch (e) {
+                                                  if (!mounted) return;
+                                                  setState(() {
+                                                    _loginAttempts++;
+                                                    if (_loginAttempts >= 1) {
+                                                      _showForgotPassword = true;
+                                                    }
+                                                  });
+                                                  ScaffoldMessenger.of(context).showSnackBar(
+                                                    SnackBar(
+                                                      content: Text(l10n.loginFailed),
+                                                      backgroundColor: Colors.red,
+                                                    ),
+                                                  );
+                                                }
+                                              } else {
+                                                // SIGN UP FLOW - Navigate to new registration screens
+                                                context.pushNamed(
+                                                  AppRoutes.registerPersonal,
+                                                  extra: {'role': _selectedRole},
+                                                );
+                                              }
+                                            },
+                                      style: ElevatedButton.styleFrom(
+                                        backgroundColor: AppColors.primary,
+                                        foregroundColor: Colors.white,
+                                        padding: const EdgeInsets.symmetric(vertical: 14),
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.circular(12),
+                                        ),
+                                      ),
+                                      child: userProvider.isLoading
+                                          ? const SizedBox(
+                                              height: 20,
+                                              width: 20,
+                                              child: CircularProgressIndicator(
+                                                color: Colors.white,
+                                                strokeWidth: 2,
+                                              ),
+                                            )
+                                          : Text(
+                                              _isSignIn ? l10n.signIn : l10n.signUp,
+                                              style: const TextStyle(
+                                                fontSize: 15,
+                                                fontWeight: FontWeight.bold,
+                                              ),
+                                            ),
+                                    ),
+                                    const SizedBox(height: 12),
                   // Continue as guest button
                   OutlinedButton(
                     onPressed: () async {

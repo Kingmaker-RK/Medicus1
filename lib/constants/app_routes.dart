@@ -1,5 +1,7 @@
 class AppRoutes {
   static const String welcome = 'welcome';
+  static const String registerPersonal = 'register-personal';
+  static const String registerAccount = 'register-account';
   static const String translation = 'translation';
   static const String settings = 'settings';
   static const String profile = 'profile';

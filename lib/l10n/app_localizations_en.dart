@@ -70,4 +70,58 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get roleDoctor => 'Doctor';
+
+  @override
+  String get registrationTitle => 'Registration';
+
+  @override
+  String get personalInfo => 'Personal Information';
+
+  @override
+  String get firstName => 'First Name';
+
+  @override
+  String get lastName => 'Last Name';
+
+  @override
+  String get dob => 'Date of Birth';
+
+  @override
+  String get gender => 'Gender';
+
+  @override
+  String get male => 'Male';
+
+  @override
+  String get female => 'Female';
+
+  @override
+  String get other => 'Other';
+
+  @override
+  String get accountSetup => 'Account Setup';
+
+  @override
+  String get confirmPassword => 'Confirm Password';
+
+  @override
+  String get passwordsDoNotMatch => 'Passwords do not match';
+
+  @override
+  String get verifyHuman => 'Verify you are human';
+
+  @override
+  String get continueText => 'Continue';
+
+  @override
+  String get done => 'Done';
+
+  @override
+  String get requiredField => 'This field is required';
+
+  @override
+  String get invalidDate => 'Invalid date';
+
+  @override
+  String get selectDate => 'Select Date';
 }

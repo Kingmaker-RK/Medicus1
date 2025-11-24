@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../constants/app_routes.dart';
 import '../screens/welcome_screen.dart';
+import '../screens/register_personal_screen.dart';
+import '../screens/register_account_screen.dart';
 import '../screens/translation_screen.dart';
 import '../screens/settings_screen.dart';
 import '../screens/patient_profile_screen.dart';
@@ -59,6 +61,30 @@ class AppRouter {
         path: '/',
         name: AppRoutes.welcome,
         builder: (context, state) => const WelcomeScreen(),
+      ),
+      GoRoute(
+        path: '/${AppRoutes.registerPersonal}',
+        name: AppRoutes.registerPersonal,
+        builder: (context, state) {
+          final extra = state.extra as Map<String, dynamic>?;
+          return RegisterPersonalScreen(
+            role: extra?['role'] as String? ?? 'patient',
+          );
+        },
+      ),
+      GoRoute(
+        path: '/${AppRoutes.registerAccount}',
+        name: AppRoutes.registerAccount,
+        builder: (context, state) {
+          final extra = state.extra as Map<String, dynamic>;
+          return RegisterAccountScreen(
+            firstName: extra['firstName'] as String,
+            lastName: extra['lastName'] as String,
+            dob: extra['dob'] as DateTime,
+            gender: extra['gender'] as String,
+            role: extra['role'] as String,
+          );
+        },
       ),
       GoRoute(
         path: '/${AppRoutes.privacyPolicy}',

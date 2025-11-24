@@ -213,6 +213,114 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Doctor'**
   String get roleDoctor;
+
+  /// Title for registration screen
+  ///
+  /// In en, this message translates to:
+  /// **'Registration'**
+  String get registrationTitle;
+
+  /// Section header for personal information
+  ///
+  /// In en, this message translates to:
+  /// **'Personal Information'**
+  String get personalInfo;
+
+  /// Label for first name field
+  ///
+  /// In en, this message translates to:
+  /// **'First Name'**
+  String get firstName;
+
+  /// Label for last name field
+  ///
+  /// In en, this message translates to:
+  /// **'Last Name'**
+  String get lastName;
+
+  /// Label for date of birth field
+  ///
+  /// In en, this message translates to:
+  /// **'Date of Birth'**
+  String get dob;
+
+  /// Label for gender field
+  ///
+  /// In en, this message translates to:
+  /// **'Gender'**
+  String get gender;
+
+  /// Gender option Male
+  ///
+  /// In en, this message translates to:
+  /// **'Male'**
+  String get male;
+
+  /// Gender option Female
+  ///
+  /// In en, this message translates to:
+  /// **'Female'**
+  String get female;
+
+  /// Gender option Other
+  ///
+  /// In en, this message translates to:
+  /// **'Other'**
+  String get other;
+
+  /// Title for account setup screen
+  ///
+  /// In en, this message translates to:
+  /// **'Account Setup'**
+  String get accountSetup;
+
+  /// Label for confirm password field
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm Password'**
+  String get confirmPassword;
+
+  /// Error message when passwords do not match
+  ///
+  /// In en, this message translates to:
+  /// **'Passwords do not match'**
+  String get passwordsDoNotMatch;
+
+  /// Label for human verification
+  ///
+  /// In en, this message translates to:
+  /// **'Verify you are human'**
+  String get verifyHuman;
+
+  /// Button text to continue
+  ///
+  /// In en, this message translates to:
+  /// **'Continue'**
+  String get continueText;
+
+  /// Button text to finish
+  ///
+  /// In en, this message translates to:
+  /// **'Done'**
+  String get done;
+
+  /// Error message for required field
+  ///
+  /// In en, this message translates to:
+  /// **'This field is required'**
+  String get requiredField;
+
+  /// Error message for invalid date
+  ///
+  /// In en, this message translates to:
+  /// **'Invalid date'**
+  String get invalidDate;
+
+  /// Hint text for date picker
+  ///
+  /// In en, this message translates to:
+  /// **'Select Date'**
+  String get selectDate;
 }
 
 class _AppLocalizationsDelegate

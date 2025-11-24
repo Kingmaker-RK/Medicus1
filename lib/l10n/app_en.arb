@@ -79,5 +79,77 @@
   "roleDoctor": "Doctor",
   "@roleDoctor": {
     "description": "Role selection option for Doctor"
+  },
+  "registrationTitle": "Registration",
+  "@registrationTitle": {
+    "description": "Title for registration screen"
+  },
+  "personalInfo": "Personal Information",
+  "@personalInfo": {
+    "description": "Section header for personal information"
+  },
+  "firstName": "First Name",
+  "@firstName": {
+    "description": "Label for first name field"
+  },
+  "lastName": "Last Name",
+  "@lastName": {
+    "description": "Label for last name field"
+  },
+  "dob": "Date of Birth",
+  "@dob": {
+    "description": "Label for date of birth field"
+  },
+  "gender": "Gender",
+  "@gender": {
+    "description": "Label for gender field"
+  },
+  "male": "Male",
+  "@male": {
+    "description": "Gender option Male"
+  },
+  "female": "Female",
+  "@female": {
+    "description": "Gender option Female"
+  },
+  "other": "Other",
+  "@other": {
+    "description": "Gender option Other"
+  },
+  "accountSetup": "Account Setup",
+  "@accountSetup": {
+    "description": "Title for account setup screen"
+  },
+  "confirmPassword": "Confirm Password",
+  "@confirmPassword": {
+    "description": "Label for confirm password field"
+  },
+  "passwordsDoNotMatch": "Passwords do not match",
+  "@passwordsDoNotMatch": {
+    "description": "Error message when passwords do not match"
+  },
+  "verifyHuman": "Verify you are human",
+  "@verifyHuman": {
+    "description": "Label for human verification"
+  },
+  "continueText": "Continue",
+  "@continueText": {
+    "description": "Button text to continue"
+  },
+  "done": "Done",
+  "@done": {
+    "description": "Button text to finish"
+  },
+  "requiredField": "This field is required",
+  "@requiredField": {
+    "description": "Error message for required field"
+  },
+  "invalidDate": "Invalid date",
+  "@invalidDate": {
+    "description": "Error message for invalid date"
+  },
+  "selectDate": "Select Date",
+  "@selectDate": {
+    "description": "Hint text for date picker"
   }
 }

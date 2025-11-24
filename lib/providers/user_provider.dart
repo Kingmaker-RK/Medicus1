@@ -190,6 +190,10 @@ class UserProvider with ChangeNotifier {
     required String email,
     required String password,
     required String role,
+    required String firstName,
+    required String lastName,
+    required DateTime dateOfBirth,
+    required String gender,
     bool rememberMe = false,
   }) async {
     _isLoading = true;
@@ -214,6 +218,10 @@ class UserProvider with ChangeNotifier {
         _currentUser = UserModel(
           id: user.uid,
           email: email,
+          firstName: firstName,
+          lastName: lastName,
+          dateOfBirth: dateOfBirth,
+          gender: gender,
           role: role,
           languageCode: _selectedLanguage,
         );

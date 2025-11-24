@@ -10,6 +10,7 @@ import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mockito/mockito.dart';
 import 'test_helpers.dart';
+import 'package:ai_gris/constants/app_routes.dart';
 
 import 'package:ai_gris/l10n/app_localizations.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -42,7 +43,16 @@ class MockUserProvider extends ChangeNotifier implements UserProvider {
   }
 
   @override
-  Future<void> signUp({required String email, required String password, required String role, bool rememberMe = false}) async {
+  Future<void> signUp({
+    required String email, 
+    required String password, 
+    required String role, 
+    required String firstName,
+    required String lastName,
+    required DateTime dateOfBirth,
+    required String gender,
+    bool rememberMe = false
+  }) async {
      _isLoading = true;
     notifyListeners();
     await Future.delayed(const Duration(milliseconds: 100));
@@ -77,10 +87,31 @@ class MockUserProvider extends ChangeNotifier implements UserProvider {
 Widget createTestAppWithRouter(UserProvider userProvider) {
   final router = GoRouter(
     routes: [
-      GoRoute(path: '/', builder: (_, __) => const WelcomeScreen()),
-      GoRoute(path: '/translation', builder: (_, __) => const Scaffold(body: Text('Translation Screen'))),
-      GoRoute(path: '/privacy-policy', builder: (_, __) => const Scaffold(body: Text('Privacy Policy'))),
-      GoRoute(path: '/verify-email', builder: (_, __) => const Scaffold(body: Text('Verify Email'))),
+      GoRoute(
+        path: '/', 
+        name: AppRoutes.welcome,
+        builder: (_, __) => const WelcomeScreen(),
+      ),
+      GoRoute(
+        path: '/translation', 
+        name: AppRoutes.translation,
+        builder: (_, __) => const Scaffold(body: Text('Translation Screen')),
+      ),
+      GoRoute(
+        path: '/privacy-policy', 
+        name: AppRoutes.privacyPolicy,
+        builder: (_, __) => const Scaffold(body: Text('Privacy Policy')),
+      ),
+      GoRoute(
+        path: '/verify-email', 
+        name: AppRoutes.verifyEmail,
+        builder: (_, __) => const Scaffold(body: Text('Verify Email')),
+      ),
+      GoRoute(
+        path: '/register-personal', 
+        name: AppRoutes.registerPersonal,
+        builder: (_, __) => const Scaffold(body: Text('Register Personal Screen')),
+      ),
     ],
   );
 
@@ -109,7 +140,7 @@ void main() {
     setupFirebaseMocks();
   });
 
-  testWidgets('WelcomeScreen enforces agreement for Register (Sign Up)', (WidgetTester tester) async {
+  testWidgets('WelcomeScreen navigates to registration flow for Register', (WidgetTester tester) async {
     final mockUserProvider = MockUserProvider();
     
     await tester.pumpWidget(createTestAppWithRouter(mockUserProvider));
@@ -119,41 +150,24 @@ void main() {
     await tester.tap(find.text('Register'));
     await tester.pump();
 
-    // Verify Checkbox is visible
-    final termsCheckboxFinder = find.descendant(
-      of: find.ancestor(
-        of: find.textContaining('I agree'),
-        matching: find.byType(Row),
-      ),
-      matching: find.byType(Checkbox),
-    );
-    expect(termsCheckboxFinder, findsOneWidget);
+    // Verify fields are hidden (e.g. email field from login)
+    expect(find.text('Email'), findsNothing);
 
-    // Try to click Register without checking box
+    // Verify "Create your account" text or similar is visible
+    expect(find.textContaining('Create your account'), findsOneWidget);
+
+    // Tap Register (Action button)
+    // Note: The button text might still be "Register" or updated. 
+    // In WelcomeScreen logic: _isSignIn ? l10n.signIn : l10n.signUp
+    // l10n.signUp is "Register".
     final registerButton = find.widgetWithText(ElevatedButton, 'Register');
     await tester.ensureVisible(registerButton);
     await tester.tap(registerButton);
-    await tester.pump();
-
-    // Verify Error SnackBar
-    expect(find.text('Please agree to the Terms & Conditions to continue.'), findsOneWidget);
-
-    // Check the box
-    await tester.tap(termsCheckboxFinder);
-    await tester.pump();
-
-    // Fill in required fields to proceed
-    await tester.enterText(find.byType(TextField).at(0), 'test@example.com');
-    await tester.enterText(find.byType(TextField).at(1), 'password123');
-
-    // Try again
-    await tester.tap(registerButton);
-    // Pump long enough for the mock delay
-    await tester.pump(const Duration(milliseconds: 200)); 
+    
     await tester.pumpAndSettle();
     
-    // Should navigate to verify email
-    expect(find.text('Verify Email'), findsOneWidget);
+    // Should navigate to Register Personal Screen
+    expect(find.text('Register Personal Screen'), findsOneWidget);
   });
 
   testWidgets('WelcomeScreen enforces agreement for Login (Sign In)', (WidgetTester tester) async {
