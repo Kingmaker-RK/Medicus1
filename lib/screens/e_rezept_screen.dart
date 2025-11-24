@@ -297,7 +297,7 @@ class _ERezeptScreenState extends State<ERezeptScreen> {
       appBar: AppBar(
         backgroundColor: AppColors.primary,
         foregroundColor: Colors.white,
-        title: const AutoTranslateText('E-Rezept'),
+        title: const AutoTranslateText('E-Receipt'),
         centerTitle: true,
       ),
       body: SingleChildScrollView(

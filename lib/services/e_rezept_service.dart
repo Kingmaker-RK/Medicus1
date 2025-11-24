@@ -89,7 +89,7 @@ class ERezeptService {
             children: [
               pw.Header(
                 level: 0,
-                child: pw.Text('E-Rezept Upload', style: pw.TextStyle(fontSize: 24, fontWeight: pw.FontWeight.bold)),
+                child: pw.Text('E-Receipt Upload', style: pw.TextStyle(fontSize: 24, fontWeight: pw.FontWeight.bold)),
               ),
               pw.SizedBox(height: 20),
               pw.Text('Date: ${DateTime.now().toString()}'),

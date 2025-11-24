@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:lucide_icons/lucide_icons.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import '../constants/app_routes.dart';
 import '../models/service_model.dart';
 
 final List<ServiceModel> services = [
   ServiceModel(
-    title: 'E-Rezept',
+    title: 'E-Receipt',
     description: 'Buy medication as per prescription. Upload prescription and insurance card photos.',
     icon: LucideIcons.pill,
     color: Colors.blue,
@@ -28,14 +29,14 @@ final List<ServiceModel> services = [
   ServiceModel(
     title: 'Dentist',
     description: 'Find dentists in your area by name, location, or pincode.',
-    icon: LucideIcons.smile,
+    icon: FontAwesomeIcons.tooth,
     color: Colors.teal,
     route: AppRoutes.dentist,
   ),
   ServiceModel(
     title: 'Dermo',
     description: 'Dermatologist treatment. Upload pictures, ask questions, get diagnosis and aftercare.',
-    icon: LucideIcons.scanFace,
+    icon: FontAwesomeIcons.handDots,
     color: Colors.orange,
     route: AppRoutes.dermo,
   ),
@@ -63,7 +64,7 @@ final List<ServiceModel> services = [
   ServiceModel(
     title: 'Physiotherapy',
     description: 'Find physiotherapy centers for rehabilitation and physical therapy.',
-    icon: LucideIcons.activity,
+    icon: FontAwesomeIcons.personWalking,
     color: Colors.indigo,
     route: AppRoutes.physiotherapy,
   ),
@@ -105,7 +106,7 @@ final List<ServiceModel> services = [
   ServiceModel(
     title: 'Pulmonology',
     description: 'Find lung specialists and clinics. Upload and manage your reports.',
-    icon: LucideIcons.wind,
+    icon: FontAwesomeIcons.lungs,
     color: Colors.lightBlue,
     route: AppRoutes.pulmonology,
   ),
