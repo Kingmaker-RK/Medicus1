@@ -146,22 +146,9 @@ void main() {
     await tester.pumpWidget(createTestAppWithRouter(mockUserProvider));
     await tester.pumpAndSettle();
 
-    // Switch to Register mode
-    await tester.tap(find.text('Register'));
-    await tester.pump();
-
-    // Verify fields are hidden (e.g. email field from login)
-    expect(find.text('Email'), findsNothing);
-
-    // Verify "Create your account" text or similar is visible
-    expect(find.textContaining('Create your account'), findsOneWidget);
-
-    // Tap Register (Action button)
-    // Note: The button text might still be "Register" or updated. 
-    // In WelcomeScreen logic: _isSignIn ? l10n.signIn : l10n.signUp
-    // l10n.signUp is "Register".
-    final registerButton = find.widgetWithText(ElevatedButton, 'Register');
-    await tester.ensureVisible(registerButton);
+    // Tap Register (The toggle/link button) which now navigates directly
+    final registerButton = find.text('Register');
+    expect(registerButton, findsOneWidget);
     await tester.tap(registerButton);
     
     await tester.pumpAndSettle();
