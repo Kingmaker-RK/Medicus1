@@ -4,6 +4,7 @@ import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:printing/printing.dart';
 import '../models/doctor_profile_model.dart';
+import '../models/modification_log.dart';
 
 class PdfReportService {
   Future<Uint8List> generateReport({
@@ -11,6 +12,7 @@ class PdfReportService {
     required String transcribedText,
     required String patientName,
     required String patientAge,
+    List<ModificationLog>? modificationHistory,
   }) async {
     final doc = pw.Document();
     final now = DateTime.now();
@@ -94,6 +96,18 @@ class PdfReportService {
               ),
               
               pw.Spacer(),
+
+              // Modification History
+              if (modificationHistory != null && modificationHistory.isNotEmpty) ...[
+                 pw.Text('Modification History:',
+                    style: pw.TextStyle(fontSize: 12, fontWeight: pw.FontWeight.bold)),
+                 pw.SizedBox(height: 5),
+                 ...modificationHistory.map((log) => pw.Text(
+                   '${log.timestamp.toString().substring(0, 19)} - ${log.action}',
+                   style: const pw.TextStyle(fontSize: 10, color: PdfColors.grey700),
+                 )),
+                 pw.SizedBox(height: 20),
+              ],
               
               // Footer
               pw.Divider(),

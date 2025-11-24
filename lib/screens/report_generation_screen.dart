@@ -108,14 +108,21 @@ class _ReportGenerationScreenState extends State<ReportGenerationScreen> {
                       value: provider.currentLanguage,
                       underline: Container(),
                       items: const [
-                        DropdownMenuItem(value: 'en', child: Text('English')),
-                        DropdownMenuItem(value: 'es', child: Text('Spanish')),
-                        DropdownMenuItem(value: 'de', child: Text('German')),
-                        DropdownMenuItem(value: 'fr', child: Text('French')),
-                        DropdownMenuItem(value: 'it', child: Text('Italian')),
+                        DropdownMenuItem(value: 'en_US', child: Text('English (US)')),
+                        DropdownMenuItem(value: 'de_DE', child: Text('German')),
+                        DropdownMenuItem(value: 'de_DE_BAV', child: Text('Bavarian')), // Mapped to de_DE internally usually, but let's see if we can trick it or just use de_DE
+                        DropdownMenuItem(value: 'fr_FR', child: Text('French')),
+                        DropdownMenuItem(value: 'es_ES', child: Text('Spanish')),
+                        DropdownMenuItem(value: 'it_IT', child: Text('Italian')),
+                        DropdownMenuItem(value: 'ru_RU', child: Text('Russian')),
+                        DropdownMenuItem(value: 'pl_PL', child: Text('Polish')),
+                        DropdownMenuItem(value: 'ar_SA', child: Text('Arabic')),
+                        DropdownMenuItem(value: 'ta_IN', child: Text('Tamil')),
                       ],
                       onChanged: (val) {
-                        if (val != null) provider.setLanguage(val);
+                        if (val != null) {
+                           provider.setLanguage(val);
+                        }
                       },
                     ),
                   ],
@@ -131,6 +138,42 @@ class _ReportGenerationScreenState extends State<ReportGenerationScreen> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
+                    // History Button
+                    IconButton(
+                      icon: const Icon(Icons.history),
+                      tooltip: 'View Modification History',
+                      onPressed: () {
+                        showDialog(
+                          context: context,
+                          builder: (context) => AlertDialog(
+                            title: const Text('Modification History'),
+                            content: SizedBox(
+                              width: double.maxFinite,
+                              child: ListView.builder(
+                                shrinkWrap: true,
+                                itemCount: provider.modificationHistory.length,
+                                itemBuilder: (context, index) {
+                                  final log = provider.modificationHistory[index];
+                                  return ListTile(
+                                    leading: const Icon(Icons.edit_note, size: 16),
+                                    title: Text(log.action),
+                                    subtitle: Text(log.timestamp.toString().substring(0, 19)),
+                                    dense: true,
+                                  );
+                                },
+                              ),
+                            ),
+                            actions: [
+                              TextButton(
+                                onPressed: () => Navigator.pop(context),
+                                child: const Text('Close'),
+                              ),
+                            ],
+                          ),
+                        );
+                      },
+                    ),
+                    const SizedBox(width: 8),
                     // AI Refine
                     if (!provider.isRecording)
                     TextButton.icon(
