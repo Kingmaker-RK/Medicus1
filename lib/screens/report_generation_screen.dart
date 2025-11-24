@@ -193,6 +193,28 @@ class _ReportGenerationScreenState extends State<ReportGenerationScreen> {
                       label: const Text('AI Polish'),
                       style: TextButton.styleFrom(foregroundColor: AppColors.primary),
                     ),
+                    
+                    // Feedback Buttons
+                    if (provider.transcribedText.isNotEmpty && !provider.isRecording) ...[
+                      const SizedBox(width: 8),
+                      IconButton(
+                        icon: const Icon(Icons.thumb_up_outlined, size: 20),
+                        tooltip: 'Good Quality',
+                        onPressed: () {
+                          provider.submitFeedback(true);
+                          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Thanks for your feedback!')));
+                        },
+                      ),
+                      IconButton(
+                        icon: const Icon(Icons.thumb_down_outlined, size: 20),
+                        tooltip: 'Poor Quality',
+                        onPressed: () {
+                          provider.submitFeedback(false);
+                           ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Thanks for your feedback!')));
+                        },
+                      ),
+                    ],
+
                     const SizedBox(width: 8),
                     // Read Back
                     IconButton(

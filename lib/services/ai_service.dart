@@ -1,6 +1,7 @@
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:google_generative_ai/google_generative_ai.dart';
 import '../utils/logger.dart';
+import '../constants/ai_prompts.dart';
 
 class AiService {
   static final AiService _instance = AiService._internal();
@@ -42,17 +43,7 @@ class AiService {
     }
 
     try {
-      final prompt = '''
-      You are a medical transcription assistant. 
-      Refine the following medical transcription text for punctuation, capitalization, and medical terminology accuracy.
-      Do not summarize or change the meaning. Keep the format similar.
-      If the text is incomplete or nonsensical, try to make it grammatically correct based on context, but do not hallucinate details.
-      
-      Input Text:
-      "$text"
-      
-      Refined Text:
-      ''';
+      final prompt = AiPrompts.medicalRefinement.replaceAll('{{TEXT}}', text);
 
       final content = [Content.text(prompt)];
       final response = await _model!.generateContent(content);
@@ -65,6 +56,11 @@ class AiService {
       logger.e('Error refining transcription with AI: $e');
       return text; // Return original if error
     }
+  }
+
+  void logFeedback(bool isPositive, String contextText) {
+    // In a real app, this would send data to an analytics server or RLHF pipeline.
+    logger.i('AI Feedback Received: ${isPositive ? "THUMBS UP" : "THUMBS DOWN"} for text length: ${contextText.length}');
   }
 
   String _basicCleanup(String text) {

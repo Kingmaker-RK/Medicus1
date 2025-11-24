@@ -253,6 +253,12 @@ class ReportGenerationProvider with ChangeNotifier {
     _isAiRefining = false;
     notifyListeners();
   }
+
+  void submitFeedback(bool isPositive) {
+    _aiService.logFeedback(isPositive, _fullTranscribedText);
+    _logModification("Feedback: ${isPositive ? 'Positive' : 'Negative'}");
+    // We could also notifyListeners() if we want to show a "Thank you" state in UI
+  }
   
   void updateTextManually(String newText) {
     // Only log if meaningful change or debounced?
