@@ -24,7 +24,7 @@ class AiGrisLogo extends StatelessWidget {
           child: ClipRRect(
             borderRadius: BorderRadius.circular(size * 0.2),
             child: Image.asset(
-              'assets/images/Ai-Gris.png',
+              'assets/images/Ai-Gris_Logo_HQ.png',
               fit: BoxFit.cover,
             ),
           ),
