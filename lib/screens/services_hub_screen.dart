@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import 'package:provider/provider.dart';
-import '../constants/app_routes.dart';
 import '../constants/colors.dart';
 import '../data/services_data.dart';
 import '../models/service_model.dart';
@@ -107,12 +106,12 @@ class ServicesHubScreen extends StatelessWidget {
         child: Row(
           children: [
             Container(
-              padding: const EdgeInsets.all(14),
+              padding: const EdgeInsets.all(8),
               decoration: BoxDecoration(
                 color: service.color.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(12),
               ),
-              child: Icon(service.icon, color: service.color, size: 32),
+              child: Icon(service.icon, color: service.color, size: 44),
             ),
             const SizedBox(width: 16),
             Expanded(
