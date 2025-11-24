@@ -2,11 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:provider/provider.dart';
 import 'package:firebase_auth_mocks/firebase_auth_mocks.dart';
+import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:ai_gris/providers/user_provider.dart';
 import 'package:ai_gris/providers/translation_provider.dart';
 import 'package:ai_gris/providers/patient_profile_provider.dart';
 import 'package:ai_gris/providers/doctor_profile_provider.dart';
+import 'package:ai_gris/services/auth_service.dart';
+import 'package:ai_gris/services/database_service.dart';
 import 'package:ai_gris/config/router.dart';
 import 'package:ai_gris/constants/colors.dart';
 import 'package:ai_gris/constants/app_constants.dart';
@@ -42,6 +45,22 @@ MockFirebaseAuth createMockFirebaseAuth({
   );
 }
 
+/// Helper to create a UserProvider with mocks
+UserProvider createMockUserProvider({
+  bool signedIn = false,
+  MockUser? mockUser,
+  FakeFirebaseFirestore? firestore,
+}) {
+  final auth = createMockFirebaseAuth(signedIn: signedIn, mockUser: mockUser);
+  final authService = AuthService(auth: auth);
+  final databaseService = DatabaseService(firestore: firestore ?? FakeFirebaseFirestore());
+  
+  return UserProvider(
+    authService: authService,
+    databaseService: databaseService,
+  );
+}
+
 /// Wraps a widget with all necessary providers for testing
 /// This ensures the widget tree has access to all app providers
 Widget createTestApp({
@@ -54,7 +73,7 @@ Widget createTestApp({
   return MultiProvider(
     providers: [
       ChangeNotifierProvider<UserProvider>(
-        create: (_) => userProvider ?? UserProvider(),
+        create: (_) => userProvider ?? createMockUserProvider(),
       ),
       ChangeNotifierProvider<TranslationProvider>(
         create: (_) => translationProvider ?? TranslationProvider(),
@@ -85,7 +104,7 @@ Widget createTestApp({
 Widget createAiGrisAppForTest() {
   return MultiProvider(
     providers: [
-      ChangeNotifierProvider(create: (_) => UserProvider()),
+      ChangeNotifierProvider(create: (_) => createMockUserProvider()),
       ChangeNotifierProvider(create: (_) => TranslationProvider()),
       ChangeNotifierProvider(create: (_) => PatientProfileProvider()),
       ChangeNotifierProvider(create: (_) => DoctorProfileProvider()),

@@ -4,14 +4,17 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../models/user_model.dart';
 import '../constants/app_constants.dart';
 import '../services/auth_service.dart';
+import '../services/database_service.dart';
 import '../services/localization_service.dart';
 
 class UserProvider with ChangeNotifier {
   final AuthService _authService;
+  final DatabaseService _databaseService;
   final LocalizationService _localizationService = LocalizationService();
 
-  UserProvider({AuthService? authService})
-      : _authService = authService ?? AuthService();
+  UserProvider({AuthService? authService, DatabaseService? databaseService})
+      : _authService = authService ?? AuthService(),
+        _databaseService = databaseService ?? DatabaseService();
 
   UserModel? _currentUser;
   String _selectedLanguage = 'en';
@@ -40,20 +43,46 @@ class UserProvider with ChangeNotifier {
 
       if (isLoggedIn) {
         final userId = prefs.getString(AppConstants.keyUserId);
-        final role =
-            prefs.getString(AppConstants.keyUserRole) ??
-            AppConstants.rolePatient;
-        final languageCode = prefs.getString(AppConstants.keyLanguage) ?? 'en';
-        final savedEmail = prefs.getString('savedEmail');
-        final rememberMe = prefs.getBool('rememberMe') ?? false;
+        
+        if (userId != null) {
+          // Try to fetch latest data from Firestore
+          try {
+             final userFromDb = await _databaseService.getUser(userId);
+             if (userFromDb != null) {
+               _currentUser = userFromDb;
+               _selectedLanguage = userFromDb.languageCode;
+             } else {
+               // Fallback to local storage if not found in DB (shouldn't happen often)
+               final role = prefs.getString(AppConstants.keyUserRole) ?? AppConstants.rolePatient;
+               final languageCode = prefs.getString(AppConstants.keyLanguage) ?? 'en';
+               final savedEmail = prefs.getString('savedEmail');
+               final rememberMe = prefs.getBool('rememberMe') ?? false;
 
-        _currentUser = UserModel(
-          id: userId,
-          role: role,
-          languageCode: languageCode,
-          email: rememberMe && savedEmail != null ? savedEmail : null,
-        );
-        _selectedLanguage = languageCode;
+               _currentUser = UserModel(
+                 id: userId,
+                 role: role,
+                 languageCode: languageCode,
+                 email: rememberMe && savedEmail != null ? savedEmail : null,
+               );
+               _selectedLanguage = languageCode;
+             }
+          } catch (e) {
+             print('Error fetching user from DB: $e');
+             // Fallback to local storage on error
+             final role = prefs.getString(AppConstants.keyUserRole) ?? AppConstants.rolePatient;
+             final languageCode = prefs.getString(AppConstants.keyLanguage) ?? 'en';
+             final savedEmail = prefs.getString('savedEmail');
+             final rememberMe = prefs.getBool('rememberMe') ?? false;
+
+             _currentUser = UserModel(
+               id: userId,
+               role: role,
+               languageCode: languageCode,
+               email: rememberMe && savedEmail != null ? savedEmail : null,
+             );
+             _selectedLanguage = languageCode;
+          }
+        }
       }
 
       final savedLanguage = prefs.getString(AppConstants.keyLanguage);
@@ -104,29 +133,48 @@ class UserProvider with ChangeNotifier {
         throw Exception('Invalid password');
       }
 
-      // TODO: Implement actual authentication with Firebase or your backend
-      await Future.delayed(const Duration(seconds: 1)); // Simulate API call
-
-      _currentUser = UserModel(
-        id: DateTime.now().millisecondsSinceEpoch.toString(),
+      // Authenticate with Firebase
+      final user = await _authService.signInWithEmailPassword(
         email: email,
-        role: role,
-        languageCode: _selectedLanguage,
+        password: password,
       );
 
-      // Save to storage
-      final prefs = await SharedPreferences.getInstance();
-      await prefs.setBool(AppConstants.keyIsLoggedIn, true);
-      await prefs.setString(AppConstants.keyUserId, _currentUser!.id!);
-      await prefs.setString(AppConstants.keyUserRole, role);
-      await prefs.remove(AppConstants.keyIsSignUp); // Clear sign-up flag
+      if (user != null) {
+        // Fetch user profile from Firestore
+        UserModel? userModel = await _databaseService.getUser(user.uid);
 
-      // Save Remember Me preference
-      await prefs.setBool('rememberMe', rememberMe);
-      if (rememberMe) {
-        await prefs.setString('savedEmail', email);
-      } else {
-        await prefs.remove('savedEmail');
+        if (userModel == null) {
+          // If user exists in Auth but not in Firestore, create a profile
+          userModel = UserModel(
+            id: user.uid,
+            email: email,
+            role: role,
+            languageCode: _selectedLanguage,
+          );
+          await _databaseService.saveUser(userModel);
+        }
+
+        _currentUser = userModel;
+        _selectedLanguage = userModel.languageCode;
+
+        // Save to storage
+        final prefs = await SharedPreferences.getInstance();
+        await prefs.setBool(AppConstants.keyIsLoggedIn, true);
+        await prefs.setString(AppConstants.keyUserId, _currentUser!.id!);
+        await prefs.setString(AppConstants.keyUserRole, _currentUser!.role);
+        await prefs.remove(AppConstants.keyIsSignUp); // Clear sign-up flag
+        
+        // Update language preference if different
+        await prefs.setString(AppConstants.keyLanguage, _currentUser!.languageCode);
+        await _localizationService.setLanguage(_currentUser!.languageCode);
+
+        // Save Remember Me preference
+        await prefs.setBool('rememberMe', rememberMe);
+        if (rememberMe) {
+          await prefs.setString('savedEmail', email);
+        } else {
+          await prefs.remove('savedEmail');
+        }
       }
     } catch (e) {
       print('Error logging in: $e');
@@ -169,6 +217,9 @@ class UserProvider with ChangeNotifier {
           role: role,
           languageCode: _selectedLanguage,
         );
+
+        // Save user to Firestore
+        await _databaseService.saveUser(_currentUser!);
 
         // Save to storage
         final prefs = await SharedPreferences.getInstance();
@@ -321,6 +372,7 @@ class UserProvider with ChangeNotifier {
     }
 
     _currentUser = null;
+    await _authService.signOut();
     notifyListeners();
   }
 
@@ -335,6 +387,12 @@ class UserProvider with ChangeNotifier {
       if (_currentUser != null) {
         _currentUser = _currentUser!.copyWith(languageCode: languageCode);
         print('🎯 UserProvider.changeLanguage: Updated user model with new language');
+        
+        // Save to Firestore if user is not guest
+        if (!_currentUser!.isGuest) {
+          await _databaseService.saveUser(_currentUser!);
+          print('🎯 UserProvider.changeLanguage: Saved language to Firestore');
+        }
       }
 
       final prefs = await SharedPreferences.getInstance();
@@ -359,10 +417,19 @@ class UserProvider with ChangeNotifier {
   }
 
   // Change role
-  void changeRole(String role) {
+  Future<void> changeRole(String role) async {
     if (_currentUser != null) {
       _currentUser = _currentUser!.copyWith(role: role);
       notifyListeners();
+      
+      // Save to Firestore if user is not guest
+      if (!_currentUser!.isGuest) {
+        try {
+          await _databaseService.saveUser(_currentUser!);
+        } catch (e) {
+          print('Error updating role in DB: $e');
+        }
+      }
     }
   }
 
