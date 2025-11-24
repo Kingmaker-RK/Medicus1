@@ -15,8 +15,17 @@ import 'constants/colors.dart';
 import 'constants/app_constants.dart';
 import 'firebase_options.dart';
 
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  // Load environment variables
+  try {
+    await dotenv.load(fileName: ".env");
+  } catch (e) {
+    print("Warning: .env file not found or invalid. AI features may be limited.");
+  }
 
   // Initialize Firebase
   await Firebase.initializeApp(

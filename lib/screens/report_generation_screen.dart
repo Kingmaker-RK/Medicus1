@@ -4,7 +4,6 @@ import 'package:permission_handler/permission_handler.dart';
 import '../providers/report_generation_provider.dart';
 import '../providers/doctor_profile_provider.dart';
 import '../constants/colors.dart';
-import '../l10n/app_localizations.dart';
 
 class ReportGenerationScreen extends StatefulWidget {
   const ReportGenerationScreen({Key? key}) : super(key: key);
@@ -124,6 +123,52 @@ class _ReportGenerationScreenState extends State<ReportGenerationScreen> {
               ),
               
               const Divider(height: 1),
+              
+              // Toolbar
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                color: Colors.grey[100],
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    // AI Refine
+                    if (!provider.isRecording)
+                    TextButton.icon(
+                      onPressed: provider.isAiRefining 
+                        ? null 
+                        : () async {
+                           await provider.refineWithAi();
+                           if (context.mounted) {
+                             ScaffoldMessenger.of(context).showSnackBar(
+                               const SnackBar(content: Text('Transcription refined with AI.')),
+                             );
+                           }
+                        },
+                      icon: provider.isAiRefining 
+                        ? const SizedBox(width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2)) 
+                        : const Icon(Icons.auto_fix_high, size: 20),
+                      label: const Text('AI Polish'),
+                      style: TextButton.styleFrom(foregroundColor: AppColors.primary),
+                    ),
+                    const SizedBox(width: 8),
+                    // Read Back
+                    IconButton(
+                      icon: const Icon(Icons.volume_up),
+                      onPressed: () => provider.readBackTranscript(),
+                      tooltip: 'Read Back Text',
+                      color: AppColors.textSecondary,
+                    ),
+                    // Play Recording
+                    if (provider.hasRecording)
+                      IconButton(
+                        icon: Icon(provider.isPlaying ? Icons.pause_circle : Icons.play_circle),
+                        onPressed: () => provider.playRecording(),
+                        tooltip: provider.isPlaying ? 'Pause Audio' : 'Play Original Audio',
+                        color: AppColors.doctorColor,
+                      ),
+                  ],
+                ),
+              ),
 
               // Transcription Area
               Expanded(

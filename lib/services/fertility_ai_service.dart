@@ -13,9 +13,9 @@ class FertilityAIService {
     // Basic Mock for the prototype
     if (AppConstants.useMockTranslation) { // Reusing the mock flag for now
       await Future.delayed(Duration(seconds: 1));
-      return "This is a simulated AI response for: $question. 
+      return '''This is a simulated AI response for: $question. 
 
-In a real implementation, this would connect to a specialized medical LLM model to provide fertility and child care advice.";
+In a real implementation, this would connect to a specialized medical LLM model to provide fertility and child care advice.''';
     }
 
     // Placeholder for real Llama/Gemini integration
