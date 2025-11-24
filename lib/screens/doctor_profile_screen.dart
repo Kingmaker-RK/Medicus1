@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../widgets/translated_widget.dart';
+import '../widgets/user_profile_avatar.dart';
 import 'package:provider/provider.dart';
 import 'dart:io';
 import 'package:image_picker/image_picker.dart';
@@ -110,69 +111,36 @@ class DoctorProfileScreen extends StatelessWidget {
     DoctorProfileModel profile,
     DoctorProfileProvider provider,
   ) {
-    ImageProvider? backgroundImage;
-    if (profile.profilePictureUrl != null &&
-        profile.profilePictureUrl!.isNotEmpty) {
-      if (profile.profilePictureUrl!.startsWith('http')) {
-        backgroundImage = NetworkImage(profile.profilePictureUrl!);
-      } else {
-        backgroundImage = FileImage(File(profile.profilePictureUrl!));
-      }
-    }
-
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(24),
         child: Column(
           children: [
-                  // Profile Picture
-            Center(
-              child: Stack(
-                children: [
-                  GestureDetector(
-                    onTap: () {
-                      if (backgroundImage != null) {
-                        _showProfilePictureZoomDialog(
-                          context,
-                          backgroundImage,
-                          provider,
-                        );
-                      }
-                    },
-                    child: CircleAvatar(
-                      radius: 60,
-                      backgroundColor: AppColors.primary.withValues(alpha: 0.1),
-                      backgroundImage: backgroundImage,
-                      child: backgroundImage == null
-                          ? Icon(
-                              Icons.person,
-                              size: 60,
-                              color: AppColors.primary,
-                            )
-                          : null,
+            // Profile Picture
+            Stack(
+              children: [
+                UserProfileAvatar(
+                  radius: 60,
+                  onTap: () => _showProfileOptions(context, provider, profile),
+                ),
+                Positioned(
+                  bottom: 0,
+                  right: 4,
+                  child: Container(
+                    padding: const EdgeInsets.all(6),
+                    decoration: BoxDecoration(
+                      color: AppColors.primary,
+                      shape: BoxShape.circle,
+                      border: Border.all(color: Colors.white, width: 2),
+                    ),
+                    child: const Icon(
+                      Icons.camera_alt,
+                      size: 16,
+                      color: Colors.white,
                     ),
                   ),
-                  Positioned(
-                    bottom: 0,
-                    right: 0,
-                    child: GestureDetector(
-                      onTap: () => _showImagePickerOptions(context, provider),
-                      child: Container(
-                        padding: const EdgeInsets.all(8),
-                        decoration: const BoxDecoration(
-                          color: AppColors.primary,
-                          shape: BoxShape.circle,
-                        ),
-                        child: const Icon(
-                          Icons.camera_alt,
-                          size: 20,
-                          color: Colors.white,
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
+                ),
+              ],
             ),
             const SizedBox(height: 16),
 
@@ -209,6 +177,139 @@ class DoctorProfileScreen extends StatelessWidget {
     );
   }
 
+  void _showProfileOptions(
+    BuildContext context,
+    DoctorProfileProvider provider,
+    DoctorProfileModel profile,
+  ) {
+    showModalBottomSheet(
+      context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (context) => SafeArea(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const SizedBox(height: 8),
+            Container(
+              width: 40,
+              height: 4,
+              decoration: BoxDecoration(
+                color: Colors.grey[300],
+                borderRadius: BorderRadius.circular(2),
+              ),
+            ),
+            const SizedBox(height: 20),
+            const Text(
+              'Profile Photo',
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 20),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                _buildOptionItem(
+                  context,
+                  icon: Icons.image,
+                  label: 'Gallery',
+                  onTap: () {
+                    Navigator.pop(context);
+                    _pickImage(context, provider, ImageSource.gallery);
+                  },
+                ),
+                _buildOptionItem(
+                  context,
+                  icon: Icons.camera_alt,
+                  label: 'Camera',
+                  onTap: () {
+                    Navigator.pop(context);
+                    _pickImage(context, provider, ImageSource.camera);
+                  },
+                ),
+                if (profile.profilePictureUrl != null &&
+                    profile.profilePictureUrl!.isNotEmpty) ...[
+                  _buildOptionItem(
+                    context,
+                    icon: Icons.person,
+                    label: 'View',
+                    onTap: () {
+                      Navigator.pop(context);
+                      ImageProvider? image;
+                      if (profile.profilePictureUrl!.startsWith('http')) {
+                        image = NetworkImage(profile.profilePictureUrl!);
+                      } else {
+                        image = FileImage(File(profile.profilePictureUrl!));
+                      }
+                      _showProfilePictureZoomDialog(context, image, provider);
+                    },
+                  ),
+                  _buildOptionItem(
+                    context,
+                    icon: Icons.delete_outline,
+                    label: 'Remove',
+                    color: Colors.red,
+                    onTap: () {
+                      Navigator.pop(context);
+                      provider.updateProfilePicture('');
+                    },
+                  ),
+                ],
+              ],
+            ),
+            const SizedBox(height: 32),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildOptionItem(
+    BuildContext context, {
+    required IconData icon,
+    required String label,
+    required VoidCallback onTap,
+    Color? color,
+  }) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(12),
+      child: Container(
+        padding: const EdgeInsets.all(12),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                border: Border.all(
+                  color: (color ?? AppColors.textSecondary).withValues(alpha: 0.2),
+                ),
+                shape: BoxShape.circle,
+              ),
+              child: Icon(
+                icon,
+                color: color ?? AppColors.primary,
+                size: 24,
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              label,
+              style: TextStyle(
+                color: color ?? AppColors.textPrimary,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   void _showProfilePictureZoomDialog(
     BuildContext context,
     ImageProvider image,
@@ -230,31 +331,14 @@ class DoctorProfileScreen extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 16),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                ElevatedButton.icon(
-                  onPressed: () {
-                    Navigator.pop(context);
-                    _showImagePickerOptions(context, provider);
-                  },
-                  icon: const Icon(Icons.edit),
-                  label: const AutoTranslateText('Change Photo'),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.white,
-                    foregroundColor: Colors.black,
-                  ),
-                ),
-                ElevatedButton.icon(
-                  onPressed: () => Navigator.pop(context),
-                  icon: const Icon(Icons.close),
-                  label: const AutoTranslateText('Close'),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.white,
-                    foregroundColor: Colors.black,
-                  ),
-                ),
-              ],
+            ElevatedButton.icon(
+              onPressed: () => Navigator.pop(context),
+              icon: const Icon(Icons.close),
+              label: const AutoTranslateText('Close'),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.white,
+                foregroundColor: Colors.black,
+              ),
             ),
           ],
         ),
@@ -281,50 +365,7 @@ class DoctorProfileScreen extends StatelessWidget {
     }
   }
 
-  void _showImagePickerOptions(
-    BuildContext context,
-    DoctorProfileProvider provider,
-  ) {
-    showModalBottomSheet(
-      context: context,
-      builder:
-          (context) => SafeArea(
-            child: Wrap(
-              children: [
-                ListTile(
-                  leading: const Icon(Icons.camera_alt),
-                  title: const AutoTranslateText('Take a photo'),
-                  onTap: () {
-                    Navigator.pop(context);
-                    _pickImage(context, provider, ImageSource.camera);
-                  },
-                ),
-                ListTile(
-                  leading: const Icon(Icons.image),
-                  title: const AutoTranslateText('Choose from gallery'),
-                  onTap: () {
-                    Navigator.pop(context);
-                    _pickImage(context, provider, ImageSource.gallery);
-                  },
-                ),
-                if (provider.profile.profilePictureUrl != null &&
-                    provider.profile.profilePictureUrl!.isNotEmpty)
-                  ListTile(
-                    leading: const Icon(Icons.delete, color: Colors.red),
-                    title: const Text(
-                      'Remove photo',
-                      style: TextStyle(color: Colors.red),
-                    ),
-                    onTap: () {
-                      Navigator.pop(context);
-                      provider.updateProfilePicture('');
-                    },
-                  ),
-              ],
-            ),
-          ),
-    );
-  }
+
 
   Widget _buildSectionCard({
     required String title,

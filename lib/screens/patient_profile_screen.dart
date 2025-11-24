@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../widgets/translated_widget.dart';
+import '../widgets/user_profile_avatar.dart';
 import 'package:provider/provider.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import 'package:image_picker/image_picker.dart';
@@ -81,48 +82,23 @@ class _PatientProfileScreenState extends State<PatientProfileScreen>
           Center(
             child: Stack(
               children: [
-                CircleAvatar(
+                UserProfileAvatar(
                   radius: 50,
-                  backgroundColor: AppColors.primary.withValues(alpha: 0.1),
-                  backgroundImage: profile.profilePicturePath.isNotEmpty
-                      ? FileImage(File(profile.profilePicturePath))
-                      : null,
-                  child: profile.profilePicturePath.isEmpty
-                      ? Icon(LucideIcons.user,
-                          size: 50, color: AppColors.primary)
-                      : null,
+                  onTap: () => _showProfileOptions(context, provider, profile),
                 ),
                 Positioned(
                   bottom: 0,
-                  right: 0,
-                  child: GestureDetector(
-                    onTap: () => _showImagePickerOptions(provider),
-                    child: Container(
-                      padding: const EdgeInsets.all(8),
-                      decoration: const BoxDecoration(
-                        color: AppColors.primary,
-                        shape: BoxShape.circle,
-                      ),
-                      child: const Icon(
-                        LucideIcons.camera,
-                        size: 16,
-                        color: Colors.white,
-                      ),
-                    ),
-                  ),
-                ),
-                Positioned(
-                  top: 0,
-                  right: 0,
+                  right: 2,
                   child: Container(
-                    padding: const EdgeInsets.all(8),
-                    decoration: const BoxDecoration(
+                    padding: const EdgeInsets.all(6),
+                    decoration: BoxDecoration(
                       color: AppColors.primary,
                       shape: BoxShape.circle,
+                      border: Border.all(color: Colors.white, width: 2),
                     ),
                     child: const Icon(
-                      LucideIcons.user,
-                      size: 16,
+                      LucideIcons.camera,
+                      size: 14,
                       color: Colors.white,
                     ),
                   ),
@@ -145,6 +121,170 @@ class _PatientProfileScreenState extends State<PatientProfileScreen>
             ],
           ),
         ],
+      ),
+    );
+  }
+
+  void _showProfileOptions(
+    BuildContext context,
+    PatientProfileProvider provider,
+    PatientProfileModel profile,
+  ) {
+    showModalBottomSheet(
+      context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (context) => SafeArea(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const SizedBox(height: 8),
+            Container(
+              width: 40,
+              height: 4,
+              decoration: BoxDecoration(
+                color: Colors.grey[300],
+                borderRadius: BorderRadius.circular(2),
+              ),
+            ),
+            const SizedBox(height: 20),
+            const Text(
+              'Profile Photo',
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 20),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                _buildOptionItem(
+                  context,
+                  icon: LucideIcons.image,
+                  label: 'Gallery',
+                  onTap: () {
+                    Navigator.pop(context);
+                    _pickImage(provider, ImageSource.gallery);
+                  },
+                ),
+                _buildOptionItem(
+                  context,
+                  icon: LucideIcons.camera,
+                  label: 'Camera',
+                  onTap: () {
+                    Navigator.pop(context);
+                    _pickImage(provider, ImageSource.camera);
+                  },
+                ),
+                if (profile.profilePicturePath.isNotEmpty) ...[
+                  _buildOptionItem(
+                    context,
+                    icon: LucideIcons.user,
+                    label: 'View',
+                    onTap: () {
+                      Navigator.pop(context);
+                      ImageProvider image;
+                      if (profile.profilePicturePath.startsWith('http')) {
+                        image = NetworkImage(profile.profilePicturePath);
+                      } else {
+                        image = FileImage(File(profile.profilePicturePath));
+                      }
+                      _showProfilePictureZoomDialog(context, image);
+                    },
+                  ),
+                  _buildOptionItem(
+                    context,
+                    icon: LucideIcons.trash2,
+                    label: 'Remove',
+                    color: Colors.red,
+                    onTap: () {
+                      Navigator.pop(context);
+                      provider.updateProfilePicture('');
+                    },
+                  ),
+                ],
+              ],
+            ),
+            const SizedBox(height: 32),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildOptionItem(
+    BuildContext context, {
+    required IconData icon,
+    required String label,
+    required VoidCallback onTap,
+    Color? color,
+  }) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(12),
+      child: Container(
+        padding: const EdgeInsets.all(12),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                border: Border.all(
+                  color: (color ?? AppColors.textSecondary).withValues(alpha: 0.2),
+                ),
+                shape: BoxShape.circle,
+              ),
+              child: Icon(
+                icon,
+                color: color ?? AppColors.primary,
+                size: 24,
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              label,
+              style: TextStyle(
+                color: color ?? AppColors.textPrimary,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _showProfilePictureZoomDialog(BuildContext context, ImageProvider image) {
+    showDialog(
+      context: context,
+      builder: (context) => Dialog(
+        backgroundColor: Colors.transparent,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Expanded(
+              child: InteractiveViewer(
+                clipBehavior: Clip.none,
+                minScale: 0.5,
+                maxScale: 4.0,
+                child: Image(image: image),
+              ),
+            ),
+            const SizedBox(height: 16),
+            ElevatedButton.icon(
+              onPressed: () => Navigator.pop(context),
+              icon: const Icon(LucideIcons.x),
+              label: const AutoTranslateText('Close'),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.white,
+                foregroundColor: Colors.black,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -787,44 +927,5 @@ class _PatientProfileScreenState extends State<PatientProfileScreen>
     }
   }
 
-  void _showImagePickerOptions(PatientProfileProvider provider) {
-    showModalBottomSheet(
-      context: context,
-      builder:
-          (context) => SafeArea(
-            child: Wrap(
-              children: [
-                ListTile(
-                  leading: const Icon(LucideIcons.camera),
-                  title: const AutoTranslateText('Take a photo'),
-                  onTap: () {
-                    Navigator.pop(context);
-                    _pickImage(provider, ImageSource.camera);
-                  },
-                ),
-                ListTile(
-                  leading: const Icon(LucideIcons.image),
-                  title: const AutoTranslateText('Choose from gallery'),
-                  onTap: () {
-                    Navigator.pop(context);
-                    _pickImage(provider, ImageSource.gallery);
-                  },
-                ),
-                if (provider.profile.profilePicturePath.isNotEmpty)
-                  ListTile(
-                    leading: const Icon(LucideIcons.trash2, color: Colors.red),
-                    title: const Text(
-                      'Remove photo',
-                      style: TextStyle(color: Colors.red),
-                    ),
-                    onTap: () {
-                      Navigator.pop(context);
-                      provider.updateProfilePicture('');
-                    },
-                  ),
-              ],
-            ),
-          ),
-    );
-  }
+
 }

@@ -1,16 +1,14 @@
 import 'package:flutter/material.dart';
 import '../widgets/translated_widget.dart';
 import 'package:flutter/services.dart';
-import 'dart:io';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
 import '../providers/translation_provider.dart';
 import '../providers/user_provider.dart';
-import '../providers/patient_profile_provider.dart';
-import '../providers/doctor_profile_provider.dart';
 import '../constants/colors.dart';
 import '../constants/app_constants.dart';
+import '../widgets/user_profile_avatar.dart';
 import '../widgets/anatomy_viewer.dart';
 import '../widgets/app_bottom_navigation_bar.dart';
 import '../widgets/handwriting_input_widget.dart';
@@ -294,73 +292,31 @@ class _TranslationScreenState extends State<TranslationScreen>
         ),
       ),
       leadingWidth: 100,
-      leading: Builder(
-        builder: (context) {
-          final isDoctor =
-              userProvider.currentUser?.role == AppConstants.roleDoctor;
-          ImageProvider? backgroundImage;
-          bool hasProfilePicture = false;
-
-          if (isDoctor) {
-            final doctorProfileProvider = Provider.of<DoctorProfileProvider>(
-              context,
-            );
-            final profile = doctorProfileProvider.profile;
-            if (profile.profilePictureUrl != null &&
-                profile.profilePictureUrl!.isNotEmpty) {
-              hasProfilePicture = true;
-              if (profile.profilePictureUrl!.startsWith('http')) {
-                backgroundImage = NetworkImage(profile.profilePictureUrl!);
+      leading: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          IconButton(
+            icon: const Icon(Icons.menu_rounded),
+            onPressed: () {
+              Scaffold.of(context).openDrawer();
+            },
+          ),
+          const SizedBox(width: 4),
+          UserProfileAvatar(
+            radius: 16,
+            onTap: () {
+              final userProvider = Provider.of<UserProvider>(
+                context,
+                listen: false,
+              );
+              if (userProvider.currentUser?.role == AppConstants.roleDoctor) {
+                context.push('/doctor-profile');
               } else {
-                backgroundImage = FileImage(File(profile.profilePictureUrl!));
+                context.push('/profile');
               }
-            }
-          } else {
-            final userProfileProvider = Provider.of<PatientProfileProvider>(
-              context,
-            );
-            final profile = userProfileProvider.profile;
-            if (profile.profilePicturePath.isNotEmpty) {
-              hasProfilePicture = true;
-              backgroundImage = FileImage(File(profile.profilePicturePath));
-            }
-          }
-
-          return Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              IconButton(
-                icon: const Icon(Icons.menu_rounded),
-                onPressed: () {
-                  Scaffold.of(context).openDrawer();
-                },
-              ),
-              const SizedBox(width: 4),
-              InkWell(
-                onTap: () {
-                  if (isDoctor) {
-                    context.push('/doctor-profile');
-                  } else {
-                    context.push('/profile');
-                  }
-                },
-                customBorder: const CircleBorder(),
-                child: CircleAvatar(
-                  radius: 16,
-                  backgroundColor: Colors.white.withValues(alpha: 0.2),
-                  backgroundImage: backgroundImage,
-                  child: !hasProfilePicture
-                      ? const Icon(
-                          Icons.person_rounded,
-                          size: 20,
-                          color: Colors.white,
-                        )
-                      : null,
-                ),
-              ),
-            ],
-          );
-        },
+            },
+          ),
+        ],
       ),
       actions: [
         // History button
