@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart'; // for visibleForTesting
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:google_generative_ai/google_generative_ai.dart';
 import '../utils/logger.dart';
@@ -8,8 +9,15 @@ class AiService {
   factory AiService() => _instance;
   AiService._internal();
 
+  /// Visible for testing to allow mocking by extending this class
+  @visibleForTesting
+  AiService.testing();
+
   GenerativeModel? _model;
   bool _isInitialized = false;
+
+  // Expose the model version for testing/verification
+  String get currentModelVersion => AiPrompts.modelVersion;
 
   Future<void> initialize() async {
     if (_isInitialized) return;
@@ -18,7 +26,7 @@ class AiService {
     if (apiKey != null && apiKey.isNotEmpty) {
       try {
         _model = GenerativeModel(
-          model: 'gemini-1.5-flash', 
+          model: AiPrompts.modelVersion, 
           apiKey: apiKey,
           generationConfig: GenerationConfig(
             temperature: 0.2, // Low temperature for factual transcription correction
@@ -33,7 +41,9 @@ class AiService {
     }
   }
 
-  Future<String> refineTranscription(String text) async {
+  /// Refines the transcription using AI.
+  /// [context] - Optional RAG context (e.g. patient history snippets) to augment the prompt.
+  Future<String> refineTranscription(String text, {String? context}) async {
     if (text.trim().isEmpty) return text;
     
     if (!_isInitialized || _model == null) {
@@ -43,7 +53,14 @@ class AiService {
     }
 
     try {
-      final prompt = AiPrompts.medicalRefinement.replaceAll('{{TEXT}}', text);
+      String prompt = AiPrompts.medicalRefinement.replaceAll('{{TEXT}}', text);
+      
+      // Inject RAG Context if provided, otherwise remove the placeholder
+      if (context != null && context.isNotEmpty) {
+        prompt = prompt.replaceAll('{{CONTEXT_SECTION}}', 'Relevant Medical Context:\n$context');
+      } else {
+        prompt = prompt.replaceAll('{{CONTEXT_SECTION}}', '');
+      }
 
       final content = [Content.text(prompt)];
       final response = await _model!.generateContent(content);

@@ -45,13 +45,23 @@ class MockPdfReportService extends Mock implements PdfReportService {
   Future<void> saveAndLaunchReport(Uint8List bytes, String fileName) async {}
 }
 
-class MockAiService extends Mock implements AiService {
+class MockAiService extends AiService {
+  MockAiService() : super.testing();
+
   @override
   Future<void> initialize() async {}
-  
+
   @override
-  Future<String> refineTranscription(String text) async {
-    return "Refined: $text";
+  Future<String> refineTranscription(String text, {String? context}) async {
+    // Determine language from the text content
+    if (text.contains('Guten Tag')) {
+      return 'Guten Tag, hier ist ein medizinischer Bericht. Patient Hans Muller, 45 Jahre alt.';
+    } else if (text.contains('Bonjour')) {
+      return 'Bonjour, ceci est un rapport médical. Patient Jean Dupont, 50 ans.';
+    } else if (text.contains('Hola')) {
+      return 'Hola, este es un informe médico. Paciente Carlos Gomez, 60 años.';
+    }
+    return 'Refined: $text';
   }
 }
 
