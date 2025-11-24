@@ -25,7 +25,7 @@ class AiGrisLogo extends StatelessWidget {
             borderRadius: BorderRadius.circular(size * 0.2),
             child: Image.asset(
               'assets/images/Ai-Gris_Logo_HQ.png',
-              fit: BoxFit.cover,
+              fit: BoxFit.contain,
             ),
           ),
         ),
