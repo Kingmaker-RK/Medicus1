@@ -24,6 +24,12 @@ class LLMTranslationService {
     void setHttpClient(http.Client client) {
       _httpClient = client;
     }
+
+    /// Force Llama configuration for testing
+    @visibleForTesting
+    void setLlamaConfigured(bool configured) {
+      _isLlamaConfigured = configured;
+    }
   
     GenerativeModel? _geminiModel;  final Map<String, Map<String, String>> _translationCache = {};
   final DeepLTranslationService _deepLService = DeepLTranslationService();
@@ -579,5 +585,109 @@ Translations (numbered format):''';
     logger.d(
       '✅ Pre-cached ${commonStrings.length} common strings for ${_getLanguageName(targetLanguageCode)}',
     );
+  }
+
+  /// Generate a personalized welcome/verification email using LLM
+  Future<Map<String, String>> generateWelcomeEmail({
+    required String userName,
+    required String appName,
+    required String verificationCode,
+    required String languageCode,
+  }) async {
+    final targetLang = _getLanguageName(languageCode);
+    
+    // Check Mock Mode
+    if (AppConstants.useMockTranslation) {
+      return {
+        'subject': 'Welcome to $appName! Verify your email',
+        'body': 'Dear $userName,\n\nWelcome to $appName. Your code is: $verificationCode.\n\nBest,\n$appName Team',
+      };
+    }
+
+    final prompt = '''
+    Write a professional and welcoming email for a new user registering for the medical app "$appName".
+    
+    User Name: $userName
+    Verification Code: $verificationCode
+    Language: $targetLang
+    
+    The email should:
+    1. Be written in $targetLang.
+    2. Warmly welcome the user.
+    3. Explain that they need to verify their email to access the platform.
+    4. Clearly display the verification code: $verificationCode.
+    5. Be signed by "The $appName Team".
+    
+    Return a JSON object with two fields:
+    - "subject": The email subject line.
+    - "body": The full email body text.
+    ''';
+
+    // 1. Try Llama
+    if (_isLlamaConfigured) {
+      try {
+        final response = await _httpClient.post(
+          Uri.parse(AppConstants.llamaApiUrl),
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ${AppConstants.llamaApiKey}',
+          },
+          body: jsonEncode({
+            'model': AppConstants.llamaModel,
+            'messages': [
+              {'role': 'system', 'content': 'You are a helpful assistant that generates emails in JSON format.'},
+              {'role': 'user', 'content': prompt}
+            ],
+            'temperature': 0.7,
+            'response_format': {'type': 'json_object'},
+          }),
+        );
+
+        if (response.statusCode == 200) {
+           final data = jsonDecode(response.body);
+           final content = data['choices']?[0]['message']?['content']?.toString().trim();
+           if (content != null) {
+             try {
+               return Map<String, String>.from(jsonDecode(content));
+             } catch (e) {
+               logger.w('⚠️ Failed to parse Llama Email JSON: $e');
+             }
+           }
+        }
+      } catch (e) {
+        logger.e('❌ Llama Email Generation error: $e');
+      }
+    }
+
+    // 2. Try Gemini
+    if (_geminiModel != null) {
+      try {
+        final response = await _geminiModel!.generateContent([Content.text(prompt)]);
+        final text = response.text?.trim() ?? '';
+        
+        // Extract JSON
+        String jsonString = text;
+        final int startIndex = text.indexOf('{');
+        final int endIndex = text.lastIndexOf('}');
+        
+        if (startIndex != -1 && endIndex != -1 && endIndex > startIndex) {
+          jsonString = text.substring(startIndex, endIndex + 1);
+        }
+        
+        try {
+          return Map<String, String>.from(jsonDecode(jsonString));
+        } catch (e) {
+           logger.w('⚠️ Failed to parse Gemini Email JSON: $e. Raw: $text');
+        }
+      } catch (e) {
+        logger.e('❌ Gemini Email Generation error: $e');
+      }
+    }
+
+    // Fallback
+    return {
+      'subject': 'Welcome to $appName - Verify your email',
+      'body': 'Dear $userName,\n\nPlease verify your email with code: $verificationCode\n\nWelcome,\n$appName Team',
+    };
   }
 }

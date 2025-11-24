@@ -6,6 +6,7 @@ import '../constants/app_constants.dart';
 import '../services/auth_service.dart';
 import '../services/database_service.dart';
 import '../services/localization_service.dart';
+import '../services/llm_translation_service.dart';
 
 class UserProvider with ChangeNotifier {
   final AuthService _authService;
@@ -212,6 +213,14 @@ class UserProvider with ChangeNotifier {
       final user = await _authService.signUpWithEmailPassword(
         email: email,
         password: password,
+        emailGenerator: (code) async {
+          return await LLMTranslationService().generateWelcomeEmail(
+            userName: '$firstName $lastName',
+            appName: 'AI-Gris',
+            verificationCode: code,
+            languageCode: _selectedLanguage,
+          );
+        },
       );
 
       if (user != null) {

@@ -24,6 +24,7 @@ class AuthService {
   Future<User?> signUpWithEmailPassword({
     required String email,
     required String password,
+    Future<Map<String, String>> Function(String code)? emailGenerator,
   }) async {
     try {
       // Create user account
@@ -34,9 +35,23 @@ class AuthService {
       final verificationCode = _generateVerificationCode();
       _verificationCodes[email] = verificationCode;
 
+      String subject = 'Verify your email';
+      String body = 'Your verification code is: $verificationCode';
+
+      if (emailGenerator != null) {
+        try {
+          final emailContent = await emailGenerator(verificationCode);
+          if (emailContent.containsKey('subject')) subject = emailContent['subject']!;
+          if (emailContent.containsKey('body')) body = emailContent['body']!;
+        } catch (e) {
+          logger.e('Error generating custom email: $e');
+          // Fallback to default
+        }
+      }
+
       // Send verification email (simulated with code)
       // In production, send this code via email service
-      await _sendVerificationEmail(email, verificationCode);
+      await _sendVerificationEmail(email, verificationCode, subject: subject, body: body);
 
       // Don't verify email yet - user needs to enter code
       return userCredential.user;
@@ -46,12 +61,19 @@ class AuthService {
   }
 
   // Send verification email (simulated)
-  Future<void> _sendVerificationEmail(String email, String code) async {
+  Future<void> _sendVerificationEmail(
+    String email, 
+    String code, {
+    String? subject, 
+    String? body,
+  }) async {
     // TODO: Integrate with email service (SendGrid, AWS SES, etc.)
     // For now, print to console for testing
     logger.d('========================================');
-    logger.d('EMAIL VERIFICATION CODE FOR: $email');
-    logger.d('CODE: $code');
+    logger.d('📧 SENDING VERIFICATION EMAIL TO: $email');
+    if (subject != null) logger.d('SUBJECT: $subject');
+    logger.d('BODY:');
+    logger.d(body ?? 'Code: $code');
     logger.d('========================================');
 
     // Simulate email sending delay
