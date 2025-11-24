@@ -4,7 +4,6 @@ import 'package:provider/provider.dart';
 import '../l10n/app_localizations.dart';
 import '../constants/colors.dart';
 import '../constants/app_routes.dart';
-import '../constants/app_constants.dart';
 import '../providers/user_provider.dart';
 
 class RegisterAccountScreen extends StatefulWidget {
@@ -91,10 +90,15 @@ class _RegisterAccountScreenState extends State<RegisterAccountScreen> {
         }
       } catch (e) {
         if (!mounted) return;
+        
+        // Display specific error message if available
+        final errorMessage = e is String ? e : (e.toString().replaceAll('Exception: ', ''));
+        
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(l10n.signUpFailed),
+            content: Text(errorMessage.isNotEmpty ? errorMessage : l10n.signUpFailed),
             backgroundColor: Colors.red,
+            duration: const Duration(seconds: 4),
           ),
         );
       }
