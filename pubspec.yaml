@@ -76,9 +76,6 @@ dependencies:
     sdk: flutter
 
   # Icons
-  font_awesome_flutter: ^10.8.0
-
-  # Image Picker
   image_picker: ^1.1.2
   deepl_dart: ^2.0.0
   lucide_icons: ^0.257.0
@@ -129,8 +126,6 @@ flutter:
   # To add assets to your application, add an assets section, like this:
   assets:
     - assets/images/
-    - assets/models/
-    - assets/icons/
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images
