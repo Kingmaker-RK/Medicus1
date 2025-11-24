@@ -8,6 +8,7 @@ class DoctorProfileModel {
   final String idNumber;
   final String personnelNumber;
   final String? profilePictureUrl;
+  final List<String> languages;
 
   DoctorProfileModel({
     this.name = '',
@@ -19,6 +20,7 @@ class DoctorProfileModel {
     this.idNumber = '',
     this.personnelNumber = '',
     this.profilePictureUrl,
+    this.languages = const [],
   });
 
   factory DoctorProfileModel.fromJson(Map<String, dynamic> json) {
@@ -32,6 +34,10 @@ class DoctorProfileModel {
       idNumber: json['idNumber'] as String? ?? '',
       personnelNumber: json['personnelNumber'] as String? ?? '',
       profilePictureUrl: json['profilePictureUrl'] as String?,
+      languages: (json['languages'] as List<dynamic>?)
+              ?.map((e) => e as String)
+              .toList() ??
+          const [],
     );
   }
 
@@ -46,6 +52,7 @@ class DoctorProfileModel {
       'idNumber': idNumber,
       'personnelNumber': personnelNumber,
       'profilePictureUrl': profilePictureUrl,
+      'languages': languages,
     };
   }
 
@@ -59,6 +66,7 @@ class DoctorProfileModel {
     String? idNumber,
     String? personnelNumber,
     String? profilePictureUrl,
+    List<String>? languages,
   }) {
     return DoctorProfileModel(
       name: name ?? this.name,
@@ -71,6 +79,7 @@ class DoctorProfileModel {
       idNumber: idNumber ?? this.idNumber,
       personnelNumber: personnelNumber ?? this.personnelNumber,
       profilePictureUrl: profilePictureUrl ?? this.profilePictureUrl,
+      languages: languages ?? this.languages,
     );
   }
 

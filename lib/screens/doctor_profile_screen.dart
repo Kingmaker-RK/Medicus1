@@ -50,6 +50,13 @@ class DoctorProfileScreen extends StatelessWidget {
                       _buildInfoRow('Speciality', profile.speciality),
                       const Divider(),
                       _buildInfoRow(
+                        'Languages Spoken',
+                        profile.languages.isNotEmpty
+                            ? profile.languages.join(', ')
+                            : 'Not specified',
+                      ),
+                      const Divider(),
+                      _buildInfoRow(
                         'Highest Qualification',
                         profile.highestQualification,
                       ),
@@ -118,17 +125,32 @@ class DoctorProfileScreen extends StatelessWidget {
         padding: const EdgeInsets.all(24),
         child: Column(
           children: [
-            // Profile Picture
+                  // Profile Picture
             Center(
               child: Stack(
                 children: [
-                  CircleAvatar(
-                    radius: 60,
-                    backgroundColor: AppColors.primary.withValues(alpha: 0.1),
-                    backgroundImage: backgroundImage,
-                    child: backgroundImage == null
-                        ? Icon(Icons.person, size: 60, color: AppColors.primary)
-                        : null,
+                  GestureDetector(
+                    onTap: () {
+                      if (backgroundImage != null) {
+                        _showProfilePictureZoomDialog(
+                          context,
+                          backgroundImage,
+                          provider,
+                        );
+                      }
+                    },
+                    child: CircleAvatar(
+                      radius: 60,
+                      backgroundColor: AppColors.primary.withValues(alpha: 0.1),
+                      backgroundImage: backgroundImage,
+                      child: backgroundImage == null
+                          ? Icon(
+                              Icons.person,
+                              size: 60,
+                              color: AppColors.primary,
+                            )
+                          : null,
+                    ),
                   ),
                   Positioned(
                     bottom: 0,
@@ -146,22 +168,6 @@ class DoctorProfileScreen extends StatelessWidget {
                           size: 20,
                           color: Colors.white,
                         ),
-                      ),
-                    ),
-                  ),
-                  Positioned(
-                    top: 0,
-                    right: 0,
-                    child: Container(
-                      padding: const EdgeInsets.all(8),
-                      decoration: const BoxDecoration(
-                        color: AppColors.primary,
-                        shape: BoxShape.circle,
-                      ),
-                      child: const Icon(
-                        Icons.medical_services,
-                        size: 20,
-                        color: Colors.white,
                       ),
                     ),
                   ),
@@ -197,6 +203,59 @@ class DoctorProfileScreen extends StatelessWidget {
                   ),
                 ),
               ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _showProfilePictureZoomDialog(
+    BuildContext context,
+    ImageProvider image,
+    DoctorProfileProvider provider,
+  ) {
+    showDialog(
+      context: context,
+      builder: (context) => Dialog(
+        backgroundColor: Colors.transparent,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Expanded(
+              child: InteractiveViewer(
+                clipBehavior: Clip.none,
+                minScale: 0.5,
+                maxScale: 4.0,
+                child: Image(image: image),
+              ),
+            ),
+            const SizedBox(height: 16),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                ElevatedButton.icon(
+                  onPressed: () {
+                    Navigator.pop(context);
+                    _showImagePickerOptions(context, provider);
+                  },
+                  icon: const Icon(Icons.edit),
+                  label: const AutoTranslateText('Change Photo'),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.white,
+                    foregroundColor: Colors.black,
+                  ),
+                ),
+                ElevatedButton.icon(
+                  onPressed: () => Navigator.pop(context),
+                  icon: const Icon(Icons.close),
+                  label: const AutoTranslateText('Close'),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.white,
+                    foregroundColor: Colors.black,
+                  ),
+                ),
+              ],
+            ),
           ],
         ),
       ),
@@ -350,6 +409,9 @@ class DoctorProfileScreen extends StatelessWidget {
     final personnelNumberController = TextEditingController(
       text: profile.personnelNumber,
     );
+    final languagesController = TextEditingController(
+      text: profile.languages.join(', '),
+    );
 
     showDialog(
       context: context,
@@ -390,6 +452,15 @@ class DoctorProfileScreen extends StatelessWidget {
                   prefixIcon: Icon(Icons.work_history),
                 ),
                 keyboardType: TextInputType.number,
+              ),
+              const SizedBox(height: 12),
+              TextField(
+                controller: languagesController,
+                decoration: const InputDecoration(
+                  labelText: 'Languages (comma separated)',
+                  prefixIcon: Icon(Icons.language),
+                  hintText: 'English, German, Spanish',
+                ),
               ),
               const SizedBox(height: 12),
               TextField(
@@ -445,13 +516,21 @@ class DoctorProfileScreen extends StatelessWidget {
                   approbationCertificate: approbationController.text,
                   idNumber: idNumberController.text,
                   personnelNumber: personnelNumberController.text,
+                  languages:
+                      languagesController.text
+                          .split(',')
+                          .map((e) => e.trim())
+                          .where((e) => e.isNotEmpty)
+                          .toList(),
                 );
 
                 await provider.updateProfile(updatedProfile);
                 if (!context.mounted) return;
                 Navigator.pop(context);
                 ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: AutoTranslateText('Profile updated successfully')),
+                  const SnackBar(
+                    content: AutoTranslateText('Profile updated successfully'),
+                  ),
                 );
               } catch (e) {
                 if (!context.mounted) return;
