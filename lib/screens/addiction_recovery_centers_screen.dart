@@ -6,10 +6,12 @@ import '../services/addiction_recovery_service.dart';
 
 class AddictionRecoveryCentersScreen extends StatefulWidget {
   final String addictionType;
+  final AddictionRecoveryService? service;
 
   const AddictionRecoveryCentersScreen({
     Key? key,
     required this.addictionType,
+    this.service,
   }) : super(key: key);
 
   @override
@@ -18,7 +20,7 @@ class AddictionRecoveryCentersScreen extends StatefulWidget {
 
 class _AddictionRecoveryCentersScreenState extends State<AddictionRecoveryCentersScreen> {
   final TextEditingController _searchController = TextEditingController();
-  final AddictionRecoveryService _service = AddictionRecoveryService();
+  late final AddictionRecoveryService _service;
   String searchType = 'Name';
   final List<String> searchTypes = ['Name', 'Location', 'Pincode'];
 
@@ -30,6 +32,7 @@ class _AddictionRecoveryCentersScreenState extends State<AddictionRecoveryCenter
   @override
   void initState() {
     super.initState();
+    _service = widget.service ?? AddictionRecoveryService();
     _loadCenters();
   }
 

@@ -41,18 +41,36 @@ class AddictionRecoveryService {
           final name = tags['name'] ?? tags['description'] ?? 'Recovery Center';
           final type = tags['amenity'] == 'social_facility' ? 'Support Center' : 'Clinic';
           
+          final street = tags['addr:street'] ?? '';
+          final city = tags['addr:city'] ?? 'Berlin';
+          final postcode = tags['addr:postcode'] ?? '';
+          
+          // Construct address parts
+          final List<String> addressParts = [];
+          if (street.isNotEmpty) addressParts.add(street);
+          if (postcode.isNotEmpty) addressParts.add(postcode);
+          if (city.isNotEmpty) addressParts.add(city);
+          
+          final location = addressParts.isNotEmpty ? addressParts.join(', ') : 'Berlin';
+          final pincode = postcode.isNotEmpty ? postcode : '10115'; // Default central Berlin if missing
+
+          final phone = tags['phone'] ?? tags['contact:phone'] ?? tags['contact:mobile'] ?? '+49 30 12345678';
+          final website = tags['website'] ?? tags['contact:website'] ?? tags['url'] ?? '';
+
            // Synthesize some metadata since OSM doesn't have ratings/phone often
           return {
             'name': name,
             'type': type,
             'specialty': tags['healthcare:speciality'] ?? 'General Support',
-            'location': '${tags['addr:street'] ?? 'Unknown St'} ${tags['addr:city'] ?? 'Berlin'}',
-            'pincode': tags['addr:postcode'] ?? '10000',
+            'location': location,
+            'pincode': pincode,
             'rating': 4.0 + (math.Random().nextDouble() * 1.0), // Simulated rating
             'reviews': 10 + math.Random().nextInt(100),
             'distance': '${_calculateDistance(lat, lon, e['lat'], e['lon']).toStringAsFixed(1)} km',
             'available': math.Random().nextBool(), // Simulated availability
-            'phone': tags['phone'] ?? '+49 30 12345678',
+            'phone': phone,
+            'website': website,
+            'opening_hours': tags['opening_hours'] ?? '09:00 - 18:00',
           };
         }).where((element) => element['name'] != 'Recovery Center').toList();
       }

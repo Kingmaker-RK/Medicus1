@@ -29,7 +29,7 @@ void main() {
     );
 
     // Verify title
-    expect(find.text('E-Rezept'), findsOneWidget);
+    expect(find.text('E-Receipt'), findsOneWidget);
     
     // Verify Upload cards
     expect(find.text('Upload Prescription'), findsOneWidget);

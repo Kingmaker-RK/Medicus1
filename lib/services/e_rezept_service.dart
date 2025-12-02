@@ -51,6 +51,9 @@ class ERezeptService {
              address = 'Unknown Address';
           }
 
+          final phone = tags['phone'] ?? tags['contact:phone'] ?? '+49 30 98765432';
+          final website = tags['website'] ?? tags['contact:website'] ?? '';
+
           final distance = _calculateDistance(userLat, userLon, lat, lon);
           
           return Pharmacy(
@@ -59,6 +62,8 @@ class ERezeptService {
             distance: double.parse(distance.toStringAsFixed(2)),
             hasMedication: true, // Assuming availability for found pharmacies
             openHours: tags['opening_hours'] ?? '09:00 - 18:00',
+            phone: phone,
+            website: website,
           );
         }).toList();
 
@@ -80,6 +85,8 @@ class ERezeptService {
         distance: 0.3,
         hasMedication: true,
         openHours: '08:00 - 20:00',
+        phone: '+49 30 123456',
+        website: 'https://example.com',
       ),
       Pharmacy(
         name: 'City Apotheke (Mock)',
@@ -87,6 +94,8 @@ class ERezeptService {
         distance: 0.8,
         hasMedication: true,
         openHours: '09:00 - 19:00',
+        phone: '+49 30 654321',
+        website: 'https://example.com',
       ),
     ];
   }

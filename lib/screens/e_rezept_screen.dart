@@ -189,22 +189,37 @@ class _ERezeptScreenState extends State<ERezeptScreen> {
                             Text('${pharmacy.distance} km', style: TextStyle(fontSize: 12, color: AppColors.textSecondary)),
                           ],
                         ),
+                        if (pharmacy.phone != null) ...[
+                          const SizedBox(height: 4),
+                          Row(
+                            children: [
+                              Icon(Icons.phone, size: 14, color: AppColors.primary),
+                              const SizedBox(width: 4),
+                              Text(pharmacy.phone!, style: TextStyle(fontSize: 12, color: AppColors.primary)),
+                            ],
+                          ),
+                        ],
                       ],
                     ),
-                    trailing: ElevatedButton(
-                      onPressed: pharmacy.hasMedication
-                          ? () {
-                              Navigator.pop(context);
-                              _handlePharmacySelection(pharmacy);
-                            }
-                          : null,
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: AppColors.primary,
-                        foregroundColor: Colors.white,
-                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-                      ),
-                      child: const Text('Select'),
+                    trailing: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        ElevatedButton(
+                          onPressed: pharmacy.hasMedication
+                              ? () {
+                                  Navigator.pop(context);
+                                  _handlePharmacySelection(pharmacy);
+                                }
+                              : null,
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: AppColors.primary,
+                            foregroundColor: Colors.white,
+                            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                          ),
+                          child: const Text('Select'),
+                        ),
+                      ],
                     ),
                   );
                 },
