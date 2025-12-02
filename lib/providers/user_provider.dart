@@ -470,4 +470,11 @@ class UserProvider with ChangeNotifier {
       jsonEncode(_serviceUsageCounts),
     );
   }
+
+  Future<String> getAILocationSuggestion() async {
+    // In a real app, this would use AI to suggest a location based on user data.
+    // For now, we'll return a hardcoded value.
+    await Future.delayed(const Duration(milliseconds: 500)); // Simulate network delay
+    return 'Munich';
+  }
 }

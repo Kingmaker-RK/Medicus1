@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:ai_gris/screens/dentist_screen.dart';
-import 'package:ai_gris/screens/dentist_history_screen.dart';
+import 'package:ai_gris/screens/eye_care_screen.dart';
+import 'package:ai_gris/screens/eye_care_history_screen.dart';
 import 'package:ai_gris/services/localization_service.dart';
 import 'package:ai_gris/providers/user_provider.dart';
 import 'package:ai_gris/models/user_model.dart';
@@ -114,19 +114,19 @@ class MockMedicalPlacesService implements MedicalPlacesService {
     final mockData = [
       MedicalFacility(
         id: '1',
-        name: 'Dr. Schmidt Dental Clinic',
-        address: 'Friedrichstraße 100, 10117 Berlin',
-        distance: 1.2,
-        phone: '+49 30 12345678',
+        name: 'Vision Plus Clinic',
+        address: 'Prenzlauer Berg, Berlin',
+        distance: 1.5,
+        phone: '+49 30 77778888',
         latitude: 52.5,
         longitude: 13.4,
       ),
       MedicalFacility(
         id: '2',
-        name: 'Smile Center Berlin',
-        address: 'Kurfürstendamm 89, 10707 Berlin',
-        distance: 2.8,
-        phone: '+49 30 87654321',
+        name: 'Berlin Eye Center',
+        address: 'Friedrichshain, Berlin',
+        distance: 3.0,
+        phone: '+49 30 99990000',
         latitude: 52.51,
         longitude: 13.41,
       ),
@@ -163,19 +163,19 @@ void main() {
         Provider<MedicalPlacesService>.value(value: mockMedicalPlacesService),
       ],
       child: MaterialApp(
-        home: const DentistScreen(),
+        home: const EyeCareScreen(),
       ),
     );
   }
 
-  testWidgets('DentistScreen renders with default list', (WidgetTester tester) async {
+  testWidgets('EyeCareScreen renders with default list', (WidgetTester tester) async {
     await tester.pumpWidget(createWidgetUnderTest());
 
     // Allow time for any initial builds (future builder / init state fetch)
     await tester.pumpAndSettle();
 
-    expect(find.text('Find a Dentist'), findsOneWidget);
-    expect(find.text('Dr. Schmidt Dental Clinic'), findsOneWidget);
+    expect(find.text('Eye Care'), findsOneWidget);
+    expect(find.text('Vision Plus Clinic'), findsOneWidget);
     expect(find.byType(ListView), findsOneWidget);
   });
 
@@ -184,13 +184,13 @@ void main() {
     await tester.pumpAndSettle();
 
     // Enter text in search
-    await tester.enterText(find.byType(TextField), 'Smile');
+    await tester.enterText(find.byType(TextField), 'Berlin');
     await tester.testTextInput.receiveAction(TextInputAction.done);
     await tester.pumpAndSettle();
 
-    // Expect "Smile Center Berlin" to be present, others gone
-    expect(find.text('Smile Center Berlin'), findsOneWidget);
-    expect(find.text('Dr. Schmidt Dental Clinic'), findsNothing);
+    // Expect "Berlin Eye Center" to be present, others gone
+    expect(find.text('Berlin Eye Center'), findsOneWidget);
+    expect(find.text('Vision Plus Clinic'), findsNothing);
   });
 
   testWidgets('Call button shows dialog with phone number', (WidgetTester tester) async {
@@ -205,7 +205,7 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('Contact Reception'), findsOneWidget);
-    expect(find.text('+49 30 12345678'), findsOneWidget); // Phone number of first item
+    expect(find.text('+49 30 77778888'), findsOneWidget); // Phone number of first item
   });
 
   testWidgets('Navigate to History Screen', (WidgetTester tester) async {
@@ -215,7 +215,7 @@ void main() {
     await tester.tap(find.byIcon(Icons.history_edu_rounded));
     await tester.pumpAndSettle();
 
-    expect(find.byType(DentistHistoryScreen), findsOneWidget);
-    expect(find.text('Dental History'), findsOneWidget);
+    expect(find.byType(EyeCareHistoryScreen), findsOneWidget);
+    expect(find.text('Eye Care History'), findsOneWidget);
   });
 }

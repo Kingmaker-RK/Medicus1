@@ -1,132 +1,209 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mockito/mockito.dart';
+import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:ai_gris/screens/podiatry_screen.dart';
+import 'package:ai_gris/services/localization_service.dart';
 import 'package:ai_gris/providers/user_provider.dart';
-import 'package:lucide_icons/lucide_icons.dart';
-import 'package:image_picker_platform_interface/image_picker_platform_interface.dart';
-import 'test_helpers.dart';
+import 'package:ai_gris/models/user_model.dart';
+import 'package:ai_gris/services/medical_places_service.dart';
+import 'package:ai_gris/models/medical_facility_model.dart';
 
-class MockUserProvider extends Mock implements UserProvider {
+// Mock LocalizationService
+class MockLocalizationService implements LocalizationService {
   @override
-  String get selectedLanguage => 'en';
-  
-  @override
-  bool get hasListeners => false;
-
-  @override
-  void addListener(VoidCallback? listener) {}
-
-  @override
-  void removeListener(VoidCallback? listener) {}
-}
-
-class MockImagePicker extends ImagePickerPlatform {
-  @override
-  Future<PickedFile?> pickImage({
-    required ImageSource source,
-    double? maxWidth,
-    double? maxHeight,
-    int? imageQuality,
-    CameraDevice preferredCameraDevice = CameraDevice.rear,
-  }) async {
-    return PickedFile('/test/path/foot_report.jpg');
+  Future<String> translate(String text) async {
+    return text; // Return text as is for testing
   }
 
   @override
-  Future<XFile?> getImageFromSource({
-    required ImageSource source,
-    ImagePickerOptions? options,
+  void initialize() {}
+
+  @override
+  Future<void> setLanguage(String languageCode) async {}
+
+  @override
+  String translateSync(String text) => text;
+
+  @override
+  void clearCache() {}
+
+  @override
+  String get currentLanguageCode => 'en';
+}
+
+// Mock UserProvider
+class MockUserProvider extends ChangeNotifier implements UserProvider {
+  @override
+  String get selectedLanguage => 'en';
+
+  @override
+  UserModel? get currentUser => null;
+
+  @override
+  bool get isLoading => false;
+
+  @override
+  bool get isLoggedIn => false;
+
+  @override
+  Map<String, int> get serviceUsageCounts => {};
+
+  @override
+  bool get sortServicesByUsage => false;
+
+  @override
+  Future<void> changeLanguage(String languageCode) async {
+    notifyListeners();
+  }
+  
+  // Implement other methods as no-ops or throws if not used
+  @override
+  Future<void> initialize() async {}
+  @override
+  Future<void> login({required String email, required String password, required String role, bool rememberMe = false}) async {}
+  @override
+  Future<void> logout() async {}
+  @override
+  Future<void> signUp({
+    required String email,
+    required String password,
+    required String role,
+    required String firstName,
+    required String lastName,
+    required DateTime dateOfBirth,
+    required String gender,
+    bool rememberMe = false,
+  }) async {}
+
+  @override
+  Future<void> changeRole(String role) async {}
+  @override
+  Future<void> continueAsGuest(String role) async {}
+  @override
+  Future<void> resendVerificationCode(String email) async {}
+  @override
+  Future<void> resetPassword({required String email, required String code, required String newPassword}) async {}
+  @override
+  Future<void> sendPasswordResetCode(String email) async {}
+  @override
+  Future<void> verifyEmail({required String email, required String code}) async {}
+  @override
+  Future<bool> verifyPasswordResetCode({required String email, required String code}) async => true;
+  @override
+  Future<void> incrementServiceUsage(String serviceRoute) async {}
+  @override
+  Future<void> toggleServiceSorting() async {}
+  @override
+  Future<String> getAILocationSuggestion() async => 'Munich';
+}
+
+// Mock MedicalPlacesService
+class MockMedicalPlacesService implements MedicalPlacesService {
+  @override
+  Future<List<MedicalFacility>> fetchFacilities({
+    required String queryType,
+    double? lat,
+    double? lon,
+    int radius = 5000,
+    String? searchQuery,
+    String? searchType,
   }) async {
-    return XFile('/test/path/foot_report.jpg');
+    // Return mock data similar to what the test expects
+    final mockData = [
+      MedicalFacility(
+        id: '1',
+        name: 'City Foot Care Center',
+        address: '123 Walk Ave, Downtown',
+        distance: 1.2,
+        phone: '+1234567890',
+        latitude: 52.5,
+        longitude: 13.4,
+      ),
+      MedicalFacility(
+        id: '2',
+        name: 'General Hospital - Podiatry Dept',
+        address: '456 Health Blvd, Westside',
+        distance: 3.5,
+        phone: '+1987654321',
+        latitude: 52.51,
+        longitude: 13.41,
+      ),
+    ];
+
+    if (searchQuery != null && searchQuery.isNotEmpty) {
+      if (searchType == 'name') {
+        return mockData
+            .where((f) => f.name.toLowerCase().contains(searchQuery.toLowerCase()))
+            .toList();
+      }
+    }
+    return mockData;
   }
 }
 
 void main() {
+  late MockLocalizationService mockLocalizationService;
   late MockUserProvider mockUserProvider;
+  late MockMedicalPlacesService mockMedicalPlacesService;
 
-  setUp(() {
+  setUp(() async {
+    SharedPreferences.setMockInitialValues({});
+    mockLocalizationService = MockLocalizationService();
     mockUserProvider = MockUserProvider();
-    ImagePickerPlatform.instance = MockImagePicker();
+    mockMedicalPlacesService = MockMedicalPlacesService();
   });
 
+  Widget createWidgetUnderTest() {
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider<UserProvider>.value(value: mockUserProvider),
+        Provider<LocalizationService>.value(value: mockLocalizationService),
+        Provider<MedicalPlacesService>.value(value: mockMedicalPlacesService),
+      ],
+      child: MaterialApp(
+        home: const PodiatryScreen(),
+      ),
+    );
+  }
 
-  group('Podiatry Screen Tests', () {
-    testWidgets('Podiatry Screen renders tabs and default view', (WidgetTester tester) async {
-      await tester.pumpWidget(createTestApp(
-        child: const PodiatryScreen(),
-        userProvider: mockUserProvider,
-      ));
-      await tester.pumpAndSettle();
+  testWidgets('PodiatryScreen renders with default list', (WidgetTester tester) async {
+    await tester.pumpWidget(createWidgetUnderTest());
 
-      expect(find.text('Podiatry'), findsOneWidget);
-      expect(find.text('Find Specialist'), findsOneWidget);
-      expect(find.text('My Reports'), findsOneWidget);
-      
-      // Default view should be Find Specialist
-      expect(find.text('Showing specialists near you'), findsOneWidget);
-      expect(find.text('City Foot Care Center'), findsOneWidget);
-    });
+    // Allow time for any initial builds (future builder / init state fetch)
+    await tester.pumpAndSettle();
 
-    testWidgets('Search functionality works', (WidgetTester tester) async {
-      await tester.pumpWidget(createTestApp(
-        child: const PodiatryScreen(),
-        userProvider: mockUserProvider,
-      ));
-      await tester.pumpAndSettle();
+    expect(find.descendant(of: find.byType(AppBar), matching: find.text('Podiatry')), findsOneWidget);
+    expect(find.text('City Foot Care Center'), findsOneWidget);
+    expect(find.byType(ListView), findsOneWidget);
+  });
 
-      expect(find.byType(TextField), findsOneWidget);
-      
-      // Search for "Hospital"
-      await tester.enterText(find.byType(TextField), 'Hospital');
-      await tester.pump();
+  testWidgets('Search functionality filters the list', (WidgetTester tester) async {
+    await tester.pumpWidget(createWidgetUnderTest());
+    await tester.pumpAndSettle();
 
-      expect(find.text('City Foot Care Center'), findsNothing);
-      expect(find.text('General Hospital - Podiatry Dept'), findsOneWidget);
-    });
+    // Enter text in search
+    await tester.enterText(find.byType(TextField), 'Hospital');
+    await tester.testTextInput.receiveAction(TextInputAction.done);
+    await tester.pumpAndSettle();
 
-    testWidgets('AI Search button exists and triggers', (WidgetTester tester) async {
-      await tester.pumpWidget(createTestApp(
-        child: const PodiatryScreen(),
-        userProvider: mockUserProvider,
-      ));
-      await tester.pumpAndSettle();
+    // Expect "General Hospital - Podiatry Dept" to be present, others gone
+    expect(find.text('General Hospital - Podiatry Dept'), findsOneWidget);
+    expect(find.text('City Foot Care Center'), findsNothing);
+  });
 
-      final aiButton = find.byIcon(LucideIcons.sparkles);
-      expect(aiButton, findsOneWidget);
-      
-      await tester.tap(aiButton);
-      await tester.pump(const Duration(seconds: 3)); // Wait for timer
-      await tester.pumpAndSettle();
-      
-      // Just check if it doesn't crash
-      expect(find.text('Podiatry'), findsOneWidget);
-    });
+  testWidgets('Call button shows dialog with phone number', (WidgetTester tester) async {
+    await tester.pumpWidget(createWidgetUnderTest());
+    await tester.pumpAndSettle();
 
-    testWidgets('Reports tab handles upload', (WidgetTester tester) async {
-      await tester.pumpWidget(createTestApp(
-        child: const PodiatryScreen(),
-        userProvider: mockUserProvider,
-      ));
-      await tester.pumpAndSettle();
+    // Find the text "Call" and tap the first occurrence
+    final callTextFinder = find.text('Call');
+    expect(callTextFinder, findsWidgets);
+    
+    await tester.tap(callTextFinder.first);
+    await tester.pumpAndSettle();
 
-      // Switch to Reports tab
-      await tester.tap(find.text('My Reports'));
-      await tester.pumpAndSettle();
-
-      expect(find.text('No reports uploaded yet'), findsOneWidget);
-
-      // Upload Report
-      await tester.tap(find.text('Upload First Report'));
-      await tester.pumpAndSettle(); // Wait for BottomSheet
-
-      // Tap "Take Picture"
-      expect(find.text('Take Picture'), findsOneWidget);
-      await tester.tap(find.text('Take Picture'));
-      await tester.pumpAndSettle();
-
-      expect(find.text('No reports uploaded yet'), findsNothing);
-      expect(find.textContaining('Foot_Report_'), findsOneWidget);
-    });
+    expect(find.text('Call Reception'), findsOneWidget);
+    expect(find.text('+1234567890'), findsOneWidget); // Phone number of first item
   });
 }

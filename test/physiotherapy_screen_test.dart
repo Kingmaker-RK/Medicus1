@@ -7,6 +7,8 @@ import 'package:ai_gris/screens/physiotherapy_history_screen.dart';
 import 'package:ai_gris/services/localization_service.dart';
 import 'package:ai_gris/providers/user_provider.dart';
 import 'package:ai_gris/models/user_model.dart';
+import 'package:ai_gris/services/medical_places_service.dart';
+import 'package:ai_gris/models/medical_facility_model.dart';
 
 // Mock LocalizationService
 class MockLocalizationService implements LocalizationService {
@@ -46,10 +48,17 @@ class MockUserProvider extends ChangeNotifier implements UserProvider {
   bool get isLoggedIn => false;
 
   @override
+  Map<String, int> get serviceUsageCounts => {};
+
+  @override
+  bool get sortServicesByUsage => false;
+
+  @override
   Future<void> changeLanguage(String languageCode) async {
     notifyListeners();
   }
   
+  // Implement other methods as no-ops or throws if not used
   @override
   Future<void> initialize() async {}
   @override
@@ -57,9 +66,19 @@ class MockUserProvider extends ChangeNotifier implements UserProvider {
   @override
   Future<void> logout() async {}
   @override
-  Future<void> signUp({required String email, required String password, required String role, bool rememberMe = false}) async {}
+  Future<void> signUp({
+    required String email,
+    required String password,
+    required String role,
+    required String firstName,
+    required String lastName,
+    required DateTime dateOfBirth,
+    required String gender,
+    bool rememberMe = false,
+  }) async {}
+
   @override
-  void changeRole(String role) {}
+  Future<void> changeRole(String role) async {}
   @override
   Future<void> continueAsGuest(String role) async {}
   @override
@@ -72,16 +91,68 @@ class MockUserProvider extends ChangeNotifier implements UserProvider {
   Future<void> verifyEmail({required String email, required String code}) async {}
   @override
   Future<bool> verifyPasswordResetCode({required String email, required String code}) async => true;
+  @override
+  Future<void> incrementServiceUsage(String serviceRoute) async {}
+  @override
+  Future<void> toggleServiceSorting() async {}
+  @override
+  Future<String> getAILocationSuggestion() async => 'Munich';
+}
+
+// Mock MedicalPlacesService
+class MockMedicalPlacesService implements MedicalPlacesService {
+  @override
+  Future<List<MedicalFacility>> fetchFacilities({
+    required String queryType,
+    double? lat,
+    double? lon,
+    int radius = 5000,
+    String? searchQuery,
+    String? searchType,
+  }) async {
+    // Return mock data similar to what the test expects
+    final mockData = [
+      MedicalFacility(
+        id: '1',
+        name: 'Active Motion Physio',
+        address: 'Torstraße 45, Berlin',
+        distance: 1.5,
+        phone: '+49 30 22334455',
+        latitude: 52.5,
+        longitude: 13.4,
+      ),
+      MedicalFacility(
+        id: '2',
+        name: 'Rehab & Recovery Center',
+        address: 'Potsdamer Platz 1, Berlin',
+        distance: 2.2,
+        phone: '+49 30 99887766',
+        latitude: 52.51,
+        longitude: 13.41,
+      ),
+    ];
+
+    if (searchQuery != null && searchQuery.isNotEmpty) {
+      if (searchType == 'name') {
+        return mockData
+            .where((f) => f.name.toLowerCase().contains(searchQuery.toLowerCase()))
+            .toList();
+      }
+    }
+    return mockData;
+  }
 }
 
 void main() {
   late MockLocalizationService mockLocalizationService;
   late MockUserProvider mockUserProvider;
+  late MockMedicalPlacesService mockMedicalPlacesService;
 
   setUp(() async {
     SharedPreferences.setMockInitialValues({});
     mockLocalizationService = MockLocalizationService();
     mockUserProvider = MockUserProvider();
+    mockMedicalPlacesService = MockMedicalPlacesService();
   });
 
   Widget createWidgetUnderTest() {
@@ -89,6 +160,7 @@ void main() {
       providers: [
         ChangeNotifierProvider<UserProvider>.value(value: mockUserProvider),
         Provider<LocalizationService>.value(value: mockLocalizationService),
+        Provider<MedicalPlacesService>.value(value: mockMedicalPlacesService),
       ],
       child: MaterialApp(
         home: const PhysiotherapyScreen(),
@@ -99,7 +171,7 @@ void main() {
   testWidgets('PhysiotherapyScreen renders with default list', (WidgetTester tester) async {
     await tester.pumpWidget(createWidgetUnderTest());
 
-    // Allow time for any initial builds
+    // Allow time for any initial builds (future builder / init state fetch)
     await tester.pumpAndSettle();
 
     expect(find.text('Find Physiotherapy'), findsOneWidget);
@@ -113,6 +185,7 @@ void main() {
 
     // Enter text in search
     await tester.enterText(find.byType(TextField), 'Rehab');
+    await tester.testTextInput.receiveAction(TextInputAction.done);
     await tester.pumpAndSettle();
 
     // Expect "Rehab & Recovery Center" to be present, others gone

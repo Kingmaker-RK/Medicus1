@@ -5,6 +5,7 @@ import '../constants/colors.dart';
 import 'dentist_history_screen.dart';
 import '../services/medical_places_service.dart';
 import '../models/medical_facility_model.dart';
+import '../widgets/medical_search_bar.dart';
 
 class DentistScreen extends StatefulWidget {
   const DentistScreen({Key? key}) : super(key: key);
@@ -14,13 +15,7 @@ class DentistScreen extends StatefulWidget {
 }
 
 class _DentistScreenState extends State<DentistScreen> {
-  final TextEditingController _searchController = TextEditingController();
-  String searchType = 'Name';
-  final List<String> searchTypes = ['Name', 'Location', 'Address'];
-
-  List<MedicalFacility> allDentists = [];
   List<MedicalFacility> displayedDentists = [];
-  bool isSearchingAI = false;
   bool _isLoading = true;
 
   @override
@@ -37,7 +32,6 @@ class _DentistScreenState extends State<DentistScreen> {
       final dentists = await context.read<MedicalPlacesService>().fetchFacilities(queryType: 'dentist');
       if (mounted) {
         setState(() {
-          allDentists = dentists;
           displayedDentists = dentists;
           _isLoading = false;
         });
@@ -54,50 +48,31 @@ class _DentistScreenState extends State<DentistScreen> {
     }
   }
 
-  void _filterDentists(String query) {
+  Future<void> _performSearch(String query, String type) async {
     setState(() {
-      if (query.isEmpty) {
-        displayedDentists = List.from(allDentists);
-        return;
+      _isLoading = true;
+    });
+    try {
+      final dentists = await context.read<MedicalPlacesService>().fetchFacilities(
+            queryType: 'dentist',
+            searchQuery: query,
+            searchType: type,
+          );
+      if (mounted) {
+        setState(() {
+          displayedDentists = dentists;
+          _isLoading = false;
+        });
       }
-
-      displayedDentists = allDentists.where((dentist) {
-        String searchTerm = query.toLowerCase();
-        switch (searchType) {
-          case 'Name':
-            return dentist.name.toLowerCase().contains(searchTerm);
-          case 'Location':
-          case 'Address':
-            return dentist.address.toLowerCase().contains(searchTerm);
-          default:
-            return false;
-        }
-      }).toList();
-    });
-  }
-
-  Future<void> _performAISearch() async {
-    setState(() {
-      isSearchingAI = true;
-    });
-
-    // Simulate network delay for LLM processing
-    await Future.delayed(const Duration(seconds: 2));
-
-    if (mounted) {
-      setState(() {
-        isSearchingAI = false;
-        // In a real app, this would fetch new data based on AI analysis.
-        // For now, we'll just sort by distance to simulate relevance
-        displayedDentists.sort((a, b) => a.distance.compareTo(b.distance));
-      });
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: const AutoTranslateText('AI found nearest dentists!'),
-          backgroundColor: AppColors.primary,
-        ),
-      );
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error searching dentists: $e')),
+        );
+      }
     }
   }
 
@@ -181,100 +156,10 @@ class _DentistScreenState extends State<DentistScreen> {
           Container(
             color: Colors.white,
             padding: const EdgeInsets.all(16),
-            child: Column(
-              children: [
-                Row(
-                  children: [
-                    Expanded(
-                      child: TextField(
-                        controller: _searchController,
-                        decoration: InputDecoration(
-                          hintText: 'Search by $searchType',
-                          prefixIcon: const Icon(Icons.search_rounded),
-                          suffixIcon: _searchController.text.isNotEmpty
-                              ? IconButton(
-                                  icon: const Icon(Icons.clear_rounded),
-                                  onPressed: () {
-                                    _searchController.clear();
-                                    _filterDentists('');
-                                  },
-                                )
-                              : null,
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12),
-                            borderSide: BorderSide(
-                              color: AppColors.textSecondary.withValues(alpha: 0.3),
-                            ),
-                          ),
-                          filled: true,
-                          fillColor: AppColors.background,
-                          contentPadding: const EdgeInsets.symmetric(
-                            horizontal: 16,
-                            vertical: 12,
-                          ),
-                        ),
-                        onChanged: _filterDentists,
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 12),
-                Row(
-                  children: searchTypes.map((type) {
-                    return Expanded(
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 4),
-                        child: ChoiceChip(
-                          label: Center(child: Text(type)),
-                          selected: searchType == type,
-                          onSelected: (selected) {
-                            setState(() {
-                              searchType = type;
-                              // Re-filter with new type if text exists
-                              if (_searchController.text.isNotEmpty) {
-                                _filterDentists(_searchController.text);
-                              }
-                            });
-                          },
-                          selectedColor: AppColors.primary,
-                          labelStyle: TextStyle(
-                            color: searchType == type
-                                ? Colors.white
-                                : AppColors.textPrimary,
-                            fontSize: 12,
-                          ),
-                        ),
-                      ),
-                    );
-                  }).toList(),
-                ),
-                const SizedBox(height: 8),
-                SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton.icon(
-                    onPressed: isSearchingAI ? null : _performAISearch,
-                    icon: isSearchingAI
-                        ? const SizedBox(
-                            width: 20,
-                            height: 20,
-                            child: CircularProgressIndicator(
-                              strokeWidth: 2,
-                              color: Colors.white,
-                            ),
-                          )
-                        : const Icon(Icons.auto_awesome_rounded),
-                    label: Text(isSearchingAI ? 'Asking AI...' : 'Ask AI to Find Location'),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.deepPurple,
-                      foregroundColor: Colors.white,
-                    ),
-                  ),
-                ),
-              ],
-            ),
+            child: MedicalSearchBar(onSearch: _performSearch),
           ),
           Expanded(
-            child: _isLoading 
+            child: _isLoading
                 ? const Center(child: CircularProgressIndicator())
                 : displayedDentists.isEmpty
                     ? const Center(child: AutoTranslateText('No dentists found.'))
@@ -318,7 +203,7 @@ class _DentistScreenState extends State<DentistScreen> {
                     Container(
                       padding: const EdgeInsets.all(12),
                       decoration: BoxDecoration(
-                        color: Colors.teal.withValues(alpha: 0.1),
+                        color: Colors.teal.withOpacity(0.1),
                         borderRadius: BorderRadius.circular(12),
                       ),
                       child: const Icon(
@@ -357,7 +242,7 @@ class _DentistScreenState extends State<DentistScreen> {
                         vertical: 4,
                       ),
                       decoration: BoxDecoration(
-                        color: Colors.green.withValues(alpha: 0.1),
+                        color: Colors.green.withOpacity(0.1),
                         borderRadius: BorderRadius.circular(6),
                       ),
                       child: const Text(
@@ -378,7 +263,7 @@ class _DentistScreenState extends State<DentistScreen> {
                     vertical: 6,
                   ),
                   decoration: BoxDecoration(
-                    color: AppColors.primary.withValues(alpha: 0.1),
+                    color: AppColors.primary.withOpacity(0.1),
                     borderRadius: BorderRadius.circular(6),
                   ),
                   child: Text(
@@ -431,7 +316,7 @@ class _DentistScreenState extends State<DentistScreen> {
               ],
             ),
           ),
-          Divider(height: 1, color: AppColors.textSecondary.withValues(alpha: 0.2)),
+          Divider(height: 1, color: AppColors.textSecondary.withOpacity(0.2)),
           Padding(
             padding: const EdgeInsets.all(12),
             child: Row(

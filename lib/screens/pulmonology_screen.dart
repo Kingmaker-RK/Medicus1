@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 import '../constants/colors.dart';
 import '../models/pulmonology_record_model.dart';
 import '../widgets/translated_widget.dart';
 import '../widgets/upload_selector.dart';
+import '../services/medical_places_service.dart';
+import '../models/medical_facility_model.dart';
+import '../widgets/medical_search_bar.dart';
 
 class PulmonologyScreen extends StatefulWidget {
   const PulmonologyScreen({Key? key}) : super(key: key);
@@ -15,73 +19,82 @@ class PulmonologyScreen extends StatefulWidget {
 
 class _PulmonologyScreenState extends State<PulmonologyScreen> with SingleTickerProviderStateMixin {
   late TabController _tabController;
-  final TextEditingController _searchController = TextEditingController();
-  String _searchQuery = '';
   final List<PulmonologyRecord> _records = [];
-
-  // Mock data for Pulmonology centers
-  final List<Map<String, dynamic>> _centers = [
-    {
-      'name': 'City Lung Center',
-      'address': '123 Breath Ave, Downtown',
-      'type': 'Clinic',
-      'distance': '1.2 km',
-      'phone': '+1234567890',
-    },
-    {
-      'name': 'General Hospital - Pulmonology Dept',
-      'address': '456 Health Blvd, Westside',
-      'type': 'Hospital',
-      'distance': '3.5 km',
-      'phone': '+1987654321',
-    },
-    {
-      'name': 'Respiratory Rehab Institute',
-      'address': '789 Recovery Rd, North Hills',
-      'type': 'Rehabilitation Centre',
-      'distance': '5.0 km',
-      'phone': '+1122334455',
-    },
-    {
-      'name': 'Advanced Diagnostic Lab',
-      'address': '321 Test Ln, Eastside',
-      'type': 'Diagnostic Lab',
-      'distance': '2.1 km',
-      'phone': '+1555666777',
-    },
-    {
-      'name': 'Intensive Lung Care Unit',
-      'address': '654 Critical Ct, Southside',
-      'type': 'Intensive Care Unit',
-      'distance': '8.2 km',
-      'phone': '+1999888777',
-    },
-  ];
+  List<MedicalFacility> _centers = [];
+  bool _isLoading = true;
 
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
+    _fetchCenters();
   }
 
   @override
   void dispose() {
     _tabController.dispose();
-    _searchController.dispose();
     super.dispose();
   }
 
-  List<Map<String, dynamic>> get _filteredCenters {
-    if (_searchQuery.isEmpty) return _centers;
-    return _centers.where((center) {
-      final query = _searchQuery.toLowerCase();
-      return center['name'].toString().toLowerCase().contains(query) ||
-             center['address'].toString().toLowerCase().contains(query) ||
-             center['type'].toString().toLowerCase().contains(query);
-    }).toList();
+  Future<void> _fetchCenters() async {
+    setState(() {
+      _isLoading = true;
+    });
+    try {
+      final centers = await context.read<MedicalPlacesService>().fetchFacilities(queryType: 'pulmonology');
+      if (mounted) {
+        setState(() {
+          _centers = centers;
+          _isLoading = false;
+        });
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error loading centers: $e')),
+        );
+      }
+    }
   }
 
-  void _callCenter(String name, String phone) {
+  Future<void> _performSearch(String query, String type) async {
+    setState(() {
+      _isLoading = true;
+    });
+    try {
+      final centers = await context.read<MedicalPlacesService>().fetchFacilities(
+            queryType: 'pulmonology',
+            searchQuery: query,
+            searchType: type,
+          );
+      if (mounted) {
+        setState(() {
+          _centers = centers;
+          _isLoading = false;
+        });
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error searching centers: $e')),
+        );
+      }
+    }
+  }
+
+  void _callCenter(MedicalFacility center) {
+    if (center.phone == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: AutoTranslateText('Phone number not available')),
+      );
+      return;
+    }
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -89,9 +102,9 @@ class _PulmonologyScreenState extends State<PulmonologyScreen> with SingleTicker
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Text('Calling $name...', style: const TextStyle(fontWeight: FontWeight.bold)),
+            Text(center.name, style: const TextStyle(fontWeight: FontWeight.bold)),
             const SizedBox(height: 8),
-            Text(phone, style: const TextStyle(fontSize: 18, color: AppColors.primary)),
+            Text(center.phone!, style: const TextStyle(fontSize: 18, color: AppColors.primary)),
           ],
         ),
         actions: [
@@ -117,39 +130,6 @@ class _PulmonologyScreenState extends State<PulmonologyScreen> with SingleTicker
         backgroundColor: AppColors.primary,
       ),
     );
-  }
-
-  void _simulateLLMSearch() {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: AutoTranslateText('Searching via AI for specialized lung care...'),
-        backgroundColor: AppColors.info,
-      ),
-    );
-    // Simulate finding a new result after a delay
-    Future.delayed(const Duration(seconds: 2), () {
-      if (mounted) {
-        setState(() {
-          _searchQuery = ''; // Clear search to show all + new
-          // Add a mock "AI found" result if not already there
-          if (!_centers.any((c) => c['name'] == 'AI Suggested Lung Specialist')) {
-            _centers.insert(0, {
-              'name': 'AI Suggested Lung Specialist',
-              'address': '101 Future Way, Tech City',
-              'type': 'Specialist Clinic',
-              'distance': '15.0 km',
-              'phone': '+1000111000',
-            });
-          }
-        });
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: AutoTranslateText('AI found highly recommended specialists!'),
-            backgroundColor: AppColors.success,
-          ),
-        );
-      }
-    });
   }
 
   // Report Methods
@@ -262,50 +242,18 @@ class _PulmonologyScreenState extends State<PulmonologyScreen> with SingleTicker
         Container(
           padding: const EdgeInsets.all(16),
           color: Colors.white,
-          child: Column(
-            children: [
-              TextField(
-                controller: _searchController,
-                decoration: InputDecoration(
-                  hintText: 'Search Hospital, Clinic, Address...',
-                  prefixIcon: const Icon(Icons.search),
-                  suffixIcon: IconButton(
-                    icon: const Icon(LucideIcons.sparkles, color: AppColors.primary),
-                    tooltip: 'AI Search',
-                    onPressed: _simulateLLMSearch,
-                  ),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  filled: true,
-                  fillColor: AppColors.background,
-                ),
-                onChanged: (value) {
-                  setState(() {
-                    _searchQuery = value;
-                  });
-                },
-              ),
-              const SizedBox(height: 8),
-              Row(
-                children: const [
-                  Icon(Icons.location_on, size: 16, color: AppColors.primary),
-                  SizedBox(width: 4),
-                  AutoTranslateText(
-                    'Showing specialists near you',
-                    style: TextStyle(color: AppColors.primary, fontWeight: FontWeight.bold),
-                  ),
-                ],
-              ),
-            ],
-          ),
+          child: MedicalSearchBar(onSearch: _performSearch),
         ),
         Expanded(
-          child: ListView.builder(
+          child: _isLoading
+              ? const Center(child: CircularProgressIndicator())
+              : _centers.isEmpty
+                  ? const Center(child: AutoTranslateText('No centers found.'))
+                  : ListView.builder(
             padding: const EdgeInsets.all(16),
-            itemCount: _filteredCenters.length,
+            itemCount: _centers.length,
             itemBuilder: (context, index) {
-              final center = _filteredCenters[index];
+              final center = _centers[index];
               return Card(
                 margin: const EdgeInsets.only(bottom: 16),
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
@@ -322,7 +270,7 @@ class _PulmonologyScreenState extends State<PulmonologyScreen> with SingleTicker
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  center['name'],
+                                  center.name,
                                   style: const TextStyle(
                                     fontSize: 18,
                                     fontWeight: FontWeight.bold,
@@ -333,12 +281,12 @@ class _PulmonologyScreenState extends State<PulmonologyScreen> with SingleTicker
                                 Container(
                                   padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                                   decoration: BoxDecoration(
-                                    color: AppColors.accent.withValues(alpha: 0.1),
+                                    color: AppColors.accent.withOpacity(0.1),
                                     borderRadius: BorderRadius.circular(6),
                                   ),
-                                  child: Text(
-                                    center['type'],
-                                    style: const TextStyle(
+                                  child: const Text(
+                                    'Pulmonology',
+                                    style: TextStyle(
                                       color: AppColors.accent,
                                       fontSize: 12,
                                       fontWeight: FontWeight.bold,
@@ -358,7 +306,7 @@ class _PulmonologyScreenState extends State<PulmonologyScreen> with SingleTicker
                               children: [
                                 const Icon(Icons.directions_walk, size: 16, color: AppColors.textSecondary),
                                 Text(
-                                  center['distance'],
+                                  '${center.distance.toStringAsFixed(1)} km',
                                   style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
                                 ),
                               ],
@@ -373,7 +321,7 @@ class _PulmonologyScreenState extends State<PulmonologyScreen> with SingleTicker
                           const SizedBox(width: 4),
                           Expanded(
                             child: Text(
-                              center['address'],
+                              center.address,
                               style: const TextStyle(color: AppColors.textSecondary),
                             ),
                           ),
@@ -384,7 +332,7 @@ class _PulmonologyScreenState extends State<PulmonologyScreen> with SingleTicker
                         children: [
                           Expanded(
                             child: OutlinedButton.icon(
-                              onPressed: () => _callCenter(center['name'], center['phone']),
+                              onPressed: () => _callCenter(center),
                               icon: const Icon(Icons.phone),
                               label: const AutoTranslateText('Call'),
                               style: OutlinedButton.styleFrom(
@@ -396,7 +344,7 @@ class _PulmonologyScreenState extends State<PulmonologyScreen> with SingleTicker
                           const SizedBox(width: 12),
                           Expanded(
                             child: ElevatedButton.icon(
-                              onPressed: () => _bookAppointment(center['name']),
+                              onPressed: () => _bookAppointment(center.name),
                               icon: const Icon(Icons.calendar_today),
                               label: const AutoTranslateText('Book Appointment'),
                               style: ElevatedButton.styleFrom(
@@ -424,7 +372,7 @@ class _PulmonologyScreenState extends State<PulmonologyScreen> with SingleTicker
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(LucideIcons.fileX, size: 64, color: AppColors.textSecondary.withValues(alpha: 0.5)),
+            Icon(LucideIcons.fileX, size: 64, color: AppColors.textSecondary.withOpacity(0.5)),
             const SizedBox(height: 16),
             const AutoTranslateText(
               'No reports uploaded yet',
@@ -470,7 +418,7 @@ class _PulmonologyScreenState extends State<PulmonologyScreen> with SingleTicker
               leading: Container(
                 padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
-                  color: AppColors.primary.withValues(alpha: 0.1),
+                  color: AppColors.primary.withOpacity(0.1),
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: const Icon(LucideIcons.fileText, color: AppColors.primary),

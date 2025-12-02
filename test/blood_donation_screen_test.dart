@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:ai_gris/models/user_model.dart';
 import 'package:ai_gris/screens/blood_donation_screen.dart';
 import 'package:provider/provider.dart';
 import 'package:ai_gris/providers/user_provider.dart';
@@ -12,7 +13,64 @@ class MockUserProvider extends ChangeNotifier implements UserProvider {
   String get selectedLanguage => 'en';
 
   @override
-  dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
+  UserModel? get currentUser => null;
+
+  @override
+  bool get isLoading => false;
+
+  @override
+  bool get isLoggedIn => false;
+
+  @override
+  Map<String, int> get serviceUsageCounts => {};
+
+  @override
+  bool get sortServicesByUsage => false;
+
+  @override
+  Future<void> changeLanguage(String languageCode) async {
+    notifyListeners();
+  }
+  
+  // Implement other methods as no-ops or throws if not used
+  @override
+  Future<void> initialize() async {}
+  @override
+  Future<void> login({required String email, required String password, required String role, bool rememberMe = false}) async {}
+  @override
+  Future<void> logout() async {}
+  @override
+  Future<void> signUp({
+    required String email,
+    required String password,
+    required String role,
+    required String firstName,
+    required String lastName,
+    required DateTime dateOfBirth,
+    required String gender,
+    bool rememberMe = false,
+  }) async {}
+
+  @override
+  Future<void> changeRole(String role) async {}
+  @override
+  Future<void> continueAsGuest(String role) async {}
+  @override
+  Future<void> resendVerificationCode(String email) async {}
+  @override
+  Future<void> resetPassword({required String email, required String code, required String newPassword}) async {}
+  @override
+  Future<void> sendPasswordResetCode(String email) async {}
+  @override
+  Future<void> verifyEmail({required String email, required String code}) async {}
+  @override
+  Future<bool> verifyPasswordResetCode({required String email, required String code}) async => true;
+  @override
+  Future<void> incrementServiceUsage(String serviceRoute) async {}
+  @override
+  Future<void> toggleServiceSorting() async {}
+  @override
+  Future<String> getAILocationSuggestion() async => 'Munich';
 }
 
 // Mock MedicalPlacesService
@@ -23,8 +81,10 @@ class MockMedicalPlacesService implements MedicalPlacesService {
     double? lat,
     double? lon,
     int radius = 5000,
+    String? searchQuery,
+    String? searchType,
   }) async {
-    return [
+    final mockData = [
       MedicalFacility(
         id: '1',
         name: 'City Blood Bank',
@@ -46,6 +106,14 @@ class MockMedicalPlacesService implements MedicalPlacesService {
         openingHours: 'Mon-Sun: 7:00 - 20:00',
       ),
     ];
+    if (searchQuery != null && searchQuery.isNotEmpty) {
+      if (searchType == 'name') {
+        return mockData
+            .where((f) => f.name.toLowerCase().contains(searchQuery.toLowerCase()))
+            .toList();
+      }
+    }
+    return mockData;
   }
 }
 
@@ -87,7 +155,7 @@ void main() {
     
     // Should still be on Eligibility screen (button is disabled/no-op)
     expect(find.text('Eligibility Check'), findsOneWidget);
-    expect(find.text('Nearby Donation Centers'), findsNothing);
+    expect(find.text('Search for medical facilities...'), findsNothing);
 
     // Scroll back up to see checkboxes
     await tester.drag(find.text('Find Donation Centers'), const Offset(0, 300));
@@ -112,7 +180,7 @@ void main() {
     await tester.pumpAndSettle();
 
     // Should now see the Main Content
-    expect(find.text('Nearby Donation Centers'), findsOneWidget);
+    expect(find.text('Search for medical facilities...'), findsOneWidget);
     expect(find.text('City Blood Bank'), findsOneWidget);
   });
 
@@ -133,17 +201,13 @@ void main() {
     await tester.tap(find.text('Find Donation Centers'));
     await tester.pumpAndSettle();
 
-    // Open Search
-    await tester.tap(find.byIcon(Icons.search_rounded));
-    await tester.pump();
-
     // Verify Search Field appears
     expect(find.byType(TextField), findsOneWidget);
-    expect(find.text('Ask AI to Find Location'), findsOneWidget);
 
     // Test Manual Search
     await tester.enterText(find.byType(TextField), 'University');
-    await tester.pump();
+    await tester.testTextInput.receiveAction(TextInputAction.done);
+    await tester.pumpAndSettle();
 
     // Should show University Hospital but NOT City Blood Bank
     expect(find.text('University Hospital Blood Center'), findsOneWidget);

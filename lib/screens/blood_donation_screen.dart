@@ -4,6 +4,7 @@ import '../widgets/translated_widget.dart';
 import '../constants/colors.dart';
 import '../services/medical_places_service.dart';
 import '../models/medical_facility_model.dart';
+import '../widgets/medical_search_bar.dart';
 
 class BloodDonationScreen extends StatefulWidget {
   const BloodDonationScreen({Key? key}) : super(key: key);
@@ -18,9 +19,6 @@ class _BloodDonationScreenState extends State<BloodDonationScreen> {
   final Set<int> _checkedItems = {};
   
   // State for Search
-  final TextEditingController _searchController = TextEditingController();
-  String _searchQuery = '';
-  bool _showSearchOptions = false;
   bool _isLoading = true;
 
   String selectedBloodType = 'All';
@@ -40,7 +38,6 @@ class _BloodDonationScreenState extends State<BloodDonationScreen> {
   @override
   void initState() {
     super.initState();
-    // Pre-fetch data or fetch when eligible? Let's pre-fetch to have it ready.
     _fetchDonationCenters();
   }
 
@@ -66,10 +63,32 @@ class _BloodDonationScreenState extends State<BloodDonationScreen> {
     }
   }
 
-  @override
-  void dispose() {
-    _searchController.dispose();
-    super.dispose();
+  Future<void> _performSearch(String query, String type) async {
+    setState(() {
+      _isLoading = true;
+    });
+    try {
+      final centers = await context.read<MedicalPlacesService>().fetchFacilities(
+            queryType: 'blood_donation',
+            searchQuery: query,
+            searchType: type,
+          );
+      if (mounted) {
+        setState(() {
+          donationCenters = centers;
+          _isLoading = false;
+        });
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error searching donation centers: $e')),
+        );
+      }
+    }
   }
 
   @override
@@ -81,17 +100,6 @@ class _BloodDonationScreenState extends State<BloodDonationScreen> {
         foregroundColor: Colors.white,
         title: const AutoTranslateText('Blood Donation'),
         centerTitle: true,
-        actions: [
-          if (_isEligible)
-            IconButton(
-              icon: const Icon(Icons.search_rounded),
-              onPressed: () {
-                setState(() {
-                  _showSearchOptions = !_showSearchOptions;
-                });
-              },
-            ),
-        ],
       ),
       body: _isEligible ? _buildMainContent() : _buildEligibilityView(),
     );
@@ -227,146 +235,28 @@ class _BloodDonationScreenState extends State<BloodDonationScreen> {
   }
 
   Widget _buildMainContent() {
-    final filteredCenters = donationCenters.where((center) {
-      if (_searchQuery.isEmpty) return true;
-      final q = _searchQuery.toLowerCase();
-      return center.name.toLowerCase().contains(q) ||
-             center.address.toLowerCase().contains(q);
-    }).toList();
-
     return Column(
       children: [
-        if (_showSearchOptions)
-          _buildSearchSection(),
-        
         Container(
           color: Colors.white,
           padding: const EdgeInsets.all(16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                'Nearby Donation Centers',
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                  color: AppColors.textPrimary,
-                ),
-              ),
-              const SizedBox(height: 12),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12),
-                decoration: BoxDecoration(
-                  color: AppColors.background,
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(
-                    color: AppColors.textSecondary.withOpacity(0.3),
-                  ),
-                ),
-                child: DropdownButtonHideUnderline(
-                  child: DropdownButton<String>(
-                    value: selectedBloodType,
-                    isExpanded: true,
-                    icon: const Icon(Icons.arrow_drop_down_rounded),
-                    items: bloodTypes.map((String type) {
-                      return DropdownMenuItem<String>(
-                        value: type,
-                        child: AutoTranslateText('Blood Type: $type'),
-                      );
-                    }).toList(),
-                    onChanged: (String? newValue) {
-                      setState(() {
-                        selectedBloodType = newValue!;
-                      });
-                    },
-                  ),
-                ),
-              ),
-            ],
-          ),
+          child: MedicalSearchBar(onSearch: _performSearch),
         ),
-        
         Expanded(
           child: _isLoading 
             ? const Center(child: CircularProgressIndicator())
-            : filteredCenters.isEmpty
+            : donationCenters.isEmpty
               ? _buildEmptyState()
               : ListView.builder(
                   padding: const EdgeInsets.all(16),
-                  itemCount: filteredCenters.length,
+                  itemCount: donationCenters.length,
                   itemBuilder: (context, index) {
-                    final center = filteredCenters[index];
+                    final center = donationCenters[index];
                     return _buildDonationCenterCard(center);
                   },
                 ),
         ),
       ],
-    );
-  }
-
-  Widget _buildSearchSection() {
-    return Container(
-      color: Colors.white,
-      padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          TextField(
-            controller: _searchController,
-            decoration: InputDecoration(
-              hintText: 'Search Hospital, Address, Pincode...',
-              prefixIcon: const Icon(Icons.search),
-              filled: true,
-              fillColor: AppColors.background,
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
-                borderSide: BorderSide.none,
-              ),
-              contentPadding: const EdgeInsets.symmetric(vertical: 12),
-            ),
-            onChanged: (value) {
-              setState(() {
-                _searchQuery = value;
-              });
-            },
-          ),
-          const SizedBox(height: 12),
-          SizedBox(
-            width: double.infinity,
-            child: OutlinedButton.icon(
-              onPressed: () {
-                // Mock LLM Search
-                setState(() {
-                  _showSearchOptions = false; 
-                });
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: const AutoTranslateText('AI is searching for the best locations...'),
-                    backgroundColor: AppColors.primary,
-                  ),
-                );
-                // Simulate delay then maybe show a result or just reset
-                Future.delayed(const Duration(seconds: 2), () {
-                   if (mounted) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: const AutoTranslateText('Found optimal locations based on your criteria.'),
-                          backgroundColor: AppColors.success,
-                        ),
-                      );
-                   }
-                });
-              },
-              icon: const Icon(Icons.auto_awesome_rounded, color: Colors.purple),
-              label: const AutoTranslateText('Ask AI to Find Location'),
-              style: OutlinedButton.styleFrom(
-                padding: const EdgeInsets.symmetric(vertical: 12),
-                side: const BorderSide(color: Colors.purple),
-              ),
-            ),
-          ),
-        ],
-      ),
     );
   }
 
@@ -394,15 +284,6 @@ class _BloodDonationScreenState extends State<BloodDonationScreen> {
               style: TextStyle(
                 color: AppColors.textSecondary,
               ),
-            ),
-            const SizedBox(height: 24),
-            ElevatedButton(
-              onPressed: () {
-                setState(() {
-                  _showSearchOptions = true;
-                });
-              },
-              child: const AutoTranslateText('Open Search'),
             ),
           ],
         ),

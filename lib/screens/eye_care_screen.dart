@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../widgets/translated_widget.dart';
 import '../constants/colors.dart';
 import 'eye_care_history_screen.dart';
+import '../services/medical_places_service.dart';
+import '../models/medical_facility_model.dart';
+import '../widgets/medical_search_bar.dart';
 
 class EyeCareScreen extends StatefulWidget {
   const EyeCareScreen({Key? key}) : super(key: key);
@@ -11,105 +15,74 @@ class EyeCareScreen extends StatefulWidget {
 }
 
 class _EyeCareScreenState extends State<EyeCareScreen> {
-  final TextEditingController _searchController = TextEditingController();
-  String searchType = 'Name';
-  final List<String> searchTypes = ['Name', 'Location', 'Pincode'];
-
-  final List<Map<String, dynamic>> allClinics = [
-    {
-      'name': 'Vision Plus Clinic',
-      'doctor': 'Dr. Elena Rossi',
-      'specialty': 'Ophthalmology',
-      'location': 'Prenzlauer Berg, Berlin',
-      'pincode': '10405',
-      'rating': 4.8,
-      'reviews': 195,
-      'distance': '1.5 km',
-      'available': true,
-      'phone': '+49 30 77778888',
-    },
-    {
-      'name': 'Berlin Eye Center',
-      'doctor': 'Dr. Michael Wolf',
-      'specialty': 'Optometry',
-      'location': 'Friedrichshain, Berlin',
-      'pincode': '10243',
-      'rating': 4.6,
-      'reviews': 120,
-      'distance': '3.0 km',
-      'available': true,
-      'phone': '+49 30 99990000',
-    },
-    {
-      'name': 'Advanced Laser Eye Care',
-      'doctor': 'Dr. Sarah Weber',
-      'specialty': 'Refractive Surgery',
-      'location': 'Mitte, Berlin',
-      'pincode': '10119',
-      'rating': 4.9,
-      'reviews': 310,
-      'distance': '2.2 km',
-      'available': false,
-      'phone': '+49 30 22223333',
-    },
-  ];
-
-  List<Map<String, dynamic>> displayedClinics = [];
-  bool isSearchingAI = false;
+  List<MedicalFacility> displayedClinics = [];
+  bool _isLoading = true;
 
   @override
   void initState() {
     super.initState();
-    displayedClinics = List.from(allClinics);
+    _fetchClinics();
   }
 
-  void _filterClinics(String query) {
+  Future<void> _fetchClinics() async {
     setState(() {
-      if (query.isEmpty) {
-        displayedClinics = List.from(allClinics);
-        return;
+      _isLoading = true;
+    });
+    try {
+      final clinics = await context.read<MedicalPlacesService>().fetchFacilities(queryType: 'eye_care');
+      if (mounted) {
+        setState(() {
+          displayedClinics = clinics;
+          _isLoading = false;
+        });
       }
-
-      displayedClinics = allClinics.where((clinic) {
-        String searchTerm = query.toLowerCase();
-        switch (searchType) {
-          case 'Name':
-            return clinic['name'].toLowerCase().contains(searchTerm) ||
-                clinic['doctor'].toLowerCase().contains(searchTerm);
-          case 'Location':
-            return clinic['location'].toLowerCase().contains(searchTerm);
-          case 'Pincode':
-            return clinic['pincode'].contains(searchTerm);
-          default:
-            return false;
-        }
-      }).toList();
-    });
-  }
-
-  Future<void> _performAISearch() async {
-    setState(() {
-      isSearchingAI = true;
-    });
-
-    await Future.delayed(const Duration(seconds: 2));
-
-    if (mounted) {
-      setState(() {
-        isSearchingAI = false;
-        displayedClinics.sort((a, b) => b['rating'].compareTo(a['rating']));
-      });
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: const AutoTranslateText('AI found top-rated eye clinics near you!'),
-          backgroundColor: AppColors.primary,
-        ),
-      );
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error loading clinics: $e')),
+        );
+      }
     }
   }
 
-  void _showCallDialog(Map<String, dynamic> clinic) {
+  Future<void> _performSearch(String query, String type) async {
+    setState(() {
+      _isLoading = true;
+    });
+    try {
+      final clinics = await context.read<MedicalPlacesService>().fetchFacilities(
+            queryType: 'eye_care',
+            searchQuery: query,
+            searchType: type,
+          );
+      if (mounted) {
+        setState(() {
+          displayedClinics = clinics;
+          _isLoading = false;
+        });
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error searching clinics: $e')),
+        );
+      }
+    }
+  }
+
+  void _showCallDialog(MedicalFacility clinic) {
+    if (clinic.phone == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: AutoTranslateText('Phone number not available')),
+      );
+      return;
+    }
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -119,7 +92,7 @@ class _EyeCareScreenState extends State<EyeCareScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              clinic['name'],
+              clinic.name,
               style: const TextStyle(fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 8),
@@ -128,7 +101,7 @@ class _EyeCareScreenState extends State<EyeCareScreen> {
                 const Icon(Icons.phone, color: AppColors.primary, size: 20),
                 const SizedBox(width: 8),
                 SelectableText(
-                  clinic['phone'],
+                  clinic.phone!,
                   style: const TextStyle(fontSize: 16),
                 ),
               ],
@@ -144,7 +117,7 @@ class _EyeCareScreenState extends State<EyeCareScreen> {
             onPressed: () {
               Navigator.pop(context);
               ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: AutoTranslateText('Calling...')),
+                SnackBar(content: AutoTranslateText('Calling ${clinic.phone}...')),
               );
             },
             icon: const Icon(Icons.call),
@@ -183,114 +156,27 @@ class _EyeCareScreenState extends State<EyeCareScreen> {
           Container(
             color: Colors.white,
             padding: const EdgeInsets.all(16),
-            child: Column(
-              children: [
-                Row(
-                  children: [
-                    Expanded(
-                      child: TextField(
-                        controller: _searchController,
-                        decoration: InputDecoration(
-                          hintText: 'Search by $searchType',
-                          prefixIcon: const Icon(Icons.search_rounded),
-                          suffixIcon: _searchController.text.isNotEmpty
-                              ? IconButton(
-                                  icon: const Icon(Icons.clear_rounded),
-                                  onPressed: () {
-                                    _searchController.clear();
-                                    _filterClinics('');
-                                  },
-                                )
-                              : null,
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12),
-                            borderSide: BorderSide(
-                              color: AppColors.textSecondary.withValues(alpha: 0.3),
-                            ),
-                          ),
-                          filled: true,
-                          fillColor: AppColors.background,
-                          contentPadding: const EdgeInsets.symmetric(
-                            horizontal: 16,
-                            vertical: 12,
-                          ),
-                        ),
-                        onChanged: _filterClinics,
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 12),
-                Row(
-                  children: searchTypes.map((type) {
-                    return Expanded(
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 4),
-                        child: ChoiceChip(
-                          label: Center(child: Text(type)),
-                          selected: searchType == type,
-                          onSelected: (selected) {
-                            setState(() {
-                              searchType = type;
-                              if (_searchController.text.isNotEmpty) {
-                                _filterClinics(_searchController.text);
-                              }
-                            });
-                          },
-                          selectedColor: AppColors.primary,
-                          labelStyle: TextStyle(
-                            color: searchType == type
-                                ? Colors.white
-                                : AppColors.textPrimary,
-                            fontSize: 12,
-                          ),
-                        ),
-                      ),
-                    );
-                  }).toList(),
-                ),
-                const SizedBox(height: 8),
-                SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton.icon(
-                    onPressed: isSearchingAI ? null : _performAISearch,
-                    icon: isSearchingAI
-                        ? const SizedBox(
-                            width: 20,
-                            height: 20,
-                            child: CircularProgressIndicator(
-                              strokeWidth: 2,
-                              color: Colors.white,
-                            ),
-                          )
-                        : const Icon(Icons.auto_awesome_rounded),
-                    label: Text(isSearchingAI ? 'Asking AI...' : 'Ask AI to Find Location'),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.deepPurple,
-                      foregroundColor: Colors.white,
-                    ),
-                  ),
-                ),
-              ],
-            ),
+            child: MedicalSearchBar(onSearch: _performSearch),
           ),
           Expanded(
-            child: displayedClinics.isEmpty
-                ? const Center(child: AutoTranslateText('No clinics found.'))
-                : ListView.builder(
-                    padding: const EdgeInsets.all(16),
-                    itemCount: displayedClinics.length,
-                    itemBuilder: (context, index) {
-                      return _buildClinicCard(displayedClinics[index]);
-                    },
-                  ),
+            child: _isLoading
+                ? const Center(child: CircularProgressIndicator())
+                : displayedClinics.isEmpty
+                    ? const Center(child: AutoTranslateText('No clinics found.'))
+                    : ListView.builder(
+                        padding: const EdgeInsets.all(16),
+                        itemCount: displayedClinics.length,
+                        itemBuilder: (context, index) {
+                          return _buildClinicCard(displayedClinics[index]);
+                        },
+                      ),
           ),
         ],
       ),
     );
   }
 
-  Widget _buildClinicCard(Map<String, dynamic> clinic) {
+  Widget _buildClinicCard(MedicalFacility clinic) {
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
       decoration: BoxDecoration(
@@ -317,7 +203,7 @@ class _EyeCareScreenState extends State<EyeCareScreen> {
                     Container(
                       padding: const EdgeInsets.all(12),
                       decoration: BoxDecoration(
-                        color: Colors.orange.withValues(alpha: 0.1),
+                        color: Colors.orange.withOpacity(0.1),
                         borderRadius: BorderRadius.circular(12),
                       ),
                       child: const Icon(
@@ -332,7 +218,7 @@ class _EyeCareScreenState extends State<EyeCareScreen> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            clinic['name'],
+                            clinic.name,
                             style: TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.bold,
@@ -341,7 +227,7 @@ class _EyeCareScreenState extends State<EyeCareScreen> {
                           ),
                           const SizedBox(height: 4),
                           Text(
-                            clinic['doctor'],
+                            'Eye Care Specialist',
                             style: TextStyle(
                               fontSize: 14,
                               color: AppColors.textSecondary,
@@ -350,45 +236,7 @@ class _EyeCareScreenState extends State<EyeCareScreen> {
                         ],
                       ),
                     ),
-                    if (clinic['available'])
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 8,
-                          vertical: 4,
-                        ),
-                        decoration: BoxDecoration(
-                          color: Colors.green.withValues(alpha: 0.1),
-                          borderRadius: BorderRadius.circular(6),
-                        ),
-                        child: const Text(
-                          'Available',
-                          style: TextStyle(
-                            color: Colors.green,
-                            fontSize: 11,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      ),
                   ],
-                ),
-                const SizedBox(height: 12),
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 10,
-                    vertical: 6,
-                  ),
-                  decoration: BoxDecoration(
-                    color: AppColors.primary.withValues(alpha: 0.1),
-                    borderRadius: BorderRadius.circular(6),
-                  ),
-                  child: Text(
-                    clinic['specialty'],
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: AppColors.primary,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
                 ),
                 const SizedBox(height: 12),
                 Row(
@@ -401,7 +249,7 @@ class _EyeCareScreenState extends State<EyeCareScreen> {
                     const SizedBox(width: 4),
                     Expanded(
                       child: Text(
-                        clinic['location'],
+                        clinic.address,
                         style: TextStyle(
                           fontSize: 13,
                           color: AppColors.textSecondary,
@@ -414,54 +262,13 @@ class _EyeCareScreenState extends State<EyeCareScreen> {
                 Row(
                   children: [
                     Icon(
-                      Icons.pin_drop_rounded,
-                      size: 16,
-                      color: AppColors.textSecondary,
-                    ),
-                    const SizedBox(width: 4),
-                    Text(
-                      'Pincode: ${clinic['pincode']}',
-                      style: TextStyle(
-                        fontSize: 13,
-                        color: AppColors.textSecondary,
-                      ),
-                    ),
-                    const Spacer(),
-                    Icon(
                       Icons.directions_rounded,
                       size: 16,
                       color: AppColors.textSecondary,
                     ),
                     const SizedBox(width: 4),
                     Text(
-                      clinic['distance'],
-                      style: TextStyle(
-                        fontSize: 13,
-                        color: AppColors.textSecondary,
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 12),
-                Row(
-                  children: [
-                    Icon(
-                      Icons.star_rounded,
-                      size: 18,
-                      color: Colors.amber,
-                    ),
-                    const SizedBox(width: 4),
-                    Text(
-                      '${clinic['rating']}',
-                      style: TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.bold,
-                        color: AppColors.textPrimary,
-                      ),
-                    ),
-                    const SizedBox(width: 4),
-                    Text(
-                      '(${clinic['reviews']} reviews)',
+                      '${clinic.distance.toStringAsFixed(1)} km',
                       style: TextStyle(
                         fontSize: 13,
                         color: AppColors.textSecondary,
@@ -472,7 +279,7 @@ class _EyeCareScreenState extends State<EyeCareScreen> {
               ],
             ),
           ),
-          Divider(height: 1, color: AppColors.textSecondary.withValues(alpha: 0.2)),
+          Divider(height: 1, color: AppColors.textSecondary.withOpacity(0.2)),
           Padding(
             padding: const EdgeInsets.all(12),
             child: Row(
@@ -494,7 +301,7 @@ class _EyeCareScreenState extends State<EyeCareScreen> {
                     onPressed: () {
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
-                          content: AutoTranslateText('Booking appointment with ${clinic['doctor']}'),
+                          content: AutoTranslateText('Booking appointment with ${clinic.name}'),
                           backgroundColor: AppColors.success,
                         ),
                       );
