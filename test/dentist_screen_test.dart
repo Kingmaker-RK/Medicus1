@@ -7,6 +7,8 @@ import 'package:ai_gris/screens/dentist_history_screen.dart';
 import 'package:ai_gris/services/localization_service.dart';
 import 'package:ai_gris/providers/user_provider.dart';
 import 'package:ai_gris/models/user_model.dart';
+import 'package:ai_gris/services/medical_places_service.dart';
+import 'package:ai_gris/models/medical_facility_model.dart';
 
 // Mock LocalizationService
 class MockLocalizationService implements LocalizationService {
@@ -46,6 +48,12 @@ class MockUserProvider extends ChangeNotifier implements UserProvider {
   bool get isLoggedIn => false;
 
   @override
+  Map<String, int> get serviceUsageCounts => {};
+
+  @override
+  bool get sortServicesByUsage => false;
+
+  @override
   Future<void> changeLanguage(String languageCode) async {
     notifyListeners();
   }
@@ -58,9 +66,19 @@ class MockUserProvider extends ChangeNotifier implements UserProvider {
   @override
   Future<void> logout() async {}
   @override
-  Future<void> signUp({required String email, required String password, required String role, bool rememberMe = false}) async {}
+  Future<void> signUp({
+    required String email,
+    required String password,
+    required String role,
+    required String firstName,
+    required String lastName,
+    required DateTime dateOfBirth,
+    required String gender,
+    bool rememberMe = false,
+  }) async {}
+
   @override
-  void changeRole(String role) {}
+  Future<void> changeRole(String role) async {}
   @override
   Future<void> continueAsGuest(String role) async {}
   @override
@@ -73,16 +91,55 @@ class MockUserProvider extends ChangeNotifier implements UserProvider {
   Future<void> verifyEmail({required String email, required String code}) async {}
   @override
   Future<bool> verifyPasswordResetCode({required String email, required String code}) async => true;
+  @override
+  Future<void> incrementServiceUsage(String serviceRoute) async {}
+  @override
+  Future<void> toggleServiceSorting() async {}
+}
+
+// Mock MedicalPlacesService
+class MockMedicalPlacesService implements MedicalPlacesService {
+  @override
+  Future<List<MedicalFacility>> fetchFacilities({
+    required String queryType,
+    double? lat,
+    double? lon,
+    int radius = 5000,
+  }) async {
+    // Return mock data similar to what the test expects
+    return [
+      MedicalFacility(
+        id: '1',
+        name: 'Dr. Schmidt Dental Clinic',
+        address: 'Friedrichstraße 100, Berlin',
+        distance: 1.2,
+        phone: '+49 30 12345678',
+        latitude: 52.5,
+        longitude: 13.4,
+      ),
+      MedicalFacility(
+        id: '2',
+        name: 'Smile Center Berlin',
+        address: 'Kurfürstendamm 89, Berlin',
+        distance: 2.8,
+        phone: '+49 30 87654321',
+        latitude: 52.51,
+        longitude: 13.41,
+      ),
+    ];
+  }
 }
 
 void main() {
   late MockLocalizationService mockLocalizationService;
   late MockUserProvider mockUserProvider;
+  late MockMedicalPlacesService mockMedicalPlacesService;
 
   setUp(() async {
     SharedPreferences.setMockInitialValues({});
     mockLocalizationService = MockLocalizationService();
     mockUserProvider = MockUserProvider();
+    mockMedicalPlacesService = MockMedicalPlacesService();
   });
 
   Widget createWidgetUnderTest() {
@@ -90,6 +147,7 @@ void main() {
       providers: [
         ChangeNotifierProvider<UserProvider>.value(value: mockUserProvider),
         Provider<LocalizationService>.value(value: mockLocalizationService),
+        Provider<MedicalPlacesService>.value(value: mockMedicalPlacesService),
       ],
       child: MaterialApp(
         home: const DentistScreen(),
@@ -100,7 +158,7 @@ void main() {
   testWidgets('DentistScreen renders with default list', (WidgetTester tester) async {
     await tester.pumpWidget(createWidgetUnderTest());
 
-    // Allow time for any initial builds
+    // Allow time for any initial builds (future builder / init state fetch)
     await tester.pumpAndSettle();
 
     expect(find.text('Find a Dentist'), findsOneWidget);

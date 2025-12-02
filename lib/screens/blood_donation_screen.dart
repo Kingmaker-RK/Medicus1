@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../widgets/translated_widget.dart';
 import '../constants/colors.dart';
+import '../services/medical_places_service.dart';
+import '../models/medical_facility_model.dart';
 
 class BloodDonationScreen extends StatefulWidget {
   const BloodDonationScreen({Key? key}) : super(key: key);
@@ -18,6 +21,7 @@ class _BloodDonationScreenState extends State<BloodDonationScreen> {
   final TextEditingController _searchController = TextEditingController();
   String _searchQuery = '';
   bool _showSearchOptions = false;
+  bool _isLoading = true;
 
   String selectedBloodType = 'All';
   final List<String> bloodTypes = ['All', 'A+', 'A-', 'B+', 'B-', 'O+', 'O-', 'AB+', 'AB-'];
@@ -31,35 +35,36 @@ class _BloodDonationScreenState extends State<BloodDonationScreen> {
     'No recent travel to high-risk malaria areas',
   ];
 
-  final List<Map<String, dynamic>> donationCenters = [
-    {
-      'name': 'City Blood Bank',
-      'address': 'Hauptstraße 123, 10115 Berlin',
-      'distance': '2.3 km',
-      'bloodTypes': ['All'],
-      'hours': 'Mon-Fri: 8:00 - 18:00',
-      'urgentNeed': ['O-', 'AB-'],
-      'phoneNumber': '+49 30 12345678',
-    },
-    {
-      'name': 'University Hospital Blood Center',
-      'address': 'Universitätsplatz 1, 10117 Berlin',
-      'distance': '3.8 km',
-      'bloodTypes': ['All'],
-      'hours': 'Mon-Sun: 7:00 - 20:00',
-      'urgentNeed': ['A-', 'B+'],
-      'phoneNumber': '+49 30 87654321',
-    },
-    {
-      'name': 'Red Cross Donation Center',
-      'address': 'Wilhelmstraße 45, 10963 Berlin',
-      'distance': '5.1 km',
-      'bloodTypes': ['All'],
-      'hours': 'Mon-Sat: 9:00 - 17:00',
-      'urgentNeed': ['O+'],
-      'phoneNumber': '+49 30 11223344',
-    },
-  ];
+  List<MedicalFacility> donationCenters = [];
+
+  @override
+  void initState() {
+    super.initState();
+    // Pre-fetch data or fetch when eligible? Let's pre-fetch to have it ready.
+    _fetchDonationCenters();
+  }
+
+  Future<void> _fetchDonationCenters() async {
+    setState(() {
+      _isLoading = true;
+    });
+    try {
+      final centers = await context.read<MedicalPlacesService>().fetchFacilities(queryType: 'blood_donation');
+      if (mounted) {
+        setState(() {
+          donationCenters = centers;
+          _isLoading = false;
+        });
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+        print('Error loading donation centers: $e');
+      }
+    }
+  }
 
   @override
   void dispose() {
@@ -193,6 +198,9 @@ class _BloodDonationScreenState extends State<BloodDonationScreen> {
                       setState(() {
                         _isEligible = true;
                       });
+                      if (donationCenters.isEmpty && !_isLoading) {
+                         _fetchDonationCenters();
+                      }
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
                           content: const AutoTranslateText('Eligibility confirmed! Finding nearby centers...'),
@@ -219,12 +227,11 @@ class _BloodDonationScreenState extends State<BloodDonationScreen> {
   }
 
   Widget _buildMainContent() {
-    // Filter logic can be added here based on _searchQuery
     final filteredCenters = donationCenters.where((center) {
       if (_searchQuery.isEmpty) return true;
       final q = _searchQuery.toLowerCase();
-      return center['name'].toString().toLowerCase().contains(q) ||
-             center['address'].toString().toLowerCase().contains(q);
+      return center.name.toLowerCase().contains(q) ||
+             center.address.toLowerCase().contains(q);
     }).toList();
 
     return Column(
@@ -280,7 +287,9 @@ class _BloodDonationScreenState extends State<BloodDonationScreen> {
         ),
         
         Expanded(
-          child: filteredCenters.isEmpty
+          child: _isLoading 
+            ? const Center(child: CircularProgressIndicator())
+            : filteredCenters.isEmpty
               ? _buildEmptyState()
               : ListView.builder(
                   padding: const EdgeInsets.all(16),
@@ -401,7 +410,7 @@ class _BloodDonationScreenState extends State<BloodDonationScreen> {
     );
   }
 
-  Widget _buildDonationCenterCard(Map<String, dynamic> center) {
+  Widget _buildDonationCenterCard(MedicalFacility center) {
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
       padding: const EdgeInsets.all(16),
@@ -439,7 +448,7 @@ class _BloodDonationScreenState extends State<BloodDonationScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      center['name'],
+                      center.name,
                       style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
@@ -456,7 +465,7 @@ class _BloodDonationScreenState extends State<BloodDonationScreen> {
                         ),
                         const SizedBox(width: 4),
                         Text(
-                          center['distance'],
+                          '${center.distance.toStringAsFixed(1)} km',
                           style: TextStyle(
                             fontSize: 13,
                             color: AppColors.textSecondary,
@@ -471,53 +480,30 @@ class _BloodDonationScreenState extends State<BloodDonationScreen> {
           ),
           const SizedBox(height: 12),
           Text(
-            center['address'],
+            center.address,
             style: TextStyle(
               fontSize: 13,
               color: AppColors.textSecondary,
             ),
           ),
-          const SizedBox(height: 8),
-          Row(
-            children: [
-              Icon(Icons.access_time_rounded,
-                  size: 14, color: AppColors.textSecondary),
-              const SizedBox(width: 4),
-              Text(
-                center['hours'],
-                style: TextStyle(
-                  fontSize: 13,
-                  color: AppColors.textSecondary,
-                ),
-              ),
-            ],
-          ),
-          if (center['urgentNeed'].isNotEmpty) ...[
-            const SizedBox(height: 12),
-            Container(
-              padding: const EdgeInsets.all(10),
-              decoration: BoxDecoration(
-                color: Colors.red.withOpacity(0.1),
-                borderRadius: BorderRadius.circular(8),
-                border: Border.all(color: Colors.red.withOpacity(0.3)),
-              ),
-              child: Row(
-                children: [
-                  const Icon(Icons.warning_amber_rounded,
-                      color: Colors.red, size: 20),
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: Text(
-                      'Urgent need: ${center['urgentNeed'].join(', ')}',
-                      style: const TextStyle(
-                        fontSize: 13,
-                        color: Colors.red,
-                        fontWeight: FontWeight.w600,
-                      ),
+          if (center.openingHours != null) ...[
+            const SizedBox(height: 8),
+            Row(
+              children: [
+                Icon(Icons.access_time_rounded,
+                    size: 14, color: AppColors.textSecondary),
+                const SizedBox(width: 4),
+                Expanded(
+                  child: Text(
+                    center.openingHours!,
+                    style: TextStyle(
+                      fontSize: 13,
+                      color: AppColors.textSecondary,
                     ),
+                    overflow: TextOverflow.ellipsis,
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
           ],
           const SizedBox(height: 12),
@@ -526,11 +512,12 @@ class _BloodDonationScreenState extends State<BloodDonationScreen> {
               Expanded(
                 child: OutlinedButton.icon(
                   onPressed: () {
+                     if (center.phone == null) return;
                      showDialog(
                         context: context,
                         builder: (context) => AlertDialog(
                           title: const AutoTranslateText('Call Donation Center'),
-                          content: Text('Phone: ${center['phoneNumber']}'),
+                          content: Text('Phone: ${center.phone}'),
                           actions: [
                             TextButton(
                               onPressed: () => Navigator.pop(context),
@@ -540,7 +527,7 @@ class _BloodDonationScreenState extends State<BloodDonationScreen> {
                               onPressed: () {
                                 Navigator.pop(context);
                                 ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(content: Text('Calling ${center['phoneNumber']}...')),
+                                  SnackBar(content: Text('Calling ${center.phone}...')),
                                 );
                               },
                               child: const AutoTranslateText('Call'),
@@ -563,7 +550,7 @@ class _BloodDonationScreenState extends State<BloodDonationScreen> {
                   onPressed: () {
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
-                        content: AutoTranslateText('Booking appointment at ${center['name']}'),
+                        content: AutoTranslateText('Booking appointment at ${center.name}'),
                         backgroundColor: AppColors.success,
                       ),
                     );

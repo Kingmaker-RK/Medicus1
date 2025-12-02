@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../widgets/translated_widget.dart';
 import '../constants/colors.dart';
 import 'dentist_history_screen.dart';
+import '../services/medical_places_service.dart';
+import '../models/medical_facility_model.dart';
 
 class DentistScreen extends StatefulWidget {
   const DentistScreen({Key? key}) : super(key: key);
@@ -13,66 +16,42 @@ class DentistScreen extends StatefulWidget {
 class _DentistScreenState extends State<DentistScreen> {
   final TextEditingController _searchController = TextEditingController();
   String searchType = 'Name';
-  final List<String> searchTypes = ['Name', 'Location', 'Pincode'];
+  final List<String> searchTypes = ['Name', 'Location', 'Address'];
 
-  final List<Map<String, dynamic>> allDentists = [
-    {
-      'name': 'Dr. Schmidt Dental Clinic',
-      'dentist': 'Dr. Maria Schmidt',
-      'specialty': 'General Dentistry',
-      'location': 'Friedrichstraße 100, Berlin',
-      'pincode': '10117',
-      'rating': 4.8,
-      'reviews': 156,
-      'distance': '1.2 km',
-      'available': true,
-      'phone': '+49 30 12345678',
-    },
-    {
-      'name': 'Smile Center Berlin',
-      'dentist': 'Dr. Thomas Weber',
-      'specialty': 'Orthodontics',
-      'location': 'Kurfürstendamm 89, Berlin',
-      'pincode': '10709',
-      'rating': 4.9,
-      'reviews': 203,
-      'distance': '2.8 km',
-      'available': true,
-      'phone': '+49 30 87654321',
-    },
-    {
-      'name': 'Family Dental Care',
-      'dentist': 'Dr. Anna Müller',
-      'specialty': 'Pediatric Dentistry',
-      'location': 'Alexanderplatz 5, Berlin',
-      'pincode': '10178',
-      'rating': 4.7,
-      'reviews': 98,
-      'distance': '3.5 km',
-      'available': false,
-      'phone': '+49 30 11223344',
-    },
-    {
-      'name': 'Advanced Dental Studio',
-      'dentist': 'Dr. Peter Klein',
-      'specialty': 'Cosmetic Dentistry',
-      'location': 'Unter den Linden 42, Berlin',
-      'pincode': '10117',
-      'rating': 4.9,
-      'reviews': 187,
-      'distance': '1.8 km',
-      'available': true,
-      'phone': '+49 30 55667788',
-    },
-  ];
-
-  List<Map<String, dynamic>> displayedDentists = [];
+  List<MedicalFacility> allDentists = [];
+  List<MedicalFacility> displayedDentists = [];
   bool isSearchingAI = false;
+  bool _isLoading = true;
 
   @override
   void initState() {
     super.initState();
-    displayedDentists = List.from(allDentists);
+    _fetchDentists();
+  }
+
+  Future<void> _fetchDentists() async {
+    setState(() {
+      _isLoading = true;
+    });
+    try {
+      final dentists = await context.read<MedicalPlacesService>().fetchFacilities(queryType: 'dentist');
+      if (mounted) {
+        setState(() {
+          allDentists = dentists;
+          displayedDentists = dentists;
+          _isLoading = false;
+        });
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error loading dentists: $e')),
+        );
+      }
+    }
   }
 
   void _filterDentists(String query) {
@@ -86,12 +65,10 @@ class _DentistScreenState extends State<DentistScreen> {
         String searchTerm = query.toLowerCase();
         switch (searchType) {
           case 'Name':
-            return dentist['name'].toLowerCase().contains(searchTerm) ||
-                dentist['dentist'].toLowerCase().contains(searchTerm);
+            return dentist.name.toLowerCase().contains(searchTerm);
           case 'Location':
-            return dentist['location'].toLowerCase().contains(searchTerm);
-          case 'Pincode':
-            return dentist['pincode'].contains(searchTerm);
+          case 'Address':
+            return dentist.address.toLowerCase().contains(searchTerm);
           default:
             return false;
         }
@@ -110,21 +87,27 @@ class _DentistScreenState extends State<DentistScreen> {
     if (mounted) {
       setState(() {
         isSearchingAI = false;
-        // In a real app, this would fetch new data.
-        // For now, we'll just sort by rating to simulate "smart" suggestions
-        displayedDentists.sort((a, b) => b['rating'].compareTo(a['rating']));
+        // In a real app, this would fetch new data based on AI analysis.
+        // For now, we'll just sort by distance to simulate relevance
+        displayedDentists.sort((a, b) => a.distance.compareTo(b.distance));
       });
 
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: const AutoTranslateText('AI found top-rated dentists near you!'),
+          content: const AutoTranslateText('AI found nearest dentists!'),
           backgroundColor: AppColors.primary,
         ),
       );
     }
   }
 
-  void _showCallDialog(Map<String, dynamic> dentist) {
+  void _showCallDialog(MedicalFacility dentist) {
+    if (dentist.phone == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: AutoTranslateText('Phone number not available')),
+      );
+      return;
+    }
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -134,7 +117,7 @@ class _DentistScreenState extends State<DentistScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              dentist['name'],
+              dentist.name,
               style: const TextStyle(fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 8),
@@ -143,7 +126,7 @@ class _DentistScreenState extends State<DentistScreen> {
                 const Icon(Icons.phone, color: AppColors.primary, size: 20),
                 const SizedBox(width: 8),
                 SelectableText(
-                  dentist['phone'],
+                  dentist.phone!,
                   style: const TextStyle(fontSize: 16),
                 ),
               ],
@@ -159,7 +142,7 @@ class _DentistScreenState extends State<DentistScreen> {
             onPressed: () {
               Navigator.pop(context);
               ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: AutoTranslateText('Calling...')),
+                SnackBar(content: AutoTranslateText('Calling ${dentist.phone}...')),
               );
             },
             icon: const Icon(Icons.call),
@@ -291,22 +274,24 @@ class _DentistScreenState extends State<DentistScreen> {
             ),
           ),
           Expanded(
-            child: displayedDentists.isEmpty
-                ? const Center(child: AutoTranslateText('No dentists found.'))
-                : ListView.builder(
-                    padding: const EdgeInsets.all(16),
-                    itemCount: displayedDentists.length,
-                    itemBuilder: (context, index) {
-                      return _buildDentistCard(displayedDentists[index]);
-                    },
-                  ),
+            child: _isLoading 
+                ? const Center(child: CircularProgressIndicator())
+                : displayedDentists.isEmpty
+                    ? const Center(child: AutoTranslateText('No dentists found.'))
+                    : ListView.builder(
+                        padding: const EdgeInsets.all(16),
+                        itemCount: displayedDentists.length,
+                        itemBuilder: (context, index) {
+                          return _buildDentistCard(displayedDentists[index]);
+                        },
+                      ),
           ),
         ],
       ),
     );
   }
 
-  Widget _buildDentistCard(Map<String, dynamic> dentist) {
+  Widget _buildDentistCard(MedicalFacility dentist) {
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
       decoration: BoxDecoration(
@@ -348,7 +333,7 @@ class _DentistScreenState extends State<DentistScreen> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            dentist['name'],
+                            dentist.name,
                             style: TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.bold,
@@ -357,7 +342,7 @@ class _DentistScreenState extends State<DentistScreen> {
                           ),
                           const SizedBox(height: 4),
                           Text(
-                            dentist['dentist'],
+                            'Dentist',
                             style: TextStyle(
                               fontSize: 14,
                               color: AppColors.textSecondary,
@@ -366,25 +351,24 @@ class _DentistScreenState extends State<DentistScreen> {
                         ],
                       ),
                     ),
-                    if (dentist['available'])
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 8,
-                          vertical: 4,
-                        ),
-                        decoration: BoxDecoration(
-                          color: Colors.green.withValues(alpha: 0.1),
-                          borderRadius: BorderRadius.circular(6),
-                        ),
-                        child: const Text(
-                          'Available',
-                          style: TextStyle(
-                            color: Colors.green,
-                            fontSize: 11,
-                            fontWeight: FontWeight.w600,
-                          ),
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 8,
+                        vertical: 4,
+                      ),
+                      decoration: BoxDecoration(
+                        color: Colors.green.withValues(alpha: 0.1),
+                        borderRadius: BorderRadius.circular(6),
+                      ),
+                      child: const Text(
+                        'Open', // Simplified for now, real open check requires parsing hours
+                        style: TextStyle(
+                          color: Colors.green,
+                          fontSize: 11,
+                          fontWeight: FontWeight.w600,
                         ),
                       ),
+                    ),
                   ],
                 ),
                 const SizedBox(height: 12),
@@ -398,7 +382,7 @@ class _DentistScreenState extends State<DentistScreen> {
                     borderRadius: BorderRadius.circular(6),
                   ),
                   child: Text(
-                    dentist['specialty'],
+                    'General Dentistry', // Generic for now
                     style: TextStyle(
                       fontSize: 12,
                       color: AppColors.primary,
@@ -417,7 +401,7 @@ class _DentistScreenState extends State<DentistScreen> {
                     const SizedBox(width: 4),
                     Expanded(
                       child: Text(
-                        dentist['location'],
+                        dentist.address,
                         style: TextStyle(
                           fontSize: 13,
                           color: AppColors.textSecondary,
@@ -430,54 +414,13 @@ class _DentistScreenState extends State<DentistScreen> {
                 Row(
                   children: [
                     Icon(
-                      Icons.pin_drop_rounded,
-                      size: 16,
-                      color: AppColors.textSecondary,
-                    ),
-                    const SizedBox(width: 4),
-                    Text(
-                      'Pincode: ${dentist['pincode']}',
-                      style: TextStyle(
-                        fontSize: 13,
-                        color: AppColors.textSecondary,
-                      ),
-                    ),
-                    const Spacer(),
-                    Icon(
                       Icons.directions_rounded,
                       size: 16,
                       color: AppColors.textSecondary,
                     ),
                     const SizedBox(width: 4),
                     Text(
-                      dentist['distance'],
-                      style: TextStyle(
-                        fontSize: 13,
-                        color: AppColors.textSecondary,
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 12),
-                Row(
-                  children: [
-                    Icon(
-                      Icons.star_rounded,
-                      size: 18,
-                      color: Colors.amber,
-                    ),
-                    const SizedBox(width: 4),
-                    Text(
-                      '${dentist['rating']}',
-                      style: TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.bold,
-                        color: AppColors.textPrimary,
-                      ),
-                    ),
-                    const SizedBox(width: 4),
-                    Text(
-                      '(${dentist['reviews']} reviews)',
+                      '${dentist.distance.toStringAsFixed(1)} km',
                       style: TextStyle(
                         fontSize: 13,
                         color: AppColors.textSecondary,
@@ -510,7 +453,7 @@ class _DentistScreenState extends State<DentistScreen> {
                     onPressed: () {
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
-                          content: AutoTranslateText('Booking appointment with ${dentist['dentist']}'),
+                          content: AutoTranslateText('Booking appointment with ${dentist.name}'),
                           backgroundColor: AppColors.success,
                         ),
                       );

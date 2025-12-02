@@ -3,6 +3,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:ai_gris/screens/blood_donation_screen.dart';
 import 'package:provider/provider.dart';
 import 'package:ai_gris/providers/user_provider.dart';
+import 'package:ai_gris/services/medical_places_service.dart';
+import 'package:ai_gris/models/medical_facility_model.dart';
 
 // Mock UserProvider
 class MockUserProvider extends ChangeNotifier implements UserProvider {
@@ -13,16 +15,55 @@ class MockUserProvider extends ChangeNotifier implements UserProvider {
   dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
 }
 
+// Mock MedicalPlacesService
+class MockMedicalPlacesService implements MedicalPlacesService {
+  @override
+  Future<List<MedicalFacility>> fetchFacilities({
+    required String queryType,
+    double? lat,
+    double? lon,
+    int radius = 5000,
+  }) async {
+    return [
+      MedicalFacility(
+        id: '1',
+        name: 'City Blood Bank',
+        address: 'Hauptstraße 123, 10115 Berlin',
+        distance: 2.3,
+        phone: '+49 30 12345678',
+        latitude: 52.5,
+        longitude: 13.4,
+        openingHours: 'Mon-Fri: 8:00 - 18:00',
+      ),
+      MedicalFacility(
+        id: '2',
+        name: 'University Hospital Blood Center',
+        address: 'Universitätsplatz 1, 10117 Berlin',
+        distance: 3.8,
+        phone: '+49 30 87654321',
+        latitude: 52.51,
+        longitude: 13.41,
+        openingHours: 'Mon-Sun: 7:00 - 20:00',
+      ),
+    ];
+  }
+}
+
 void main() {
   late MockUserProvider mockUserProvider;
+  late MockMedicalPlacesService mockMedicalPlacesService;
 
   setUp(() {
     mockUserProvider = MockUserProvider();
+    mockMedicalPlacesService = MockMedicalPlacesService();
   });
 
   Widget createWidgetUnderTest() {
-    return ChangeNotifierProvider<UserProvider>.value(
-      value: mockUserProvider,
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider<UserProvider>.value(value: mockUserProvider),
+        Provider<MedicalPlacesService>.value(value: mockMedicalPlacesService),
+      ],
       child: const MaterialApp(
         home: BloodDonationScreen(),
       ),

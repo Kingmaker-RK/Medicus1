@@ -11,6 +11,7 @@ import 'providers/patient_profile_provider.dart';
 import 'providers/doctor_profile_provider.dart';
 import 'providers/report_generation_provider.dart';
 import 'providers/health_provider.dart';
+import 'services/medical_places_service.dart';
 import 'constants/colors.dart';
 import 'constants/app_constants.dart';
 import 'firebase_options.dart';
@@ -62,6 +63,7 @@ class AiGrisApp extends StatelessWidget {
         ChangeNotifierProvider(
           create: (_) => ReportGenerationProvider(),
         ),
+        Provider(create: (_) => MedicalPlacesService()),
       ],
       child: Consumer<UserProvider>(
         builder: (context, userProvider, child) {
