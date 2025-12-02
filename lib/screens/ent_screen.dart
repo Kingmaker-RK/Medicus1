@@ -15,65 +15,33 @@ class ENTScreen extends StatefulWidget {
 }
 
 class _ENTScreenState extends State<ENTScreen> {
-  List<MedicalFacility> displayedENTs = [];
-  bool _isLoading = true;
+  late Future<List<MedicalFacility>> _entsFuture;
 
   @override
   void initState() {
     super.initState();
-    _fetchENTs();
+    _entsFuture = _fetchENTs();
   }
 
-  Future<void> _fetchENTs() async {
-    setState(() {
-      _isLoading = true;
-    });
+  Future<List<MedicalFacility>> _fetchENTs() async {
     try {
-      final ents = await context.read<MedicalPlacesService>().fetchFacilities(queryType: 'ent');
-      if (mounted) {
-        setState(() {
-          displayedENTs = ents;
-          _isLoading = false;
-        });
-      }
+      return await context.read<MedicalPlacesService>().fetchFacilities(queryType: 'ent');
     } catch (e) {
-      if (mounted) {
-        setState(() {
-          _isLoading = false;
-        });
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error loading ENT specialists: $e')),
-        );
-      }
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error loading ENT specialists: $e')),
+      );
+      return [];
     }
   }
 
-  Future<void> _performSearch(String query, String type) async {
+  void _performSearch(String query, String type) {
     setState(() {
-      _isLoading = true;
-    });
-    try {
-      final ents = await context.read<MedicalPlacesService>().fetchFacilities(
+      _entsFuture = context.read<MedicalPlacesService>().fetchFacilities(
             queryType: 'ent',
             searchQuery: query,
             searchType: type,
           );
-      if (mounted) {
-        setState(() {
-          displayedENTs = ents;
-          _isLoading = false;
-        });
-      }
-    } catch (e) {
-      if (mounted) {
-        setState(() {
-          _isLoading = false;
-        });
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error searching ENT specialists: $e')),
-        );
-      }
-    }
+    });
   }
 
   void _showCallDialog(MedicalFacility ent) {
@@ -159,17 +127,27 @@ class _ENTScreenState extends State<ENTScreen> {
             child: MedicalSearchBar(onSearch: _performSearch),
           ),
           Expanded(
-            child: _isLoading
-                ? const Center(child: CircularProgressIndicator())
-                : displayedENTs.isEmpty
-                    ? const Center(child: AutoTranslateText('No ENT specialists found.'))
-                    : ListView.builder(
-                        padding: const EdgeInsets.all(16),
-                        itemCount: displayedENTs.length,
-                        itemBuilder: (context, index) {
-                          return _buildENTCard(displayedENTs[index]);
-                        },
-                      ),
+            child: FutureBuilder<List<MedicalFacility>>(
+              future: _entsFuture,
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const Center(child: CircularProgressIndicator());
+                } else if (snapshot.hasError) {
+                  return Center(child: Text('Error: ${snapshot.error}'));
+                } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                  return const Center(child: AutoTranslateText('No ENT specialists found.'));
+                } else {
+                  final ents = snapshot.data!;
+                  return ListView.builder(
+                    padding: const EdgeInsets.all(16),
+                    itemCount: ents.length,
+                    itemBuilder: (context, index) {
+                      return _buildENTCard(ents[index]);
+                    },
+                  );
+                }
+              },
+            ),
           ),
         ],
       ),

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:mockito/mockito.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:ai_gris/screens/podiatry_screen.dart';
@@ -8,6 +9,8 @@ import 'package:ai_gris/providers/user_provider.dart';
 import 'package:ai_gris/models/user_model.dart';
 import 'package:ai_gris/services/medical_places_service.dart';
 import 'package:ai_gris/models/medical_facility_model.dart';
+
+class MockMedicalPlacesService extends Mock implements MedicalPlacesService {}
 
 // Mock LocalizationService
 class MockLocalizationService implements LocalizationService {
@@ -98,54 +101,31 @@ class MockUserProvider extends ChangeNotifier implements UserProvider {
   Future<String> getAILocationSuggestion() async => 'Munich';
 }
 
-// Mock MedicalPlacesService
-class MockMedicalPlacesService implements MedicalPlacesService {
-  @override
-  Future<List<MedicalFacility>> fetchFacilities({
-    required String queryType,
-    double? lat,
-    double? lon,
-    int radius = 5000,
-    String? searchQuery,
-    String? searchType,
-  }) async {
-    // Return mock data similar to what the test expects
-    final mockData = [
-      MedicalFacility(
-        id: '1',
-        name: 'City Foot Care Center',
-        address: '123 Walk Ave, Downtown',
-        distance: 1.2,
-        phone: '+1234567890',
-        latitude: 52.5,
-        longitude: 13.4,
-      ),
-      MedicalFacility(
-        id: '2',
-        name: 'General Hospital - Podiatry Dept',
-        address: '456 Health Blvd, Westside',
-        distance: 3.5,
-        phone: '+1987654321',
-        latitude: 52.51,
-        longitude: 13.41,
-      ),
-    ];
-
-    if (searchQuery != null && searchQuery.isNotEmpty) {
-      if (searchType == 'name') {
-        return mockData
-            .where((f) => f.name.toLowerCase().contains(searchQuery.toLowerCase()))
-            .toList();
-      }
-    }
-    return mockData;
-  }
-}
-
 void main() {
   late MockLocalizationService mockLocalizationService;
   late MockUserProvider mockUserProvider;
   late MockMedicalPlacesService mockMedicalPlacesService;
+
+  final mockData = [
+    MedicalFacility(
+      id: '1',
+      name: 'City Foot Care Center',
+      address: '123 Walk Ave, Downtown',
+      distance: 1.2,
+      phone: '+1234567890',
+      latitude: 52.5,
+      longitude: 13.4,
+    ),
+    MedicalFacility(
+      id: '2',
+      name: 'General Hospital - Podiatry Dept',
+      address: '456 Health Blvd, Westside',
+      distance: 3.5,
+      phone: '+1987654321',
+      latitude: 52.51,
+      longitude: 13.41,
+    ),
+  ];
 
   setUp(() async {
     SharedPreferences.setMockInitialValues({});
@@ -168,6 +148,8 @@ void main() {
   }
 
   testWidgets('PodiatryScreen renders with default list', (WidgetTester tester) async {
+    when(mockMedicalPlacesService.fetchFacilities(queryType: 'podiatry')).thenAnswer((_) async => mockData);
+
     await tester.pumpWidget(createWidgetUnderTest());
 
     // Allow time for any initial builds (future builder / init state fetch)
@@ -179,6 +161,8 @@ void main() {
   });
 
   testWidgets('Search functionality filters the list', (WidgetTester tester) async {
+    when(mockMedicalPlacesService.fetchFacilities(queryType: 'podiatry', searchQuery: 'Hospital', searchType: 'name')).thenAnswer((_) async => [mockData[1]]);
+
     await tester.pumpWidget(createWidgetUnderTest());
     await tester.pumpAndSettle();
 
@@ -193,6 +177,8 @@ void main() {
   });
 
   testWidgets('Call button shows dialog with phone number', (WidgetTester tester) async {
+    when(mockMedicalPlacesService.fetchFacilities(queryType: 'podiatry')).thenAnswer((_) async => mockData);
+
     await tester.pumpWidget(createWidgetUnderTest());
     await tester.pumpAndSettle();
 

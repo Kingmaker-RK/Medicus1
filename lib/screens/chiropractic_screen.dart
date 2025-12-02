@@ -15,65 +15,33 @@ class ChiropracticScreen extends StatefulWidget {
 }
 
 class _ChiropracticScreenState extends State<ChiropracticScreen> {
-  List<MedicalFacility> displayedClinics = [];
-  bool _isLoading = true;
+  late Future<List<MedicalFacility>> _clinicsFuture;
 
   @override
   void initState() {
     super.initState();
-    _fetchClinics();
+    _clinicsFuture = _fetchClinics();
   }
 
-  Future<void> _fetchClinics() async {
-    setState(() {
-      _isLoading = true;
-    });
+  Future<List<MedicalFacility>> _fetchClinics() async {
     try {
-      final clinics = await context.read<MedicalPlacesService>().fetchFacilities(queryType: 'chiropractor');
-      if (mounted) {
-        setState(() {
-          displayedClinics = clinics;
-          _isLoading = false;
-        });
-      }
+      return await context.read<MedicalPlacesService>().fetchFacilities(queryType: 'chiropractor');
     } catch (e) {
-      if (mounted) {
-        setState(() {
-          _isLoading = false;
-        });
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error loading clinics: $e')),
-        );
-      }
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error loading clinics: $e')),
+      );
+      return [];
     }
   }
 
-  Future<void> _performSearch(String query, String type) async {
+  void _performSearch(String query, String type) {
     setState(() {
-      _isLoading = true;
-    });
-    try {
-      final clinics = await context.read<MedicalPlacesService>().fetchFacilities(
+      _clinicsFuture = context.read<MedicalPlacesService>().fetchFacilities(
             queryType: 'chiropractor',
             searchQuery: query,
             searchType: type,
           );
-      if (mounted) {
-        setState(() {
-          displayedClinics = clinics;
-          _isLoading = false;
-        });
-      }
-    } catch (e) {
-      if (mounted) {
-        setState(() {
-          _isLoading = false;
-        });
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error searching clinics: $e')),
-        );
-      }
-    }
+    });
   }
 
   void _showCallDialog(MedicalFacility clinic) {
@@ -159,17 +127,27 @@ class _ChiropracticScreenState extends State<ChiropracticScreen> {
             child: MedicalSearchBar(onSearch: _performSearch),
           ),
           Expanded(
-            child: _isLoading
-                ? const Center(child: CircularProgressIndicator())
-                : displayedClinics.isEmpty
-                    ? const Center(child: AutoTranslateText('No clinics found.'))
-                    : ListView.builder(
-                        padding: const EdgeInsets.all(16),
-                        itemCount: displayedClinics.length,
-                        itemBuilder: (context, index) {
-                          return _buildClinicCard(displayedClinics[index]);
-                        },
-                      ),
+            child: FutureBuilder<List<MedicalFacility>>(
+              future: _clinicsFuture,
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const Center(child: CircularProgressIndicator());
+                } else if (snapshot.hasError) {
+                  return Center(child: Text('Error: ${snapshot.error}'));
+                } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                  return const Center(child: AutoTranslateText('No clinics found.'));
+                } else {
+                  final clinics = snapshot.data!;
+                  return ListView.builder(
+                    padding: const EdgeInsets.all(16),
+                    itemCount: clinics.length,
+                    itemBuilder: (context, index) {
+                      return _buildClinicCard(clinics[index]);
+                    },
+                  );
+                }
+              },
+            ),
           ),
         ],
       ),

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:mockito/mockito.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:ai_gris/screens/eye_care_screen.dart';
@@ -9,6 +10,8 @@ import 'package:ai_gris/providers/user_provider.dart';
 import 'package:ai_gris/models/user_model.dart';
 import 'package:ai_gris/services/medical_places_service.dart';
 import 'package:ai_gris/models/medical_facility_model.dart';
+
+class MockMedicalPlacesService extends Mock implements MedicalPlacesService {}
 
 // Mock LocalizationService
 class MockLocalizationService implements LocalizationService {
@@ -99,54 +102,31 @@ class MockUserProvider extends ChangeNotifier implements UserProvider {
   Future<String> getAILocationSuggestion() async => 'Munich';
 }
 
-// Mock MedicalPlacesService
-class MockMedicalPlacesService implements MedicalPlacesService {
-  @override
-  Future<List<MedicalFacility>> fetchFacilities({
-    required String queryType,
-    double? lat,
-    double? lon,
-    int radius = 5000,
-    String? searchQuery,
-    String? searchType,
-  }) async {
-    // Return mock data similar to what the test expects
-    final mockData = [
-      MedicalFacility(
-        id: '1',
-        name: 'Vision Plus Clinic',
-        address: 'Prenzlauer Berg, Berlin',
-        distance: 1.5,
-        phone: '+49 30 77778888',
-        latitude: 52.5,
-        longitude: 13.4,
-      ),
-      MedicalFacility(
-        id: '2',
-        name: 'Berlin Eye Center',
-        address: 'Friedrichshain, Berlin',
-        distance: 3.0,
-        phone: '+49 30 99990000',
-        latitude: 52.51,
-        longitude: 13.41,
-      ),
-    ];
-
-    if (searchQuery != null && searchQuery.isNotEmpty) {
-      if (searchType == 'name') {
-        return mockData
-            .where((f) => f.name.toLowerCase().contains(searchQuery.toLowerCase()))
-            .toList();
-      }
-    }
-    return mockData;
-  }
-}
-
 void main() {
   late MockLocalizationService mockLocalizationService;
   late MockUserProvider mockUserProvider;
   late MockMedicalPlacesService mockMedicalPlacesService;
+
+  final mockData = [
+    MedicalFacility(
+      id: '1',
+      name: 'Vision Plus Clinic',
+      address: 'Prenzlauer Berg, Berlin',
+      distance: 1.5,
+      phone: '+49 30 77778888',
+      latitude: 52.5,
+      longitude: 13.4,
+    ),
+    MedicalFacility(
+      id: '2',
+      name: 'Berlin Eye Center',
+      address: 'Friedrichshain, Berlin',
+      distance: 3.0,
+      phone: '+49 30 99990000',
+      latitude: 52.51,
+      longitude: 13.41,
+    ),
+  ];
 
   setUp(() async {
     SharedPreferences.setMockInitialValues({});
@@ -169,6 +149,8 @@ void main() {
   }
 
   testWidgets('EyeCareScreen renders with default list', (WidgetTester tester) async {
+    when(mockMedicalPlacesService.fetchFacilities(queryType: 'eye_care')).thenAnswer((_) async => mockData);
+
     await tester.pumpWidget(createWidgetUnderTest());
 
     // Allow time for any initial builds (future builder / init state fetch)
@@ -180,6 +162,8 @@ void main() {
   });
 
   testWidgets('Search functionality filters the list', (WidgetTester tester) async {
+    when(mockMedicalPlacesService.fetchFacilities(queryType: 'eye_care', searchQuery: 'Berlin', searchType: 'name')).thenAnswer((_) async => [mockData[1]]);
+
     await tester.pumpWidget(createWidgetUnderTest());
     await tester.pumpAndSettle();
 
@@ -194,6 +178,8 @@ void main() {
   });
 
   testWidgets('Call button shows dialog with phone number', (WidgetTester tester) async {
+    when(mockMedicalPlacesService.fetchFacilities(queryType: 'eye_care')).thenAnswer((_) async => mockData);
+
     await tester.pumpWidget(createWidgetUnderTest());
     await tester.pumpAndSettle();
 
@@ -209,6 +195,8 @@ void main() {
   });
 
   testWidgets('Navigate to History Screen', (WidgetTester tester) async {
+    when(mockMedicalPlacesService.fetchFacilities(queryType: 'eye_care')).thenAnswer((_) async => mockData);
+
     await tester.pumpWidget(createWidgetUnderTest());
     await tester.pumpAndSettle();
 

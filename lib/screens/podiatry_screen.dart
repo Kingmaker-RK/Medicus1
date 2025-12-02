@@ -20,14 +20,13 @@ class PodiatryScreen extends StatefulWidget {
 class _PodiatryScreenState extends State<PodiatryScreen> with SingleTickerProviderStateMixin {
   late TabController _tabController;
   final List<PodiatryRecord> _records = [];
-  List<MedicalFacility> _centers = [];
-  bool _isLoading = true;
+  late Future<List<MedicalFacility>> _centersFuture;
 
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
-    _fetchCenters();
+    _centersFuture = _fetchCenters();
   }
 
   @override
@@ -36,56 +35,25 @@ class _PodiatryScreenState extends State<PodiatryScreen> with SingleTickerProvid
     super.dispose();
   }
 
-  Future<void> _fetchCenters() async {
-    setState(() {
-      _isLoading = true;
-    });
+  Future<List<MedicalFacility>> _fetchCenters() async {
     try {
-      final centers = await context.read<MedicalPlacesService>().fetchFacilities(queryType: 'podiatry');
-      if (mounted) {
-        setState(() {
-          _centers = centers;
-          _isLoading = false;
-        });
-      }
+      return await context.read<MedicalPlacesService>().fetchFacilities(queryType: 'podiatry');
     } catch (e) {
-      if (mounted) {
-        setState(() {
-          _isLoading = false;
-        });
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error loading centers: $e')),
-        );
-      }
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error loading centers: $e')),
+      );
+      return [];
     }
   }
 
-  Future<void> _performSearch(String query, String type) async {
+  void _performSearch(String query, String type) {
     setState(() {
-      _isLoading = true;
-    });
-    try {
-      final centers = await context.read<MedicalPlacesService>().fetchFacilities(
+      _centersFuture = context.read<MedicalPlacesService>().fetchFacilities(
             queryType: 'podiatry',
             searchQuery: query,
             searchType: type,
           );
-      if (mounted) {
-        setState(() {
-          _centers = centers;
-          _isLoading = false;
-        });
-      }
-    } catch (e) {
-      if (mounted) {
-        setState(() {
-          _isLoading = false;
-        });
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error searching centers: $e')),
-        );
-      }
-    }
+    });
   }
 
   void _callCenter(MedicalFacility center) {
@@ -245,120 +213,130 @@ class _PodiatryScreenState extends State<PodiatryScreen> with SingleTickerProvid
           child: MedicalSearchBar(onSearch: _performSearch),
         ),
         Expanded(
-          child: _isLoading
-              ? const Center(child: CircularProgressIndicator())
-              : _centers.isEmpty
-                  ? const Center(child: AutoTranslateText('No centers found.'))
-                  : ListView.builder(
-            padding: const EdgeInsets.all(16),
-            itemCount: _centers.length,
-            itemBuilder: (context, index) {
-              final center = _centers[index];
-              return Card(
-                margin: const EdgeInsets.only(bottom: 16),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                child: Padding(
+          child: FutureBuilder<List<MedicalFacility>>(
+            future: _centersFuture,
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return const Center(child: CircularProgressIndicator());
+              } else if (snapshot.hasError) {
+                return Center(child: Text('Error: ${snapshot.error}'));
+              } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                return const Center(child: AutoTranslateText('No centers found.'));
+              } else {
+                final centers = snapshot.data!;
+                return ListView.builder(
                   padding: const EdgeInsets.all(16),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Expanded(
-                            child: Column(
+                  itemCount: centers.length,
+                  itemBuilder: (context, index) {
+                    final center = centers[index];
+                    return Card(
+                      margin: const EdgeInsets.only(bottom: 16),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                      child: Padding(
+                        padding: const EdgeInsets.all(16),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text(
-                                  center.name,
-                                  style: const TextStyle(
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.bold,
-                                    color: AppColors.textPrimary,
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        center.name,
+                                        style: const TextStyle(
+                                          fontSize: 18,
+                                          fontWeight: FontWeight.bold,
+                                          color: AppColors.textPrimary,
+                                        ),
+                                      ),
+                                      const SizedBox(height: 4),
+                                      Container(
+                                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                        decoration: BoxDecoration(
+                                          color: AppColors.accent.withOpacity(0.1),
+                                          borderRadius: BorderRadius.circular(6),
+                                        ),
+                                        child: const Text(
+                                          'Podiatry',
+                                          style: TextStyle(
+                                            color: AppColors.accent,
+                                            fontSize: 12,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
                                   ),
                                 ),
-                                const SizedBox(height: 4),
                                 Container(
-                                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                  padding: const EdgeInsets.all(8),
                                   decoration: BoxDecoration(
-                                    color: AppColors.accent.withOpacity(0.1),
-                                    borderRadius: BorderRadius.circular(6),
+                                    color: AppColors.background,
+                                    borderRadius: BorderRadius.circular(8),
                                   ),
-                                  child: const Text(
-                                    'Podiatry',
-                                    style: TextStyle(
-                                      color: AppColors.accent,
-                                      fontSize: 12,
-                                      fontWeight: FontWeight.bold,
+                                  child: Column(
+                                    children: [
+                                      const Icon(Icons.directions_walk, size: 16, color: AppColors.textSecondary),
+                                      Text(
+                                        '${center.distance.toStringAsFixed(1)} km',
+                                        style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 8),
+                            Row(
+                              children: [
+                                const Icon(Icons.location_on_outlined, size: 16, color: AppColors.textSecondary),
+                                const SizedBox(width: 4),
+                                Expanded(
+                                  child: Text(
+                                    center.address,
+                                    style: const TextStyle(color: AppColors.textSecondary),
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 16),
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: OutlinedButton.icon(
+                                    onPressed: () => _callCenter(center),
+                                    icon: const Icon(Icons.phone),
+                                    label: const AutoTranslateText('Call'),
+                                    style: OutlinedButton.styleFrom(
+                                      foregroundColor: AppColors.success,
+                                      side: const BorderSide(color: AppColors.success),
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(width: 12),
+                                Expanded(
+                                  child: ElevatedButton.icon(
+                                    onPressed: () => _bookAppointment(center.name),
+                                    icon: const Icon(Icons.calendar_today),
+                                    label: const AutoTranslateText('Book Appointment'),
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: AppColors.primary,
+                                      foregroundColor: Colors.white,
                                     ),
                                   ),
                                 ),
                               ],
                             ),
-                          ),
-                          Container(
-                            padding: const EdgeInsets.all(8),
-                            decoration: BoxDecoration(
-                              color: AppColors.background,
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            child: Column(
-                              children: [
-                                const Icon(Icons.directions_walk, size: 16, color: AppColors.textSecondary),
-                                Text(
-                                  '${center.distance.toStringAsFixed(1)} km',
-                                  style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
-                      const SizedBox(height: 8),
-                      Row(
-                        children: [
-                          const Icon(Icons.location_on_outlined, size: 16, color: AppColors.textSecondary),
-                          const SizedBox(width: 4),
-                          Expanded(
-                            child: Text(
-                              center.address,
-                              style: const TextStyle(color: AppColors.textSecondary),
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 16),
-                      Row(
-                        children: [
-                          Expanded(
-                            child: OutlinedButton.icon(
-                              onPressed: () => _callCenter(center),
-                              icon: const Icon(Icons.phone),
-                              label: const AutoTranslateText('Call'),
-                              style: OutlinedButton.styleFrom(
-                                foregroundColor: AppColors.success,
-                                side: const BorderSide(color: AppColors.success),
-                              ),
-                            ),
-                          ),
-                          const SizedBox(width: 12),
-                          Expanded(
-                            child: ElevatedButton.icon(
-                              onPressed: () => _bookAppointment(center.name),
-                              icon: const Icon(Icons.calendar_today),
-                              label: const AutoTranslateText('Book Appointment'),
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: AppColors.primary,
-                                foregroundColor: Colors.white,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-              );
+                    );
+                  },
+                );
+              }
             },
           ),
         ),

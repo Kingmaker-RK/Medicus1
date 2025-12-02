@@ -15,65 +15,33 @@ class DentistScreen extends StatefulWidget {
 }
 
 class _DentistScreenState extends State<DentistScreen> {
-  List<MedicalFacility> displayedDentists = [];
-  bool _isLoading = true;
+  late Future<List<MedicalFacility>> _dentistsFuture;
 
   @override
   void initState() {
     super.initState();
-    _fetchDentists();
+    _dentistsFuture = _fetchDentists();
   }
 
-  Future<void> _fetchDentists() async {
-    setState(() {
-      _isLoading = true;
-    });
+  Future<List<MedicalFacility>> _fetchDentists() async {
     try {
-      final dentists = await context.read<MedicalPlacesService>().fetchFacilities(queryType: 'dentist');
-      if (mounted) {
-        setState(() {
-          displayedDentists = dentists;
-          _isLoading = false;
-        });
-      }
+      return await context.read<MedicalPlacesService>().fetchFacilities(queryType: 'dentist');
     } catch (e) {
-      if (mounted) {
-        setState(() {
-          _isLoading = false;
-        });
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error loading dentists: $e')),
-        );
-      }
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error loading dentists: $e')),
+      );
+      return [];
     }
   }
 
-  Future<void> _performSearch(String query, String type) async {
+  void _performSearch(String query, String type) {
     setState(() {
-      _isLoading = true;
-    });
-    try {
-      final dentists = await context.read<MedicalPlacesService>().fetchFacilities(
+      _dentistsFuture = context.read<MedicalPlacesService>().fetchFacilities(
             queryType: 'dentist',
             searchQuery: query,
             searchType: type,
           );
-      if (mounted) {
-        setState(() {
-          displayedDentists = dentists;
-          _isLoading = false;
-        });
-      }
-    } catch (e) {
-      if (mounted) {
-        setState(() {
-          _isLoading = false;
-        });
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error searching dentists: $e')),
-        );
-      }
-    }
+    });
   }
 
   void _showCallDialog(MedicalFacility dentist) {
@@ -159,17 +127,27 @@ class _DentistScreenState extends State<DentistScreen> {
             child: MedicalSearchBar(onSearch: _performSearch),
           ),
           Expanded(
-            child: _isLoading
-                ? const Center(child: CircularProgressIndicator())
-                : displayedDentists.isEmpty
-                    ? const Center(child: AutoTranslateText('No dentists found.'))
-                    : ListView.builder(
-                        padding: const EdgeInsets.all(16),
-                        itemCount: displayedDentists.length,
-                        itemBuilder: (context, index) {
-                          return _buildDentistCard(displayedDentists[index]);
-                        },
-                      ),
+            child: FutureBuilder<List<MedicalFacility>>(
+              future: _dentistsFuture,
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const Center(child: CircularProgressIndicator());
+                } else if (snapshot.hasError) {
+                  return Center(child: Text('Error: ${snapshot.error}'));
+                } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                  return const Center(child: AutoTranslateText('No dentists found.'));
+                } else {
+                  final dentists = snapshot.data!;
+                  return ListView.builder(
+                    padding: const EdgeInsets.all(16),
+                    itemCount: dentists.length,
+                    itemBuilder: (context, index) {
+                      return _buildDentistCard(dentists[index]);
+                    },
+                  );
+                }
+              },
+            ),
           ),
         ],
       ),

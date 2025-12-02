@@ -36,6 +36,7 @@ class MedicalPlacesService {
     }
 
     String overpassQuery = _buildQuery(queryType, searchLat, searchLon, searchRadius, searchQuery, searchType);
+    print('Overpass Query: $overpassQuery');
 
     try {
       final response = await http.post(
@@ -44,6 +45,7 @@ class MedicalPlacesService {
       );
 
       if (response.statusCode == 200) {
+        print('Overpass API Response: ${response.body}');
         final data = json.decode(utf8.decode(response.bodyBytes));
         final elements = data['elements'] as List;
 

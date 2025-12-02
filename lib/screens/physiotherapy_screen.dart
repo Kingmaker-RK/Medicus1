@@ -15,65 +15,33 @@ class PhysiotherapyScreen extends StatefulWidget {
 }
 
 class _PhysiotherapyScreenState extends State<PhysiotherapyScreen> {
-  List<MedicalFacility> displayedCenters = [];
-  bool _isLoading = true;
+  late Future<List<MedicalFacility>> _centersFuture;
 
   @override
   void initState() {
     super.initState();
-    _fetchCenters();
+    _centersFuture = _fetchCenters();
   }
 
-  Future<void> _fetchCenters() async {
-    setState(() {
-      _isLoading = true;
-    });
+  Future<List<MedicalFacility>> _fetchCenters() async {
     try {
-      final centers = await context.read<MedicalPlacesService>().fetchFacilities(queryType: 'physiotherapy');
-      if (mounted) {
-        setState(() {
-          displayedCenters = centers;
-          _isLoading = false;
-        });
-      }
+      return await context.read<MedicalPlacesService>().fetchFacilities(queryType: 'physiotherapy');
     } catch (e) {
-      if (mounted) {
-        setState(() {
-          _isLoading = false;
-        });
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error loading centers: $e')),
-        );
-      }
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error loading centers: $e')),
+      );
+      return [];
     }
   }
 
-  Future<void> _performSearch(String query, String type) async {
+  void _performSearch(String query, String type) {
     setState(() {
-      _isLoading = true;
-    });
-    try {
-      final centers = await context.read<MedicalPlacesService>().fetchFacilities(
+      _centersFuture = context.read<MedicalPlacesService>().fetchFacilities(
             queryType: 'physiotherapy',
             searchQuery: query,
             searchType: type,
           );
-      if (mounted) {
-        setState(() {
-          displayedCenters = centers;
-          _isLoading = false;
-        });
-      }
-    } catch (e) {
-      if (mounted) {
-        setState(() {
-          _isLoading = false;
-        });
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error searching centers: $e')),
-        );
-      }
-    }
+    });
   }
 
   void _showCallDialog(MedicalFacility center) {
@@ -159,17 +127,27 @@ class _PhysiotherapyScreenState extends State<PhysiotherapyScreen> {
             child: MedicalSearchBar(onSearch: _performSearch),
           ),
           Expanded(
-            child: _isLoading
-                ? const Center(child: CircularProgressIndicator())
-                : displayedCenters.isEmpty
-                    ? const Center(child: AutoTranslateText('No centers found.'))
-                    : ListView.builder(
-                        padding: const EdgeInsets.all(16),
-                        itemCount: displayedCenters.length,
-                        itemBuilder: (context, index) {
-                          return _buildCenterCard(displayedCenters[index]);
-                        },
-                      ),
+            child: FutureBuilder<List<MedicalFacility>>(
+              future: _centersFuture,
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const Center(child: CircularProgressIndicator());
+                } else if (snapshot.hasError) {
+                  return Center(child: Text('Error: ${snapshot.error}'));
+                } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                  return const Center(child: AutoTranslateText('No centers found.'));
+                } else {
+                  final centers = snapshot.data!;
+                  return ListView.builder(
+                    padding: const EdgeInsets.all(16),
+                    itemCount: centers.length,
+                    itemBuilder: (context, index) {
+                      return _buildCenterCard(centers[index]);
+                    },
+                  );
+                }
+              },
+            ),
           ),
         ],
       ),
