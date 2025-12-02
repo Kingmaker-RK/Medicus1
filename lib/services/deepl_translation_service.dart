@@ -20,7 +20,7 @@ class DeepLTranslationService {
     try {
       final deeplApiKey = AppConstants.deeplApiKey;
 
-      if (deeplApiKey.isNotEmpty && deeplApiKey != 'YOUR_DEEP_API_KEY') {
+      if (deeplApiKey.isNotEmpty && deeplApiKey != 'YOUR_DEEPL_API_KEY') {
         _translator = DeepL(authKey: deeplApiKey);
         _isInitialized = true;
         logger.d('✅ DeepL Translation Service initialized successfully');

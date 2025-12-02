@@ -174,31 +174,7 @@ class TranslationService {
         }
       }
 
-      // 4. Try LibreTranslate (Free, no API key needed)
-      try {
-        final libreResult = await _translateWithLibreTranslate(
-          text,
-          sourceLanguage,
-          targetLanguage,
-        );
-
-        final medicalTerms = _mockMedicalTerms('$text $libreResult');
-        final anatomyImages = await getAnatomyImages(medicalTerms);
-
-        logger.d('✅ Translation completed using LibreTranslate');
-        return TranslationResult(
-          originalText: text,
-          translatedText: libreResult,
-          sourceLanguage: sourceLanguage,
-          targetLanguage: targetLanguage,
-          medicalTerms: medicalTerms,
-          anatomyImages: anatomyImages,
-        );
-      } catch (e) {
-        logger.e('⚠️ LibreTranslate failed: $e');
-      }
-
-      // 5. Try MyMemory API (Free, no API key needed)
+      // 4. Try MyMemory API (Free, no API key needed)
       try {
         final myMemoryResult = await _translateWithMyMemory(
           text,
@@ -222,6 +198,30 @@ class TranslationService {
         logger.e('⚠️ MyMemory translation failed: $e');
       }
 
+      // 5. Try LibreTranslate (Free, no API key needed)
+      try {
+        final libreResult = await _translateWithLibreTranslate(
+          text,
+          sourceLanguage,
+          targetLanguage,
+        );
+
+        final medicalTerms = _mockMedicalTerms('$text $libreResult');
+        final anatomyImages = await getAnatomyImages(medicalTerms);
+
+        logger.d('✅ Translation completed using LibreTranslate');
+        return TranslationResult(
+          originalText: text,
+          translatedText: libreResult,
+          sourceLanguage: sourceLanguage,
+          targetLanguage: targetLanguage,
+          medicalTerms: medicalTerms,
+          anatomyImages: anatomyImages,
+        );
+      } catch (e) {
+        logger.e('⚠️ LibreTranslate failed: $e');
+      }
+
       // 6. Try OpenAI GPT-4 (if configured)
       final apiKey = AppConstants.openaiApiKey;
       if (apiKey.isNotEmpty && apiKey != 'YOUR_OPENAI_API_KEY') {
@@ -240,7 +240,7 @@ class TranslationService {
 
       // 7. Fallback to mock translation for testing
       logger.w(
-        '⚠️ All translation APIs failed or not configured, using mock translation',
+        '⚠️ All translation APIs failed or not configured. Please check API keys in .env or ApiConfig. Using mock translation as fallback.',
       );
       return _mockTranslation(text, sourceLanguage, targetLanguage);
     } catch (e) {

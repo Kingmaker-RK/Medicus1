@@ -1,5 +1,7 @@
 import 'dart:io';
 import 'dart:convert';
+import 'dart:math' as math;
+import 'package:dio/dio.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:printing/printing.dart';
@@ -7,46 +9,95 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:path_provider/path_provider.dart';
 import '../models/pharmacy_model.dart';
 import '../models/upload_record_model.dart';
+import '../utils/logger.dart';
 
 class ERezeptService {
   static const String _historyKey = 'e_rezept_history';
 
-  // Mock method to find nearby pharmacies
+  // Find nearby pharmacies using Overpass API (Real-time data)
   Future<List<Pharmacy>> findNearbyPharmacies() async {
-    // Simulate network delay
-    await Future.delayed(const Duration(seconds: 2));
+    try {
+      // Default location: Berlin TV Tower (52.5208, 13.4094)
+      // In a production app, we would use geolocator to get the user's current position
+      const double userLat = 52.5208;
+      const double userLon = 13.4094;
+      const int radius = 2000; // 2km radius
 
-    // Mock data - in a real app, this would call an API with lat/long
+      final dio = Dio();
+      // Overpass QL query for pharmacies
+      final query = '[out:json];node["amenity"="pharmacy"](around:$radius,$userLat,$userLon);out;';
+      
+      final response = await dio.get(
+        'https://overpass-api.de/api/interpreter',
+        queryParameters: {'data': query},
+      );
+
+      if (response.statusCode == 200 && response.data != null) {
+        final elements = response.data['elements'] as List;
+        
+        final pharmacies = elements.take(15).map<Pharmacy>((e) {
+          final tags = e['tags'] ?? {};
+          final lat = e['lat'] as double;
+          final lon = e['lon'] as double;
+          
+          final name = tags['name'] ?? 'Pharmacy';
+          final street = tags['addr:street'] ?? '';
+          final houseNumber = tags['addr:housenumber'] ?? '';
+          final postcode = tags['addr:postcode'] ?? '';
+          final city = tags['addr:city'] ?? '';
+          
+          String address = '$street $houseNumber, $postcode $city'.trim();
+          if (address.isEmpty || address == ',') {
+             address = 'Unknown Address';
+          }
+
+          final distance = _calculateDistance(userLat, userLon, lat, lon);
+          
+          return Pharmacy(
+            name: name,
+            address: address,
+            distance: double.parse(distance.toStringAsFixed(2)),
+            hasMedication: true, // Assuming availability for found pharmacies
+            openHours: tags['opening_hours'] ?? '09:00 - 18:00',
+          );
+        }).toList();
+
+        // Sort by distance
+        pharmacies.sort((a, b) => a.distance.compareTo(b.distance));
+        
+        return pharmacies;
+      }
+    } catch (e) {
+      logger.e('Error fetching real pharmacy data: $e');
+    }
+
+    // Fallback to mock data if API fails or network is down
+    logger.w('Falling back to mock pharmacy data');
     return [
       Pharmacy(
-        name: 'Apotheke am Markt',
+        name: 'Apotheke am Markt (Mock)',
         address: 'Marktstraße 10, 10117 Berlin',
         distance: 0.3,
         hasMedication: true,
         openHours: '08:00 - 20:00',
       ),
       Pharmacy(
-        name: 'City Apotheke',
+        name: 'City Apotheke (Mock)',
         address: 'Friedrichstraße 200, 10117 Berlin',
         distance: 0.8,
         hasMedication: true,
         openHours: '09:00 - 19:00',
       ),
-      Pharmacy(
-        name: 'Gesundheit Center',
-        address: 'Unter den Linden 50, 10117 Berlin',
-        distance: 1.2,
-        hasMedication: false, // Not available
-        openHours: '08:30 - 18:30',
-      ),
-      Pharmacy(
-        name: 'Nord Apotheke',
-        address: 'Torstraße 15, 10119 Berlin',
-        distance: 1.5,
-        hasMedication: true,
-        openHours: '08:00 - 20:00',
-      ),
     ];
+  }
+
+  double _calculateDistance(double lat1, double lon1, double lat2, double lon2) {
+    var p = 0.017453292519943295;
+    var c = math.cos;
+    var a = 0.5 - c((lat2 - lat1) * p)/2 + 
+          c(lat1 * p) * c(lat2 * p) * 
+          (1 - c((lon2 - lon1) * p))/2;
+    return 12742 * math.asin(math.sqrt(a));
   }
 
   Future<File> generateAndSavePdf(String imagePath, {String? insuranceCardPath}) async {

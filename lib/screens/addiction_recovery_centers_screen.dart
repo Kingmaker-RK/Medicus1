@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../widgets/translated_widget.dart';
 import '../constants/colors.dart';
 import 'addiction_history_screen.dart';
+import '../services/addiction_recovery_service.dart';
 
 class AddictionRecoveryCentersScreen extends StatefulWidget {
   final String addictionType;
@@ -17,55 +18,31 @@ class AddictionRecoveryCentersScreen extends StatefulWidget {
 
 class _AddictionRecoveryCentersScreenState extends State<AddictionRecoveryCentersScreen> {
   final TextEditingController _searchController = TextEditingController();
+  final AddictionRecoveryService _service = AddictionRecoveryService();
   String searchType = 'Name';
   final List<String> searchTypes = ['Name', 'Location', 'Pincode'];
 
-  final List<Map<String, dynamic>> allCenters = [
-    {
-      'name': 'Hope Recovery Center',
-      'type': 'Government Funded',
-      'specialty': 'General Addiction',
-      'location': 'Mitte, Berlin',
-      'pincode': '10115',
-      'rating': 4.5,
-      'reviews': 85,
-      'distance': '2.0 km',
-      'available': true,
-      'phone': '+49 30 11110000',
-    },
-    {
-      'name': 'New Life Counselling',
-      'type': 'Private Practice',
-      'specialty': 'Behavioral Therapy',
-      'location': 'Kreuzberg, Berlin',
-      'pincode': '10969',
-      'rating': 4.8,
-      'reviews': 120,
-      'distance': '3.5 km',
-      'available': true,
-      'phone': '+49 30 22220000',
-    },
-    {
-      'name': 'City Addiction Support',
-      'type': 'Non-Profit',
-      'specialty': 'Substance Abuse',
-      'location': 'Neukölln, Berlin',
-      'pincode': '12043',
-      'rating': 4.6,
-      'reviews': 95,
-      'distance': '4.2 km',
-      'available': false,
-      'phone': '+49 30 33330000',
-    },
-  ];
-
+  List<Map<String, dynamic>> allCenters = [];
   List<Map<String, dynamic>> displayedCenters = [];
   bool isSearchingAI = false;
+  bool _isLoading = true;
 
   @override
   void initState() {
     super.initState();
-    displayedCenters = List.from(allCenters);
+    _loadCenters();
+  }
+
+  Future<void> _loadCenters() async {
+    setState(() => _isLoading = true);
+    final centers = await _service.findCenters(widget.addictionType);
+    if (mounted) {
+      setState(() {
+        allCenters = centers;
+        displayedCenters = List.from(allCenters);
+        _isLoading = false;
+      });
+    }
   }
 
   void _filterCenters(String query) {
@@ -79,11 +56,11 @@ class _AddictionRecoveryCentersScreenState extends State<AddictionRecoveryCenter
         String searchTerm = query.toLowerCase();
         switch (searchType) {
           case 'Name':
-            return center['name'].toLowerCase().contains(searchTerm);
+            return center['name'].toString().toLowerCase().contains(searchTerm);
           case 'Location':
-            return center['location'].toLowerCase().contains(searchTerm);
+            return center['location'].toString().toLowerCase().contains(searchTerm);
           case 'Pincode':
-            return center['pincode'].contains(searchTerm);
+            return center['pincode'].toString().contains(searchTerm);
           default:
             return false;
         }
@@ -96,12 +73,18 @@ class _AddictionRecoveryCentersScreenState extends State<AddictionRecoveryCenter
       isSearchingAI = true;
     });
 
+    // Simulate AI processing of the REAL data
     await Future.delayed(const Duration(seconds: 2));
 
     if (mounted) {
       setState(() {
         isSearchingAI = false;
-        displayedCenters.sort((a, b) => b['rating'].compareTo(a['rating']));
+        // AI "Sort" - prioritization based on simulated ratings/reviews
+        displayedCenters.sort((a, b) {
+           final ratingA = (a['rating'] as num?) ?? 0;
+           final ratingB = (b['rating'] as num?) ?? 0;
+           return ratingB.compareTo(ratingA);
+        });
       });
 
       ScaffoldMessenger.of(context).showSnackBar(
@@ -257,7 +240,7 @@ class _AddictionRecoveryCentersScreenState extends State<AddictionRecoveryCenter
                 SizedBox(
                   width: double.infinity,
                   child: ElevatedButton.icon(
-                    onPressed: isSearchingAI ? null : _performAISearch,
+                    onPressed: isSearchingAI || _isLoading ? null : _performAISearch,
                     icon: isSearchingAI
                         ? const SizedBox(
                             width: 20,
@@ -279,15 +262,17 @@ class _AddictionRecoveryCentersScreenState extends State<AddictionRecoveryCenter
             ),
           ),
           Expanded(
-            child: displayedCenters.isEmpty
-                ? const Center(child: AutoTranslateText('No centers found.'))
-                : ListView.builder(
-                    padding: const EdgeInsets.all(16),
-                    itemCount: displayedCenters.length,
-                    itemBuilder: (context, index) {
-                      return _buildCenterCard(displayedCenters[index]);
-                    },
-                  ),
+            child: _isLoading 
+                ? const Center(child: CircularProgressIndicator())
+                : displayedCenters.isEmpty
+                    ? const Center(child: AutoTranslateText('No centers found.'))
+                    : ListView.builder(
+                        padding: const EdgeInsets.all(16),
+                        itemCount: displayedCenters.length,
+                        itemBuilder: (context, index) {
+                          return _buildCenterCard(displayedCenters[index]);
+                        },
+                      ),
           ),
         ],
       ),
