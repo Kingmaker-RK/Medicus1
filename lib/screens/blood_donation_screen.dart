@@ -6,6 +6,7 @@ import '../providers/user_provider.dart';
 import '../services/medical_places_service.dart';
 import '../models/medical_facility_model.dart';
 import '../widgets/medical_search_bar.dart';
+import '../widgets/medical_facility_card.dart';
 
 class BloodDonationScreen extends StatefulWidget {
   const BloodDonationScreen({Key? key}) : super(key: key);
@@ -261,7 +262,10 @@ class _BloodDonationScreenState extends State<BloodDonationScreen> {
                   itemCount: donationCenters.length,
                   itemBuilder: (context, index) {
                     final center = donationCenters[index];
-                    return _buildDonationCenterCard(center);
+                    return MedicalFacilityCard(
+                      facility: center,
+                      facilityType: 'Donation Center',
+                    );
                   },
                 ),
         ),
@@ -296,166 +300,6 @@ class _BloodDonationScreenState extends State<BloodDonationScreen> {
             ),
           ],
         ),
-      ),
-    );
-  }
-
-  Widget _buildDonationCenterCard(MedicalFacility center) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 16),
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: AppColors.shadowLight,
-            blurRadius: 8,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Container(
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: Colors.red.withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: const Icon(
-                  Icons.local_hospital_rounded,
-                  color: Colors.red,
-                  size: 28,
-                ),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      center.name,
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                        color: AppColors.textPrimary,
-                      ),
-                    ),
-                    const SizedBox(height: 4),
-                    Row(
-                      children: [
-                        Icon(
-                          Icons.location_on_rounded,
-                          size: 14,
-                          color: AppColors.textSecondary,
-                        ),
-                        const SizedBox(width: 4),
-                        Text(
-                          '${center.distance.toStringAsFixed(1)} km',
-                          style: TextStyle(
-                            fontSize: 13,
-                            color: AppColors.textSecondary,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 12),
-          Text(
-            center.address,
-            style: TextStyle(
-              fontSize: 13,
-              color: AppColors.textSecondary,
-            ),
-          ),
-          if (center.openingHours != null) ...[
-            const SizedBox(height: 8),
-            Row(
-              children: [
-                Icon(Icons.access_time_rounded,
-                    size: 14, color: AppColors.textSecondary),
-                const SizedBox(width: 4),
-                Expanded(
-                  child: Text(
-                    center.openingHours!,
-                    style: TextStyle(
-                      fontSize: 13,
-                      color: AppColors.textSecondary,
-                    ),
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ),
-              ],
-            ),
-          ],
-          const SizedBox(height: 12),
-          Row(
-            children: [
-              Expanded(
-                child: OutlinedButton.icon(
-                  onPressed: () {
-                     if (center.phone == null) return;
-                     showDialog(
-                        context: context,
-                        builder: (context) => AlertDialog(
-                          title: const AutoTranslateText('Call Donation Center'),
-                          content: Text('Phone: ${center.phone}'),
-                          actions: [
-                            TextButton(
-                              onPressed: () => Navigator.pop(context),
-                              child: const AutoTranslateText('Close'),
-                            ),
-                            FilledButton(
-                              onPressed: () {
-                                Navigator.pop(context);
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(content: Text('Calling ${center.phone}...')),
-                                );
-                              },
-                              child: const AutoTranslateText('Call'),
-                            ),
-                          ],
-                        ),
-                      );
-                  },
-                  icon: const Icon(Icons.phone_rounded, size: 18),
-                  label: const AutoTranslateText('Call'),
-                  style: OutlinedButton.styleFrom(
-                    foregroundColor: AppColors.primary,
-                    side: BorderSide(color: AppColors.primary),
-                  ),
-                ),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: ElevatedButton.icon(
-                  onPressed: () {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: AutoTranslateText('Booking appointment at ${center.name}'),
-                        backgroundColor: AppColors.success,
-                      ),
-                    );
-                  },
-                  icon: const Icon(Icons.calendar_today_rounded, size: 18),
-                  label: const AutoTranslateText('Book'),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.primary,
-                    foregroundColor: Colors.white,
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ],
       ),
     );
   }

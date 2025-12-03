@@ -10,6 +10,7 @@ import '../widgets/upload_selector.dart';
 import '../services/medical_places_service.dart';
 import '../models/medical_facility_model.dart';
 import '../widgets/medical_search_bar.dart';
+import '../widgets/medical_facility_card.dart';
 
 class PodiatryScreen extends StatefulWidget {
   const PodiatryScreen({Key? key}) : super(key: key);
@@ -63,50 +64,6 @@ class _PodiatryScreenState extends State<PodiatryScreen> with SingleTickerProvid
             lon: userProvider.longitude,
           );
     });
-  }
-
-  void _callCenter(MedicalFacility center) {
-    if (center.phone == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: AutoTranslateText('Phone number not available')),
-      );
-      return;
-    }
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const AutoTranslateText('Call Reception'),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(center.name, style: const TextStyle(fontWeight: FontWeight.bold)),
-            const SizedBox(height: 8),
-            Text(center.phone!, style: const TextStyle(fontSize: 18, color: AppColors.primary)),
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const AutoTranslateText('Cancel'),
-          ),
-          ElevatedButton.icon(
-            onPressed: () => Navigator.pop(context),
-            icon: const Icon(Icons.call),
-            label: const AutoTranslateText('Call Now'),
-            style: ElevatedButton.styleFrom(backgroundColor: AppColors.success),
-          ),
-        ],
-      ),
-    );
-  }
-
-  void _bookAppointment(String name) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: AutoTranslateText('Booking appointment at $name...'),
-        backgroundColor: AppColors.primary,
-      ),
-    );
   }
 
   // Report Methods
@@ -237,111 +194,9 @@ class _PodiatryScreenState extends State<PodiatryScreen> with SingleTickerProvid
                   padding: const EdgeInsets.all(16),
                   itemCount: centers.length,
                   itemBuilder: (context, index) {
-                    final center = centers[index];
-                    return Card(
-                      margin: const EdgeInsets.only(bottom: 16),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                      child: Padding(
-                        padding: const EdgeInsets.all(16),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Row(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Expanded(
-                                  child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        center.name,
-                                        style: const TextStyle(
-                                          fontSize: 18,
-                                          fontWeight: FontWeight.bold,
-                                          color: AppColors.textPrimary,
-                                        ),
-                                      ),
-                                      const SizedBox(height: 4),
-                                      Container(
-                                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                                        decoration: BoxDecoration(
-                                          color: AppColors.accent.withOpacity(0.1),
-                                          borderRadius: BorderRadius.circular(6),
-                                        ),
-                                        child: const Text(
-                                          'Podiatry',
-                                          style: TextStyle(
-                                            color: AppColors.accent,
-                                            fontSize: 12,
-                                            fontWeight: FontWeight.bold,
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                                Container(
-                                  padding: const EdgeInsets.all(8),
-                                  decoration: BoxDecoration(
-                                    color: AppColors.background,
-                                    borderRadius: BorderRadius.circular(8),
-                                  ),
-                                  child: Column(
-                                    children: [
-                                      const Icon(Icons.directions_walk, size: 16, color: AppColors.textSecondary),
-                                      Text(
-                                        '${center.distance.toStringAsFixed(1)} km',
-                                        style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ],
-                            ),
-                            const SizedBox(height: 8),
-                            Row(
-                              children: [
-                                const Icon(Icons.location_on_outlined, size: 16, color: AppColors.textSecondary),
-                                const SizedBox(width: 4),
-                                Expanded(
-                                  child: Text(
-                                    center.address,
-                                    style: const TextStyle(color: AppColors.textSecondary),
-                                  ),
-                                ),
-                              ],
-                            ),
-                            const SizedBox(height: 16),
-                            Row(
-                              children: [
-                                Expanded(
-                                  child: OutlinedButton.icon(
-                                    onPressed: () => _callCenter(center),
-                                    icon: const Icon(Icons.phone),
-                                    label: const AutoTranslateText('Call'),
-                                    style: OutlinedButton.styleFrom(
-                                      foregroundColor: AppColors.success,
-                                      side: const BorderSide(color: AppColors.success),
-                                    ),
-                                  ),
-                                ),
-                                const SizedBox(width: 12),
-                                Expanded(
-                                  child: ElevatedButton.icon(
-                                    onPressed: () => _bookAppointment(center.name),
-                                    icon: const Icon(Icons.calendar_today),
-                                    label: const AutoTranslateText('Book Appointment'),
-                                    style: ElevatedButton.styleFrom(
-                                      backgroundColor: AppColors.primary,
-                                      foregroundColor: Colors.white,
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ],
-                        ),
-                      ),
+                    return MedicalFacilityCard(
+                      facility: centers[index],
+                      facilityType: 'Podiatry',
                     );
                   },
                 );

@@ -11,7 +11,28 @@ import 'package:ai_gris/models/user_model.dart';
 import 'package:ai_gris/services/medical_places_service.dart';
 import 'package:ai_gris/models/medical_facility_model.dart';
 
-class MockMedicalPlacesService extends Mock implements MedicalPlacesService {}
+class MockMedicalPlacesService implements MedicalPlacesService {
+  List<MedicalFacility> _mockData = [];
+
+  void setMockData(List<MedicalFacility> data) {
+    _mockData = data;
+  }
+
+  @override
+  Future<List<MedicalFacility>> fetchFacilities({
+    required String queryType,
+    double? lat,
+    double? lon,
+    int radius = 5000,
+    String? searchQuery,
+    String? searchType,
+  }) async {
+    if (searchQuery != null && searchType == 'name') {
+       return _mockData.where((e) => e.name.contains(searchQuery)).toList();
+    }
+    return _mockData;
+  }
+}
 
 // Mock LocalizationService
 class MockLocalizationService implements LocalizationService {
@@ -100,6 +121,15 @@ class MockUserProvider extends ChangeNotifier implements UserProvider {
   Future<void> toggleServiceSorting() async {}
   @override
   Future<String> getAILocationSuggestion() async => 'Munich';
+  
+  @override
+  Future<void> determinePosition() async {}
+
+  @override
+  double? get latitude => 52.5200;
+
+  @override
+  double? get longitude => 13.4050;
 }
 
 void main() {
@@ -114,6 +144,7 @@ void main() {
       address: 'Friedrichstraße 100, 10117 Berlin',
       distance: 1.2,
       phone: '+49 30 12345678',
+      openingHours: 'Mo-Fr 08:00-18:00',
       latitude: 52.5,
       longitude: 13.4,
     ),
@@ -149,7 +180,7 @@ void main() {
   }
 
   testWidgets('DentistScreen renders with default list', (WidgetTester tester) async {
-    when(mockMedicalPlacesService.fetchFacilities(queryType: 'dentist')).thenAnswer((_) async => mockData);
+    mockMedicalPlacesService.setMockData(mockData);
 
     await tester.pumpWidget(createWidgetUnderTest());
 
@@ -162,7 +193,7 @@ void main() {
   });
 
   testWidgets('Search functionality filters the list', (WidgetTester tester) async {
-    when(mockMedicalPlacesService.fetchFacilities(queryType: 'dentist', searchQuery: 'Smile', searchType: 'name')).thenAnswer((_) async => [mockData[1]]);
+    mockMedicalPlacesService.setMockData(mockData);
 
     await tester.pumpWidget(createWidgetUnderTest());
     await tester.pumpAndSettle();
@@ -178,7 +209,7 @@ void main() {
   });
 
   testWidgets('Call button shows dialog with phone number', (WidgetTester tester) async {
-    when(mockMedicalPlacesService.fetchFacilities(queryType: 'dentist')).thenAnswer((_) async => mockData);
+    mockMedicalPlacesService.setMockData(mockData);
 
     await tester.pumpWidget(createWidgetUnderTest());
     await tester.pumpAndSettle();
@@ -190,12 +221,12 @@ void main() {
     await tester.tap(callTextFinder.first);
     await tester.pumpAndSettle();
 
-    expect(find.text('Contact Reception'), findsOneWidget);
+    expect(find.text('Contact Facility'), findsOneWidget);
     expect(find.text('+49 30 12345678'), findsOneWidget); // Phone number of first item
   });
 
   testWidgets('Navigate to History Screen', (WidgetTester tester) async {
-    when(mockMedicalPlacesService.fetchFacilities(queryType: 'dentist')).thenAnswer((_) async => mockData);
+    mockMedicalPlacesService.setMockData(mockData);
 
     await tester.pumpWidget(createWidgetUnderTest());
     await tester.pumpAndSettle();
@@ -204,6 +235,6 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.byType(DentistHistoryScreen), findsOneWidget);
-    expect(find.text('Dental History'), findsOneWidget);
+    expect(find.text('Dental History'), findsOneWidget); // Adjusted expectation if title is 'Dental History'
   });
 }
