@@ -8,6 +8,7 @@ The project has successfully established a robust foundation with Supabase integ
 - [ ] **Manual Testing**: Verify user profile creation and persistence in the app.
 
 ### 2. Feature Completion
+- [x] **Real-time Booking**: Implemented appointment booking with Supabase `appointments` table.
 - [ ] **E-Rezept Integration**: Connect `ERezeptService` to `DatabaseService` to upload generated PDFs to Supabase Storage.
 - [ ] **AI Features**: Ensure `AiService` is fully utilized in the UI for transcription and report generation.
 

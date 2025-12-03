@@ -30,13 +30,22 @@ AI-Gris is a comprehensive healthcare application built with Flutter, designed t
 - **users**: Stores basic user info (linked to Firebase Auth UID).
 - **patients**: Stores patient-specific profiles.
 - **doctors**: Stores doctor-specific profiles.
+- **appointments**:
+  - `id` (uuid, primary key, default: `gen_random_uuid()`)
+  - `user_id` (uuid, foreign key to `users.id`)
+  - `facility_id` (text)
+  - `facility_name` (text)
+  - `facility_type` (text)
+  - `appointment_date` (timestamptz)
+  - `status` (text, default: 'pending')
+  - `created_at` (timestamptz, default: `now()`)
 - **Storage Buckets**: `profiles`, `documents`.
 
 ## Recent Changes
 - **Call & Book Functionality**:
     - Enhanced medical facility cards across all service screens.
     - Implemented real-time phone calling via `url_launcher`.
-    - Added appointment booking with date/time picker and opening hours validation.
+    - **Real-time Appointment Booking**: Replaced simulation with actual database insertion into Supabase `appointments` table.
     - Added visual indicators for Open/Closed status.
 - Migrated database from Firestore to Supabase.
 - Implemented storage for profile pictures and documents.

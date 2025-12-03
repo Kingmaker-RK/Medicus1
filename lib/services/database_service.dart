@@ -191,4 +191,30 @@ class DatabaseService {
       throw Exception('Failed to upload document');
     }
   }
+
+  // --- Appointment Methods ---
+
+  Future<void> createAppointment({
+    required String userId,
+    required String facilityId,
+    required String facilityName,
+    required String facilityType,
+    required DateTime appointmentDateTime,
+  }) async {
+    try {
+      await _client.from('appointments').insert({
+        'user_id': userId,
+        'facility_id': facilityId,
+        'facility_name': facilityName,
+        'facility_type': facilityType,
+        'appointment_date': appointmentDateTime.toIso8601String(),
+        'status': 'pending', // Default status
+        'created_at': DateTime.now().toIso8601String(),
+      });
+      logger.d('Appointment created for user: $userId at $facilityName');
+    } catch (e) {
+      logger.e('Error creating appointment in Supabase: $e');
+      throw Exception('Failed to create appointment');
+    }
+  }
 }

@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:provider/provider.dart';
 import '../models/medical_facility_model.dart';
 import '../constants/colors.dart';
 import '../utils/opening_hours_parser.dart';
 import 'translated_widget.dart';
+import '../providers/user_provider.dart';
+import '../services/database_service.dart';
 
 class MedicalFacilityCard extends StatelessWidget {
   final MedicalFacility facility;
@@ -84,6 +87,19 @@ class MedicalFacilityCard extends StatelessWidget {
   }
 
   Future<void> _showBookingDialog(BuildContext context) async {
+    final userProvider = Provider.of<UserProvider>(context, listen: false);
+    
+    if (!userProvider.isLoggedIn || userProvider.currentUser?.id == null) {
+      if (!context.mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: AutoTranslateText('Please log in to book an appointment.'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
+
     final now = DateTime.now();
     final date = await showDatePicker(
       context: context,
@@ -157,15 +173,43 @@ class MedicalFacilityCard extends StatelessWidget {
 
     if (!context.mounted) return;
 
-    // Proceed with booking (simulation)
+    // Show loading
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: AutoTranslateText(
-          'Booking request sent for ${date.toString().substring(0, 10)} at ${time.format(context)}',
-        ),
-        backgroundColor: AppColors.success,
+      const SnackBar(
+        content: AutoTranslateText('Processing booking request...'),
+        duration: Duration(seconds: 1),
       ),
     );
+
+    try {
+      await DatabaseService().createAppointment(
+        userId: userProvider.currentUser!.id!,
+        facilityId: facility.id,
+        facilityName: facility.name,
+        facilityType: facilityType,
+        appointmentDateTime: selectedDateTime,
+      );
+
+      if (!context.mounted) return;
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: AutoTranslateText(
+            'Booking confirmed for ${date.toString().substring(0, 10)} at ${time.format(context)}',
+          ),
+          backgroundColor: AppColors.success,
+        ),
+      );
+    } catch (e) {
+      if (!context.mounted) return;
+      
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: AutoTranslateText('Failed to book appointment: ${e.toString()}'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
   }
 
   @override
