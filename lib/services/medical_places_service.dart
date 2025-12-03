@@ -33,6 +33,9 @@ class MedicalPlacesService {
         print('Error geocoding location: $e');
         // Keep default coordinates
       }
+    } else if ((searchType == 'name' || searchType == 'pincode') && radius == 5000) {
+      // Expand radius for specific name/pincode searches if default radius is used
+      searchRadius = 50000; // 50km
     }
 
     String overpassQuery = _buildQuery(queryType, searchLat, searchLon, searchRadius, searchQuery, searchType);

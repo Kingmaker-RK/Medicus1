@@ -11,7 +11,28 @@ import 'package:ai_gris/models/user_model.dart';
 import 'package:ai_gris/services/medical_places_service.dart';
 import 'package:ai_gris/models/medical_facility_model.dart';
 
-class MockMedicalPlacesService extends Mock implements MedicalPlacesService {}
+class MockMedicalPlacesService implements MedicalPlacesService {
+  List<MedicalFacility> _mockData = [];
+
+  void setMockData(List<MedicalFacility> data) {
+    _mockData = data;
+  }
+
+  @override
+  Future<List<MedicalFacility>> fetchFacilities({
+    required String queryType,
+    double? lat,
+    double? lon,
+    int radius = 5000,
+    String? searchQuery,
+    String? searchType,
+  }) async {
+    if (searchQuery != null && searchType == 'name') {
+       return _mockData.where((e) => e.name.contains(searchQuery)).toList();
+    }
+    return _mockData;
+  }
+}
 
 // Mock LocalizationService
 class MockLocalizationService implements LocalizationService {
@@ -100,6 +121,15 @@ class MockUserProvider extends ChangeNotifier implements UserProvider {
   Future<void> toggleServiceSorting() async {}
   @override
   Future<String> getAILocationSuggestion() async => 'Munich';
+
+  @override
+  Future<void> determinePosition() async {}
+
+  @override
+  double? get latitude => 52.5200;
+
+  @override
+  double? get longitude => 13.4050;
 }
 
 void main() {
@@ -149,7 +179,7 @@ void main() {
   }
 
   testWidgets('ChiropracticScreen renders with default list', (WidgetTester tester) async {
-    when(mockMedicalPlacesService.fetchFacilities(queryType: 'chiropractor')).thenAnswer((_) async => mockData);
+    mockMedicalPlacesService.setMockData(mockData);
 
     await tester.pumpWidget(createWidgetUnderTest());
 
@@ -162,7 +192,7 @@ void main() {
   });
 
   testWidgets('Search functionality filters the list', (WidgetTester tester) async {
-    when(mockMedicalPlacesService.fetchFacilities(queryType: 'chiropractor', searchQuery: 'Wellness', searchType: 'name')).thenAnswer((_) async => [mockData[1]]);
+    mockMedicalPlacesService.setMockData(mockData);
 
     await tester.pumpWidget(createWidgetUnderTest());
     await tester.pumpAndSettle();
@@ -178,7 +208,7 @@ void main() {
   });
 
   testWidgets('Call button shows dialog with phone number', (WidgetTester tester) async {
-    when(mockMedicalPlacesService.fetchFacilities(queryType: 'chiropractor')).thenAnswer((_) async => mockData);
+    mockMedicalPlacesService.setMockData(mockData);
 
     await tester.pumpWidget(createWidgetUnderTest());
     await tester.pumpAndSettle();
@@ -195,7 +225,7 @@ void main() {
   });
 
   testWidgets('Navigate to History Screen', (WidgetTester tester) async {
-    when(mockMedicalPlacesService.fetchFacilities(queryType: 'chiropractor')).thenAnswer((_) async => mockData);
+    mockMedicalPlacesService.setMockData(mockData);
 
     await tester.pumpWidget(createWidgetUnderTest());
     await tester.pumpAndSettle();

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../widgets/translated_widget.dart';
 import '../constants/colors.dart';
+import '../providers/user_provider.dart';
 import 'dentist_history_screen.dart';
 import '../services/medical_places_service.dart';
 import '../models/medical_facility_model.dart';
@@ -25,7 +26,12 @@ class _DentistScreenState extends State<DentistScreen> {
 
   Future<List<MedicalFacility>> _fetchDentists() async {
     try {
-      return await context.read<MedicalPlacesService>().fetchFacilities(queryType: 'dentist');
+      final userProvider = context.read<UserProvider>();
+      return await context.read<MedicalPlacesService>().fetchFacilities(
+        queryType: 'dentist',
+        lat: userProvider.latitude,
+        lon: userProvider.longitude,
+      );
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Error loading dentists: $e')),
@@ -36,10 +42,13 @@ class _DentistScreenState extends State<DentistScreen> {
 
   void _performSearch(String query, String type) {
     setState(() {
+      final userProvider = context.read<UserProvider>();
       _dentistsFuture = context.read<MedicalPlacesService>().fetchFacilities(
             queryType: 'dentist',
             searchQuery: query,
             searchType: type,
+            lat: userProvider.latitude,
+            lon: userProvider.longitude,
           );
     });
   }

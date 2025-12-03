@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../widgets/translated_widget.dart';
 import '../constants/colors.dart';
+import '../providers/user_provider.dart';
 import '../services/medical_places_service.dart';
 import '../models/medical_facility_model.dart';
 import '../widgets/medical_search_bar.dart';
@@ -46,7 +47,12 @@ class _BloodDonationScreenState extends State<BloodDonationScreen> {
       _isLoading = true;
     });
     try {
-      final centers = await context.read<MedicalPlacesService>().fetchFacilities(queryType: 'blood_donation');
+      final userProvider = context.read<UserProvider>();
+      final centers = await context.read<MedicalPlacesService>().fetchFacilities(
+        queryType: 'blood_donation',
+        lat: userProvider.latitude,
+        lon: userProvider.longitude,
+      );
       if (mounted) {
         setState(() {
           donationCenters = centers;
@@ -68,10 +74,13 @@ class _BloodDonationScreenState extends State<BloodDonationScreen> {
       _isLoading = true;
     });
     try {
+      final userProvider = context.read<UserProvider>();
       final centers = await context.read<MedicalPlacesService>().fetchFacilities(
             queryType: 'blood_donation',
             searchQuery: query,
             searchType: type,
+            lat: userProvider.latitude,
+            lon: userProvider.longitude,
           );
       if (mounted) {
         setState(() {

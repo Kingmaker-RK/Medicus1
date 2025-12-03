@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:geolocator/geolocator.dart';
 import '../models/user_model.dart';
 import '../constants/app_constants.dart';
 import '../services/auth_service.dart';
@@ -22,6 +23,8 @@ class UserProvider with ChangeNotifier {
   bool _isLoading = false;
   bool _sortServicesByUsage = false;
   Map<String, int> _serviceUsageCounts = {};
+  double? _latitude;
+  double? _longitude;
 
   UserModel? get currentUser => _currentUser;
   String get selectedLanguage => _selectedLanguage;
@@ -29,6 +32,8 @@ class UserProvider with ChangeNotifier {
   bool get isLoggedIn => _currentUser != null;
   bool get sortServicesByUsage => _sortServicesByUsage;
   Map<String, int> get serviceUsageCounts => _serviceUsageCounts;
+  double? get latitude => _latitude;
+  double? get longitude => _longitude;
 
   // Initialize user from storage
   Future<void> initialize() async {
@@ -38,6 +43,9 @@ class UserProvider with ChangeNotifier {
     try {
       // Initialize localization service
       _localizationService.initialize();
+      
+      // Initialize location
+      await determinePosition();
 
       final prefs = await SharedPreferences.getInstance();
       final isLoggedIn = prefs.getBool(AppConstants.keyIsLoggedIn) ?? false;
@@ -469,6 +477,52 @@ class UserProvider with ChangeNotifier {
       AppConstants.keyServiceUsageCounts,
       jsonEncode(_serviceUsageCounts),
     );
+  }
+
+  Future<void> determinePosition() async {
+    bool serviceEnabled;
+    LocationPermission permission;
+
+    // Test if location services are enabled.
+    serviceEnabled = await Geolocator.isLocationServiceEnabled();
+    if (!serviceEnabled) {
+      // Location services are not enabled don't continue
+      // accessing the position and request users of the 
+      // App to enable the location services.
+      print('Location services are disabled.');
+      return;
+    }
+
+    permission = await Geolocator.checkPermission();
+    if (permission == LocationPermission.denied) {
+      permission = await Geolocator.requestPermission();
+      if (permission == LocationPermission.denied) {
+        // Permissions are denied, next time you could try
+        // requesting permissions again (this is also where
+        // Android's shouldShowRequestPermissionRationale 
+        // returned true. According to Android guidelines
+        // your App should show an explanatory UI now.
+        print('Location permissions are denied');
+        return;
+      }
+    }
+    
+    if (permission == LocationPermission.deniedForever) {
+      // Permissions are denied forever, handle appropriately. 
+      print('Location permissions are permanently denied, we cannot request permissions.');
+      return;
+    } 
+
+    // When we reach here, permissions are granted and we can
+    // continue accessing the position of the device.
+    try {
+      Position position = await Geolocator.getCurrentPosition();
+      _latitude = position.latitude;
+      _longitude = position.longitude;
+      notifyListeners();
+    } catch (e) {
+      print('Error getting current position: $e');
+    }
   }
 
   Future<String> getAILocationSuggestion() async {

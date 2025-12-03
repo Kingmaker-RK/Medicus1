@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../widgets/translated_widget.dart';
 import '../constants/colors.dart';
+import '../providers/user_provider.dart';
 import 'ent_history_screen.dart';
 import '../services/medical_places_service.dart';
 import '../models/medical_facility_model.dart';
@@ -25,7 +26,12 @@ class _ENTScreenState extends State<ENTScreen> {
 
   Future<List<MedicalFacility>> _fetchENTs() async {
     try {
-      return await context.read<MedicalPlacesService>().fetchFacilities(queryType: 'ent');
+      final userProvider = context.read<UserProvider>();
+      return await context.read<MedicalPlacesService>().fetchFacilities(
+        queryType: 'ent',
+        lat: userProvider.latitude,
+        lon: userProvider.longitude,
+      );
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Error loading ENT specialists: $e')),
@@ -36,10 +42,13 @@ class _ENTScreenState extends State<ENTScreen> {
 
   void _performSearch(String query, String type) {
     setState(() {
+      final userProvider = context.read<UserProvider>();
       _entsFuture = context.read<MedicalPlacesService>().fetchFacilities(
             queryType: 'ent',
             searchQuery: query,
             searchType: type,
+            lat: userProvider.latitude,
+            lon: userProvider.longitude,
           );
     });
   }

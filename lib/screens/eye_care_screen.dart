@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../widgets/translated_widget.dart';
 import '../constants/colors.dart';
+import '../providers/user_provider.dart';
 import 'eye_care_history_screen.dart';
 import '../services/medical_places_service.dart';
 import '../models/medical_facility_model.dart';
@@ -25,7 +26,12 @@ class _EyeCareScreenState extends State<EyeCareScreen> {
 
   Future<List<MedicalFacility>> _fetchClinics() async {
     try {
-      return await context.read<MedicalPlacesService>().fetchFacilities(queryType: 'eye_care');
+      final userProvider = context.read<UserProvider>();
+      return await context.read<MedicalPlacesService>().fetchFacilities(
+        queryType: 'eye_care',
+        lat: userProvider.latitude,
+        lon: userProvider.longitude,
+      );
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Error loading clinics: $e')),
@@ -36,10 +42,13 @@ class _EyeCareScreenState extends State<EyeCareScreen> {
 
   void _performSearch(String query, String type) {
     setState(() {
+      final userProvider = context.read<UserProvider>();
       _clinicsFuture = context.read<MedicalPlacesService>().fetchFacilities(
             queryType: 'eye_care',
             searchQuery: query,
             searchType: type,
+            lat: userProvider.latitude,
+            lon: userProvider.longitude,
           );
     });
   }

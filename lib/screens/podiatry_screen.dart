@@ -3,6 +3,7 @@ import 'package:lucide_icons/lucide_icons.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import '../constants/colors.dart';
+import '../providers/user_provider.dart';
 import '../models/podiatry_record_model.dart';
 import '../widgets/translated_widget.dart';
 import '../widgets/upload_selector.dart';
@@ -37,7 +38,12 @@ class _PodiatryScreenState extends State<PodiatryScreen> with SingleTickerProvid
 
   Future<List<MedicalFacility>> _fetchCenters() async {
     try {
-      return await context.read<MedicalPlacesService>().fetchFacilities(queryType: 'podiatry');
+      final userProvider = context.read<UserProvider>();
+      return await context.read<MedicalPlacesService>().fetchFacilities(
+        queryType: 'podiatry',
+        lat: userProvider.latitude,
+        lon: userProvider.longitude,
+      );
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Error loading centers: $e')),
@@ -48,10 +54,13 @@ class _PodiatryScreenState extends State<PodiatryScreen> with SingleTickerProvid
 
   void _performSearch(String query, String type) {
     setState(() {
+      final userProvider = context.read<UserProvider>();
       _centersFuture = context.read<MedicalPlacesService>().fetchFacilities(
             queryType: 'podiatry',
             searchQuery: query,
             searchType: type,
+            lat: userProvider.latitude,
+            lon: userProvider.longitude,
           );
     });
   }
