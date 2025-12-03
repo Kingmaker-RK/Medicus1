@@ -17,6 +17,8 @@ import 'constants/app_constants.dart';
 import 'firebase_options.dart';
 
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+import 'services/supabase_service.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -32,6 +34,19 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+
+  // Initialize Supabase
+  final supabaseUrl = dotenv.env['SUPABASE_URL'];
+  final supabaseAnonKey = dotenv.env['SUPABASE_ANON_KEY'];
+
+  if (supabaseUrl != null && supabaseAnonKey != null) {
+    await Supabase.initialize(
+      url: supabaseUrl,
+      anonKey: supabaseAnonKey,
+    );
+  } else {
+    print("Warning: Supabase keys not found in .env. Supabase features will be disabled.");
+  }
 
   runApp(const AiGrisApp());
 }
@@ -64,6 +79,7 @@ class AiGrisApp extends StatelessWidget {
           create: (_) => ReportGenerationProvider(),
         ),
         Provider(create: (_) => MedicalPlacesService()),
+        Provider(create: (_) => SupabaseService()),
       ],
       child: Consumer<UserProvider>(
         builder: (context, userProvider, child) {

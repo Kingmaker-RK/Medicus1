@@ -92,6 +92,7 @@ dependencies:
   flutter_dotenv: ^6.0.0
   geocoding: ^4.0.0
   geolocator: ^14.0.2
+  supabase_flutter: ^2.10.3
 
 dev_dependencies:
   flutter_test:
