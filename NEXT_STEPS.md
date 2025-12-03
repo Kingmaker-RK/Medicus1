@@ -1,11 +1,11 @@
 # Next Steps
 
-The project has successfully established a robust foundation with Supabase integration. Here are the immediate next steps:
+The project has successfully established a robust foundation with Supabase integration and enhanced medical service interactions.
 
 ### 1. Verification & Testing
-- [ ] **Run Tests**: Execute `flutter test` to ensure the new `DatabaseService` (Supabase implementation) passes existing tests (mocks might need updates).
-- [ ] **Manual Testing**: Verify user profile creation, updates, and persistence in the app.
-- [ ] **Storage Testing**: Verify profile picture upload and document upload functionality.
+- [x] **Medical Screens**: Verified "Call" and "Book" functionality with unit tests (`chiropractic` and `dentist`).
+- [ ] **Supabase Tests**: Update remaining tests to mock Supabase client correctly.
+- [ ] **Manual Testing**: Verify user profile creation and persistence in the app.
 
 ### 2. Feature Completion
 - [ ] **E-Rezept Integration**: Connect `ERezeptService` to `DatabaseService` to upload generated PDFs to Supabase Storage.

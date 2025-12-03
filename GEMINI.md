@@ -33,6 +33,11 @@ AI-Gris is a comprehensive healthcare application built with Flutter, designed t
 - **Storage Buckets**: `profiles`, `documents`.
 
 ## Recent Changes
+- **Call & Book Functionality**:
+    - Enhanced medical facility cards across all service screens.
+    - Implemented real-time phone calling via `url_launcher`.
+    - Added appointment booking with date/time picker and opening hours validation.
+    - Added visual indicators for Open/Closed status.
 - Migrated database from Firestore to Supabase.
 - Implemented storage for profile pictures and documents.
 - Optimized medical facility search with larger radius and geocoding.
