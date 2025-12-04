@@ -4,7 +4,8 @@ The project has successfully established a robust foundation with Supabase integ
 
 ### 1. Verification & Testing
 - [x] **Medical Screens**: Verified "Call" and "Book" functionality with unit tests (`chiropractic` and `dentist`).
-- [x] **Supabase Tests**: Update remaining tests to mock Supabase client correctly.
+- [x] **Supabase Tests**: Updated and verified tests for `dentist`, `chiropractic`, and `e_rezept` screens with Supabase mocks.
+- [x] **Supabase Verification**: Verified `DatabaseService` schema matches the SQL setup script.
 - [ ] **Manual Testing**: Verify user profile creation and persistence in the app.
 
 ### 2. Feature Completion
