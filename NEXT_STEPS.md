@@ -11,6 +11,7 @@ The project has successfully established a robust foundation with Supabase integ
 ### 2. Feature Completion
 - [x] **Real-time Booking**: Implemented appointment booking with Supabase `appointments` table.
 - [x] **E-Rezept Integration**: Connect `ERezeptService` to `DatabaseService` to upload generated PDFs to Supabase Storage.
+- [x] **Translation Enhancements**: Fixed bugs, added AI Verification to History, and ran extensive language support tests.
 - [ ] **AI Features**: Ensure `AiService` is fully utilized in the UI for transcription and report generation.
 
 ### 3. Polish

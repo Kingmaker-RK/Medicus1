@@ -338,6 +338,30 @@ class TranslationProvider with ChangeNotifier {
     notifyListeners();
   }
 
+  // Verify specific history item with AI
+  Future<void> verifyHistoryItem(int index) async {
+    if (index < 0 || index >= _translationHistory.length) return;
+
+    // Show loading state if needed, or just update silently
+    // For better UX, we could add a loading state to the specific item, 
+    // but for now we'll just await the result.
+    
+    try {
+      final item = _translationHistory[index];
+      // Don't re-verify if already verified (optional optimization)
+      if (item.isVerifiedByAI) return;
+
+      final verifiedItem = await _translationService.verifyTranslation(item);
+      
+      _translationHistory[index] = verifiedItem;
+      notifyListeners();
+    } catch (e) {
+      print('Error verifying history item: $e');
+      _lastError = 'Verification failed: ${e.toString()}';
+      notifyListeners();
+    }
+  }
+
   @override
   void dispose() {
     _speechService.dispose();

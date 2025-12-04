@@ -6,6 +6,9 @@ class TranslationResult {
   final List<String> medicalTerms;
   final List<String> anatomyImages;
   final DateTime timestamp;
+  final String? aiFeedback;
+  final String? optimizedTranslation;
+  final bool isVerifiedByAI;
 
   TranslationResult({
     required this.originalText,
@@ -15,6 +18,9 @@ class TranslationResult {
     this.medicalTerms = const [],
     this.anatomyImages = const [],
     DateTime? timestamp,
+    this.aiFeedback,
+    this.optimizedTranslation,
+    this.isVerifiedByAI = false,
   }) : timestamp = timestamp ?? DateTime.now();
 
   factory TranslationResult.fromJson(Map<String, dynamic> json) {
@@ -36,6 +42,9 @@ class TranslationResult {
       timestamp: json['timestamp'] != null
           ? DateTime.parse(json['timestamp'] as String)
           : DateTime.now(),
+      aiFeedback: json['aiFeedback'] as String?,
+      optimizedTranslation: json['optimizedTranslation'] as String?,
+      isVerifiedByAI: json['isVerifiedByAI'] as bool? ?? false,
     );
   }
 
@@ -48,6 +57,9 @@ class TranslationResult {
       'medicalTerms': medicalTerms,
       'anatomyImages': anatomyImages,
       'timestamp': timestamp.toIso8601String(),
+      'aiFeedback': aiFeedback,
+      'optimizedTranslation': optimizedTranslation,
+      'isVerifiedByAI': isVerifiedByAI,
     };
   }
 }

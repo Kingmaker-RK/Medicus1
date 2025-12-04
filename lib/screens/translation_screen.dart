@@ -1481,11 +1481,40 @@ class _TranslationScreenState extends State<TranslationScreen>
                           decoration: BoxDecoration(
                             color: AppColors.inputBackground,
                             borderRadius: BorderRadius.circular(12),
-                            border: Border.all(color: AppColors.borderLight),
+                            border: Border.all(
+                              color: translation.isVerifiedByAI 
+                                  ? AppColors.success.withValues(alpha: 0.5) 
+                                  : AppColors.borderLight,
+                              width: translation.isVerifiedByAI ? 1.5 : 1,
+                            ),
                           ),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
+                              // Header: AI Badge + Timestamp (optional)
+                              if (translation.isVerifiedByAI)
+                                Padding(
+                                  padding: const EdgeInsets.only(bottom: 8),
+                                  child: Row(
+                                    children: [
+                                      Icon(
+                                        Icons.check_circle_rounded,
+                                        size: 14,
+                                        color: AppColors.success,
+                                      ),
+                                      const SizedBox(width: 4),
+                                      Text(
+                                        'AI Verified',
+                                        style: TextStyle(
+                                          fontSize: 10,
+                                          fontWeight: FontWeight.bold,
+                                          color: AppColors.success,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+
                               // Original text
                               Row(
                                 children: [
@@ -1532,8 +1561,60 @@ class _TranslationScreenState extends State<TranslationScreen>
                                   ),
                                 ],
                               ),
+                              
+                              // AI Feedback Section
+                              if (translation.aiFeedback != null) ...[
+                                const SizedBox(height: 8),
+                                Container(
+                                  padding: const EdgeInsets.all(8),
+                                  decoration: BoxDecoration(
+                                    color: AppColors.primary.withValues(alpha: 0.05),
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Row(
+                                        children: [
+                                          Icon(Icons.auto_awesome, size: 12, color: AppColors.primary),
+                                          const SizedBox(width: 4),
+                                          Text(
+                                            'AI Analysis',
+                                            style: TextStyle(
+                                              fontSize: 10,
+                                              fontWeight: FontWeight.bold,
+                                              color: AppColors.primary,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                      const SizedBox(height: 4),
+                                      Text(
+                                        translation.aiFeedback!,
+                                        style: TextStyle(
+                                          fontSize: 11,
+                                          color: AppColors.textSecondary,
+                                          fontStyle: FontStyle.italic,
+                                        ),
+                                      ),
+                                      if (translation.optimizedTranslation != null) ...[
+                                        const SizedBox(height: 4),
+                                        Text(
+                                          'Suggestion: ${translation.optimizedTranslation}',
+                                          style: TextStyle(
+                                            fontSize: 11,
+                                            fontWeight: FontWeight.w600,
+                                            color: AppColors.textPrimary,
+                                          ),
+                                        ),
+                                      ],
+                                    ],
+                                  ),
+                                ),
+                              ],
+
                               const SizedBox(height: 8),
-                              // Language info
+                              // Language info & Actions
                               Row(
                                 children: [
                                   Container(
@@ -1555,6 +1636,19 @@ class _TranslationScreenState extends State<TranslationScreen>
                                     ),
                                   ),
                                   const Spacer(),
+                                  // AI Verify Button
+                                  if (!translation.isVerifiedByAI)
+                                    IconButton(
+                                      icon: const Icon(Icons.fact_check_outlined, size: 18),
+                                      color: AppColors.primary,
+                                      padding: EdgeInsets.zero,
+                                      constraints: const BoxConstraints(),
+                                      tooltip: 'Verify with AI',
+                                      onPressed: () {
+                                        translationProvider.verifyHistoryItem(index);
+                                      },
+                                    ),
+                                  const SizedBox(width: 12),
                                   IconButton(
                                     icon: const Icon(
                                       Icons.copy_rounded,

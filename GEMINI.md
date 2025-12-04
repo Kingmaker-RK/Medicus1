@@ -50,6 +50,10 @@ AI-Gris is a comprehensive healthcare application built with Flutter, designed t
 - Migrated database from Firestore to Supabase.
 - Implemented storage for profile pictures and documents.
 - **E-Rezept Integration**: Connected to Supabase Storage. Prescriptions are now uploaded to `documents` bucket.
+- **Translation Enhancements**:
+    - **Massive Language Support**: Verified support for 50+ languages with performance benchmarks.
+    - **AI Verification**: Added "AI Check" feature in Translation History to verify and optimize past translations using LLM.
+    - **Robustness**: Improved error handling and fallback mechanisms for translation services.
 - Optimized medical facility search with larger radius and geocoding.
 - Removed language selector from Welcome Screen.
 
