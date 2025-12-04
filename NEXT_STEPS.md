@@ -4,12 +4,12 @@ The project has successfully established a robust foundation with Supabase integ
 
 ### 1. Verification & Testing
 - [x] **Medical Screens**: Verified "Call" and "Book" functionality with unit tests (`chiropractic` and `dentist`).
-- [ ] **Supabase Tests**: Update remaining tests to mock Supabase client correctly.
+- [x] **Supabase Tests**: Update remaining tests to mock Supabase client correctly.
 - [ ] **Manual Testing**: Verify user profile creation and persistence in the app.
 
 ### 2. Feature Completion
 - [x] **Real-time Booking**: Implemented appointment booking with Supabase `appointments` table.
-- [ ] **E-Rezept Integration**: Connect `ERezeptService` to `DatabaseService` to upload generated PDFs to Supabase Storage.
+- [x] **E-Rezept Integration**: Connect `ERezeptService` to `DatabaseService` to upload generated PDFs to Supabase Storage.
 - [ ] **AI Features**: Ensure `AiService` is fully utilized in the UI for transcription and report generation.
 
 ### 3. Polish

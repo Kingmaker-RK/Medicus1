@@ -34,6 +34,7 @@ class UserProvider with ChangeNotifier {
   Map<String, int> get serviceUsageCounts => _serviceUsageCounts;
   double? get latitude => _latitude;
   double? get longitude => _longitude;
+  DatabaseService get databaseService => _databaseService;
 
   // Initialize user from storage
   Future<void> initialize() async {

@@ -6,7 +6,9 @@ import '../models/doctor_profile_model.dart';
 import '../utils/logger.dart';
 
 class DatabaseService {
-  SupabaseClient get _client => Supabase.instance.client;
+  final SupabaseClient? _injectedClient;
+
+  SupabaseClient get _client => _injectedClient ?? Supabase.instance.client;
 
   // Table names
   static const String _usersTable = 'users';
@@ -18,7 +20,8 @@ class DatabaseService {
   static const String _documentsBucket = 'documents';
 
   // Constructor - keeping signature compatible but ignoring Firestore
-  DatabaseService({dynamic firestore});
+  // Added optional client for testing
+  DatabaseService({dynamic firestore, SupabaseClient? client}) : _injectedClient = client;
 
   // --- User Methods ---
 

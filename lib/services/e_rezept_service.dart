@@ -11,6 +11,8 @@ import '../models/pharmacy_model.dart';
 import '../models/upload_record_model.dart';
 import '../utils/logger.dart';
 
+import 'database_service.dart';
+
 class ERezeptService {
   static const String _historyKey = 'e_rezept_history';
 
@@ -209,5 +211,18 @@ class ERezeptService {
   // Helper to mock location based time zone
   String getCurrentTimeZone() {
     return DateTime.now().timeZoneName;
+  }
+
+  Future<String> uploadPrescriptionPdf(File file, String userId, DatabaseService dbService) async {
+    try {
+      final url = await dbService.uploadDocument(userId, file, 'prescriptions');
+      logger.i('Prescription PDF uploaded: $url');
+      return url;
+    } catch (e) {
+      logger.e('Failed to upload prescription PDF: $e');
+      // We might want to rethrow or just return empty string depending on requirement
+      // For now rethrow to let UI handle it
+      rethrow;
+    }
   }
 }

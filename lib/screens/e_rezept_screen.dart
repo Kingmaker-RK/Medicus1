@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import '../providers/user_provider.dart';
 import '../widgets/translated_widget.dart';
 import 'package:image_picker/image_picker.dart';
 import '../constants/colors.dart';
@@ -256,7 +258,21 @@ class _ERezeptScreenState extends State<ERezeptScreen> {
         timeZone: _service.getCurrentTimeZone(),
       );
 
-      // 3. Save Record
+      // 3. Upload to Supabase Storage (New Step)
+      if (mounted) {
+         final userProvider = Provider.of<UserProvider>(context, listen: false);
+         final userId = userProvider.currentUser?.id;
+         if (userId != null) {
+            try {
+              await _service.uploadPrescriptionPdf(pdfFile, userId, userProvider.databaseService);
+            } catch (e) {
+              logger.w('Failed to upload PDF to cloud: $e');
+              // Continue execution, as we still have the local file and can proceed
+            }
+         }
+      }
+
+      // 4. Save Record (Local History)
       try {
         await _service.saveUploadRecord(record);
       } catch (e) {

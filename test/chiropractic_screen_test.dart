@@ -10,6 +10,7 @@ import 'package:ai_gris/providers/user_provider.dart';
 import 'package:ai_gris/models/user_model.dart';
 import 'package:ai_gris/services/medical_places_service.dart';
 import 'package:ai_gris/models/medical_facility_model.dart';
+import 'package:ai_gris/services/database_service.dart';
 
 class MockMedicalPlacesService implements MedicalPlacesService {
   List<MedicalFacility> _mockData = [];
@@ -63,13 +64,16 @@ class MockUserProvider extends ChangeNotifier implements UserProvider {
   String get selectedLanguage => 'en';
 
   @override
-  UserModel? get currentUser => null;
+  DatabaseService get databaseService => DatabaseService();
+
+  @override
+  UserModel? get currentUser => UserModel(id: 'test-user', email: 'test@example.com', role: 'patient', languageCode: 'en');
 
   @override
   bool get isLoading => false;
 
   @override
-  bool get isLoggedIn => false;
+  bool get isLoggedIn => true;
 
   @override
   Map<String, int> get serviceUsageCounts => {};
