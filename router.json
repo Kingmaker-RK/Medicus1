@@ -1,0 +1,136 @@
+{
+  "routes": [
+    {
+      "path": "/",
+      "name": "welcome",
+      "screen": "WelcomeScreen",
+      "description": "Welcome screen with app introduction"
+    },
+    {
+      "path": "/translation",
+      "name": "translation",
+      "screen": "TranslationScreen",
+      "description": "Main translation screen with voice recognition"
+    },
+    {
+      "path": "/settings",
+      "name": "settings",
+      "screen": "SettingsScreen",
+      "description": "Settings screen for app configuration"
+    },
+    {
+      "path": "/profile",
+      "name": "profile",
+      "screen": "UserProfileScreen",
+      "description": "User profile screen with personal info, certificates, sick notes, reimbursements, and mailbox"
+    },
+    {
+      "path": "/doctor-profile",
+      "name": "doctor-profile",
+      "screen": "DoctorProfileScreen",
+      "description": "Doctor profile screen with professional info, credentials, and clinic details"
+    },
+    {
+      "path": "/complete-profile",
+      "name": "complete-profile",
+      "screen": "ProfileCompletionScreen",
+      "description": "Mandatory profile completion screen for new users to fill all required information"
+    },
+    {
+      "path": "/forgot-password",
+      "name": "forgot-password",
+      "screen": "ForgotPasswordScreen",
+      "description": "Password reset screen where users can request a password reset code via email"
+    },
+    {
+      "path": "/verify-email",
+      "name": "verify-email",
+      "screen": "EmailVerificationScreen",
+      "description": "Email verification screen where new users enter the 6-digit code sent to their email"
+    },
+    {
+      "path": "/verify-password-reset",
+      "name": "verify-password-reset",
+      "screen": "VerifyPasswordResetScreen",
+      "description": "Password reset verification screen where users enter the 6-digit reset code"
+    },
+    {
+      "path": "/reset-password",
+      "name": "reset-password",
+      "screen": "ResetPasswordScreen",
+      "description": "New password creation screen with password strength validation and confirmation"
+    },
+    {
+      "path": "/appointments",
+      "name": "appointments",
+      "screen": "AppointmentsScreen",
+      "description": "Appointment booking screen with Video and In-Person consultation options"
+    },
+    {
+      "path": "/health",
+      "name": "health",
+      "screen": "HealthScreen",
+      "description": "Health data dashboard displaying smartwatch and phone health metrics"
+    },
+    {
+      "path": "/reminders",
+      "name": "reminders",
+      "screen": "RemindersScreen",
+      "description": "Medication reminder management screen with notifications and alarms"
+    },
+    {
+      "path": "/services",
+      "name": "services",
+      "screen": "ServicesHubScreen",
+      "description": "Medical services hub with access to all healthcare services"
+    },
+    {
+      "path": "/e-rezept",
+      "name": "e-rezept",
+      "screen": "ERezeptScreen",
+      "description": "E-prescription service to order medication by uploading prescription and insurance card photos"
+    },
+    {
+      "path": "/pregnancy-tracker",
+      "name": "pregnancy-tracker",
+      "screen": "PregnancyTrackerScreen",
+      "description": "Pregnancy tracking with weekly updates, baby development info, and health tips"
+    },
+    {
+      "path": "/blood-donation",
+      "name": "blood-donation",
+      "screen": "BloodDonationScreen",
+      "description": "Blood donation service to find centers, check eligibility, and schedule appointments"
+    },
+    {
+      "path": "/dentist",
+      "name": "dentist",
+      "screen": "DentistScreen",
+      "description": "Dentist finder with search by name, location, and pincode"
+    },
+    {
+      "path": "/dermo",
+      "name": "dermo",
+      "screen": "DermoScreen",
+      "description": "Dermatology service with image upload, questions, diagnosis, therapy, and aftercare"
+    },
+    {
+      "path": "/baby-tracker",
+      "name": "baby-tracker",
+      "screen": "BabyTrackerScreen",
+      "description": "Newborn tracker for feeding, sleep, diapers, and growth milestones"
+    },
+    {
+      "path": "/orthopedic",
+      "name": "orthopedic",
+      "screen": "OrthopedicScreen",
+      "description": "Orthopedic examination tools for doctors with spine, upper limb, and lower limb assessments"
+    },
+    {
+      "path": "/fitphysic",
+      "name": "fitphysic",
+      "screen": "FitPhysicScreen",
+      "description": "Rehabilitation guide with training videos for knee, shoulder, back, hip, and ankle recovery"
+    }
+  ]
+}

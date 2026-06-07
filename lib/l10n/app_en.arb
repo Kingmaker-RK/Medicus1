@@ -1,0 +1,155 @@
+{
+  "@@locale": "en",
+  "welcomeTitle": "Welcome to AI-Gris",
+  "@welcomeTitle": {
+    "description": "The main welcome title on the landing screen"
+  },
+  "welcomeSubtitle": "Breaking language barriers in healthcare",
+  "@welcomeSubtitle": {
+    "description": "The subtitle below the welcome title"
+  },
+  "signIn": "Login",
+  "@signIn": {
+    "description": "Button text for signing in"
+  },
+  "signUp": "Register",
+  "@signUp": {
+    "description": "Button text for signing up"
+  },
+  "emailLabel": "Email",
+  "@emailLabel": {
+    "description": "Label for email input field"
+  },
+  "passwordLabel": "Password",
+  "@passwordLabel": {
+    "description": "Label for password input field"
+  },
+  "rememberMe": "Remember me",
+  "@rememberMe": {
+    "description": "Checkbox label for remembering user"
+  },
+  "forgotPassword": "Forgot Password?",
+  "@forgotPassword": {
+    "description": "Link text for forgotten password"
+  },
+  "agreeToTerms": "I agree to the Terms & Conditions and Privacy Policy",
+  "@agreeToTerms": {
+    "description": "Checkbox label for agreeing to terms"
+  },
+  "pleaseAgreeToTerms": "Please agree to the Terms & Conditions to continue.",
+  "@pleaseAgreeToTerms": {
+    "description": "Error message when terms are not agreed to"
+  },
+  "loginFailed": "Login failed. Please check your credentials.",
+  "@loginFailed": {
+    "description": "Error message for failed login"
+  },
+  "signUpFailed": "Register failed. Please try again.",
+  "@signUpFailed": {
+    "description": "Error message for failed sign up"
+  },
+  "continueAsGuest": "Continue as Guest",
+  "@continueAsGuest": {
+    "description": "Button text to continue as a guest"
+  },
+  "termsAndConditions": "Terms & Conditions",
+  "@termsAndConditions": {
+    "description": "Title for terms and conditions dialog"
+  },
+  "guestTermsMessage": "By continuing as a guest, you agree to our Terms & Conditions and Privacy Policy.",
+  "@guestTermsMessage": {
+    "description": "Message explaining terms for guests"
+  },
+  "viewPolicy": "View Policy",
+  "@viewPolicy": {
+    "description": "Button text to view privacy policy"
+  },
+  "cancel": "Cancel",
+  "@cancel": {
+    "description": "Cancel button text"
+  },
+  "iAgree": "I Agree",
+  "@iAgree": {
+    "description": "Agreement button text"
+  },
+  "rolePatient": "Patient",
+  "@rolePatient": {
+    "description": "Role selection option for Patient"
+  },
+  "roleDoctor": "Doctor",
+  "@roleDoctor": {
+    "description": "Role selection option for Doctor"
+  },
+  "registrationTitle": "Registration",
+  "@registrationTitle": {
+    "description": "Title for registration screen"
+  },
+  "personalInfo": "Personal Information",
+  "@personalInfo": {
+    "description": "Section header for personal information"
+  },
+  "firstName": "First Name",
+  "@firstName": {
+    "description": "Label for first name field"
+  },
+  "lastName": "Last Name",
+  "@lastName": {
+    "description": "Label for last name field"
+  },
+  "dob": "Date of Birth",
+  "@dob": {
+    "description": "Label for date of birth field"
+  },
+  "gender": "Gender",
+  "@gender": {
+    "description": "Label for gender field"
+  },
+  "male": "Male",
+  "@male": {
+    "description": "Gender option Male"
+  },
+  "female": "Female",
+  "@female": {
+    "description": "Gender option Female"
+  },
+  "other": "Other",
+  "@other": {
+    "description": "Gender option Other"
+  },
+  "accountSetup": "Account Setup",
+  "@accountSetup": {
+    "description": "Title for account setup screen"
+  },
+  "confirmPassword": "Confirm Password",
+  "@confirmPassword": {
+    "description": "Label for confirm password field"
+  },
+  "passwordsDoNotMatch": "Passwords do not match",
+  "@passwordsDoNotMatch": {
+    "description": "Error message when passwords do not match"
+  },
+  "verifyHuman": "Verify you are human",
+  "@verifyHuman": {
+    "description": "Label for human verification"
+  },
+  "continueText": "Continue",
+  "@continueText": {
+    "description": "Button text to continue"
+  },
+  "done": "Done",
+  "@done": {
+    "description": "Button text to finish"
+  },
+  "requiredField": "This field is required",
+  "@requiredField": {
+    "description": "Error message for required field"
+  },
+  "invalidDate": "Invalid date",
+  "@invalidDate": {
+    "description": "Error message for invalid date"
+  },
+  "selectDate": "Select Date",
+  "@selectDate": {
+    "description": "Hint text for date picker"
+  }
+}
